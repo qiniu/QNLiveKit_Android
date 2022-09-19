@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/llLinkContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:ignore="MissingDefaultResource">
+
+    <FrameLayout
+        android:id="@+id/flVideoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="266dp"
+        android:layout_marginTop="116dp"
+        android:orientation="horizontal" />
+
+    <ImageView
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:src="@drawable/kit_dafault_room_bg"
+        android:id="@+id/ivBackGround"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="266dp"
+        android:layout_marginTop="116dp"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/flAnchorContainer"
+            android:layout_width="0dp"
+            android:layout_height="266dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/llAnchorCover"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp">
+
+                <com.qlive.uikitcore.view.CircleImageView
+                    android:id="@+id/ivAnchorAvatar"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+
+                    />
+
+                <TextView
+                    android:id="@+id/tvAnchorName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#ffffff"
+                    android:layout_marginStart="4dp"
+                    tools:text="王老五" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/flAudienceContainer"
+            android:layout_width="0dp"
+            android:layout_height="266dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/llAudienceCover"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp">
+
+                <com.qlive.uikitcore.view.CircleImageView
+                    android:id="@+id/ivAudienceAvatar"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+
+                    />
+
+                <TextView
+                    android:id="@+id/ivAudienceName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#ffffff"
+                    android:layout_marginStart="4dp"
+                    tools:text="王老五" />
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

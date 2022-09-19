@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center"
+    tools:background="@color/black"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingBottom="12dp"
+        >
+        <ImageView
+            android:id="@+id/beauty_item_iv"
+            android:layout_width="48dp"
+            android:layout_height="44dp" />
+
+        <TextView
+            android:id="@+id/beauty_item_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textColor="#555555"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/beauty_item_subscription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_beauty_item_subscript"
+            android:gravity="center"
+            android:textColor="#555555"
+            android:textSize="6sp" />
+    </LinearLayout>
+
+
+</FrameLayout>

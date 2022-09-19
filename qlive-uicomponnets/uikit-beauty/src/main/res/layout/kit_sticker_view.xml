@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:orientation="vertical"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_gravity="bottom"
+        android:background="#cc000000"
+        android:orientation="vertical"
+        tools:visibility="visible">
+
+        <RelativeLayout
+            android:id="@+id/rl_sticker_options"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <RelativeLayout
+                android:id="@+id/rv_close_sticker"
+                android:layout_width="45dp"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true">
+
+                <ImageView
+                    android:id="@+id/iv_close_sticker"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="7dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/close_sticker" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/view_line"
+                android:layout_width="1dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_toRightOf="@+id/rv_close_sticker"
+                android:background="#80ffffff" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_sticker_options"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/view_line"
+                android:padding="2dp"
+                android:scrollbars="none" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_alignParentBottom="true"
+                android:background="#80ffffff" />
+
+        </RelativeLayout>
+
+        <com.qlive.uiwidghtbeauty.ui.BeautyViewPage
+            android:id="@+id/vp_sticker_page"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:padding="5dp"
+            android:scrollbars="none" />
+    </LinearLayout>
+</FrameLayout>

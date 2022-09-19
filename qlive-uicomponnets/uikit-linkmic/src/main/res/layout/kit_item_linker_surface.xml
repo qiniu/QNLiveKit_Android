@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/llContiner"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end"
+    android:orientation="vertical"
+    tools:background="#000000"
+    android:layout_marginEnd="8dp"
+    tools:layout_width="100dp"
+    tools:layout_height="100dp"
+    tools:ignore="MissingDefaultResource">
+
+    <FrameLayout
+        android:id="@+id/flSurfaceContainer"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_gravity="end|center_vertical"
+        tools:background="#ffffff"
+        />
+
+    <ImageView
+        android:id="@+id/ivMicStatus"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="42dp"
+        android:layout_marginTop="45dp"
+        android:src="@drawable/kit_select_seat_mic"
+        />
+
+
+</FrameLayout>
+
+
+

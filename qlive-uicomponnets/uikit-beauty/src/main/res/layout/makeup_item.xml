@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sensetime="http://schemas.android.com/apk/res-auto"
+    android:layout_width="80dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="5dp">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        >
+
+        <com.qlive.uiwidghtbeauty.ui.RoundImageView
+            android:id="@+id/iv_makeup_image"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            sensetime:borderRadius="8dp"
+            sensetime:type="circle" />
+
+        <ImageView
+            android:id="@+id/normalState"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginStart="38dp"
+            android:layout_marginTop="38dp"
+            android:background="@drawable/sticker_normal_state"
+            android:scaleType="fitXY"
+            android:visibility="visible" />
+
+        <FrameLayout
+            android:id="@+id/loadingStateParent"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/sticker_loading"
+            android:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/downloadingState"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/sticker_loading_state"
+                android:visibility="invisible" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/makeup_text"
+        android:layout_width="60dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="12sp" />
+
+</LinearLayout>

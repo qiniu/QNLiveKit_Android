@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:background="#000000">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="560dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/kit_shape_bg_shopping"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:text="@string/shopping_dialog_goods_list_tittle"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingEnd="16dp">
+
+            <RadioButton
+                android:id="@+id/rbAll"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:button="@null"
+                android:checked="true"
+                android:text="@string/shopping_dialog_goods_manager_all"
+                android:textColor="@drawable/select_color_tab_shopping"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/rbOnSale"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:button="@null"
+                android:gravity="center"
+                android:text="@string/shopping_dialog_goods_manager_onsale"
+                android:textColor="@drawable/select_color_tab_shopping"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/rbPulled"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:button="@null"
+                android:gravity="end|center_vertical"
+                android:text="@string/shopping_dialog_goods_manager_pulled"
+                android:textColor="@drawable/select_color_tab_shopping"
+                android:textSize="12sp" />
+        </RadioGroup>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/vpGoods"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E5E5E5" />
+
+        <LinearLayout
+            android:id="@+id/radioGroupOp"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="#ffffff"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="24dp">
+
+            <TextView
+                android:id="@+id/tvUp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:text="@string/shopping_op_on_sale"
+                android:textColor="@drawable/select_color_op_shopping"
+                android:textSize="12sp" />
+
+
+            <TextView
+                android:id="@+id/tvDown"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:button="@null"
+                android:gravity="center"
+                android:text="@string/shopping_op_on_pull"
+                android:textColor="@drawable/select_color_op_shopping"
+                android:textSize="12sp" />
+
+
+            <LinearLayout
+                android:id="@+id/llMove"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvMove"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/select_ic_goods_delete"
+                    android:drawablePadding="2dp"
+                    android:gravity="end"
+                    android:orientation="horizontal"
+                    android:text="@string/shopping_op_on_remove"
+                    android:textColor="@drawable/select_color_op_shopping"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

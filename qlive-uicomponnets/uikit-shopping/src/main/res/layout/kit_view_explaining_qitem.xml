@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.qlive.uikitcore.view.SquareImageView
+        android:id="@+id/ivCover"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/kit_pic_empty" />
+
+
+    <TextView
+        android:id="@+id/tvOrder"
+        android:layout_width="32dp"
+        android:layout_height="22dp"
+        android:layout_margin="2dp"
+        android:textColor="#ffffff"
+        android:textSize="13sp"
+        android:gravity="center"
+        android:background="@drawable/shape_66000000_topleft_4" />
+
+    <ImageView
+        android:id="@+id/ivClose"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="end"
+        android:padding="7dp"
+        android:src="@mipmap/kit_close_explaining" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="8dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#333333"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_marginTop="8dp"
+            android:background="#E79294"
+            >
+
+
+            <TextView
+                android:id="@+id/tvNowPrice"
+                android:textColor="#ffffff"
+                tools:text="12312"
+                android:paddingStart="8dp"
+                android:gravity="center_vertical"
+                android:textSize="13sp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <TextView
+                android:textColor="#ffffff"
+                android:text="抢"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:background="@mipmap/kit_ic_qiang" />
+
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

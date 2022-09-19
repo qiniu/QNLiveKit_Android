@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="100dp"
+    android:layout_height="180dp"
+    android:orientation="vertical"
+
+    app:cardCornerRadius="6dp">
+
+    <FrameLayout
+        android:background="@drawable/kit_dafault_room_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.qlive.uikit.component.DefaultFloatingPlayerRenderView
+            android:id="@+id/floatPlayerRenderView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/ivFloatClose"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
+            android:layout_gravity="end|top"
+            android:padding="4dp"
+            android:src="@mipmap/kit_close_explaining"
+
+            />
+    </FrameLayout>
+
+</androidx.cardview.widget.CardView>

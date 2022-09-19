@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:background="@drawable/kit_shape_white_8"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <CheckBox
+        android:id="@+id/opCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="103dp"
+        android:layout_height="103dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/ivCover"
+                android:layout_width="103dp"
+                android:layout_height="103dp"
+                android:scaleType="fitCenter"
+                tools:src="@drawable/kit_pic_empty" />
+
+            <TextView
+                android:id="@+id/tvOrder"
+                android:layout_width="32dp"
+                android:layout_height="22dp"
+                android:background="#66000000"
+                android:gravity="center"
+                android:textColor="#ffffff"
+                android:textSize="13sp"
+                tools:text="1" />
+
+            <LinearLayout
+                android:id="@+id/llItemShowing"
+                android:layout_width="match_parent"
+                android:layout_height="22dp"
+                android:layout_gravity="bottom"
+                android:background="#BFE34D59"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.qlive.uikitshopping.ui.AutoVoiceWaveView
+                    android:id="@+id/mAutoVoiceWaveView"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/shopping_status_explaining_str"
+                    android:textColor="#ffffff"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvPulledCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#80000000"
+                android:gravity="center"
+                android:text="@string/shopping_status_pulled_str"
+                android:textColor="#ffffff"
+                android:textSize="13sp" />
+
+        </FrameLayout>
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="12dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvGoodsName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#333333"
+            android:textSize="12sp"
+            tools:text="dasdsdasdnasldnasdnaksdnasldnaslkdnasldnkasldnasldnsaldnsaldnasldas" />
+
+        <com.qlive.uikitshopping.ui.flowlayout.TagFlowLayout
+            android:id="@+id/flGoodsTag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvNowPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#EF4149"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="¥32" />
+
+            <TextView
+                android:id="@+id/tvOriginPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="#BFBFBF"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                tools:text="¥32" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/ivSort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:src="@mipmap/kit_ic_goods_sort" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

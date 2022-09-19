@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="80dp"
+    android:layout_height="40dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/iv_beauty_options"
+        android:layout_width="80dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:padding="3dp"
+        android:textSize="16dp" />
+
+    <TextView
+        android:layout_width="80dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
+        android:background="@color/black"
+        android:gravity="center"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/iv_select_flag"
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/seekbar_thumb"
+        android:gravity="center"
+        android:visibility="invisible" />
+
+</LinearLayout>

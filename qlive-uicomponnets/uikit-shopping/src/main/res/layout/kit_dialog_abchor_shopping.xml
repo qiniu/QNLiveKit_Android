@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:background="#000000">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="560dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/kit_shape_bg_shopping"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="24dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:gravity="center"
+                android:text="@string/shopping_dialog_goods_list_tittle"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_marginEnd="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_gravity="end|center_vertical"
+                >
+
+                <ImageView
+                    android:src="@mipmap/kit_ic_shopping_setting"
+                    android:layout_width="11dp"
+                    android:scaleType="fitXY"
+                    android:layout_height="11dp" />
+
+                <TextView
+                    android:id="@+id/tvManager"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="6dp"
+                    android:gravity="center"
+                    android:text="@string/shopping_dialog_goods_list_manager"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                 />
+            </LinearLayout>
+        </FrameLayout>
+
+        <com.qlive.uikitcore.smartrecycler.SmartRecyclerView
+            android:id="@+id/recyclerViewGoods"
+            app:placeholder_empty_icon="@drawable/kit_pic_empty"
+            app:placeholder_empty_no_net_icon="@drawable/kit_pic_empty_network"
+            app:placeholder_empty_tips="@string/empty_tip_str"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+</FrameLayout>

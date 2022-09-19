@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="3dp"
+    android:layout_marginBottom="3dp"
+    android:orientation="horizontal">
+
+    <com.qlive.uikitcore.view.CircleImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+
+        android:layout_marginEnd="4dp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/kit_shape_40000000_6"
+        android:orientation="vertical"
+
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#CCDFFC"
+            android:textSize="13sp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:textStyle="bold"
+            tools:text="androi" />
+
+        <TextView
+            android:id="@+id/tvContent"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:textSize="13sp"
+            tools:text="androadandroadjasuidasidsaidasdhuaiusdaisdhaiiandroadjasuidasidsaidasdhuaiusdaisdhaiiandroadjasuidasidsaidasdhuaiusdaisdhaiiandroadjasuidasidsaidasdhuaiusdaisdhaiijasuidasidsaidasdhuaiusdaisdhaii" />
+
+    </LinearLayout>
+</LinearLayout>

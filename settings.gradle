@@ -1,0 +1,45 @@
+
+rootProject.name = "QNLiveKit"
+include ':app'
+include ':doc:sdkbuilder'
+//qlive 输出sdk
+include ':app-sdk:qlive-sdk'
+include ':app-sdk:qlive-sdk-uikit'
+//qlive 依赖sdk
+include ':app-sdk:depends_sdk_piliplayer' //七牛播放器
+include ':app-sdk:depends_sdk_qnim' //七牛im
+include ':app-sdk:depends_sdk_qrtc' //七牛rtc
+
+include ':liveroom-service:linkmicservice'
+include ':liveroom-service:pkservice'
+include ':liveroom-service:chatservice'
+include ':liveroom-service:danmakuservice'
+include ':liveroom-service:publicchatservice'
+include ':liveroom-service:roomservice'
+include ':liveroom-service:shoppingservice'
+
+include ':liveroom-libs:comp_avparam'
+include ':liveroom-libs:lib_json'
+include ':liveroom-libs:comp_rtm'
+include ':liveroom-libs:comp_player'
+include ':liveroom-libs:comp_imadapter'
+include ':liveroom-libs:comp_rtclive'
+include ':liveroom-libs:lib_log'
+include ':liveroom-libs:sensehook'
+
+include ':liveroom-core'
+include ':liveroom-coreimpl'
+include ':liveroom-uikit-core'
+
+include ':qlive-uicomponnets:uikit-user'
+include ':qlive-uicomponnets:uikit-danmaku'
+include ':qlive-uicomponnets:uikit-publicchat'
+include ':qlive-uicomponnets:uiwidget-input'
+include ':qlive-uicomponnets:uikit-beauty'
+include ':qlive-uicomponnets:uikit-shopping'
+include ':qlive-uicomponnets:uikit-linkmic'
+include ':qlive-uicomponnets:uikit-pk'
+
+include ':qlivesdk'
+include ':qlive-uikit'
+
