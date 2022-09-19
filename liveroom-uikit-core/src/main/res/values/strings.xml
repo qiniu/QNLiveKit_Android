@@ -1,0 +1,105 @@
+<resources>
+
+    <string name="empty_tip_str">空空如也</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确认</string>
+    <string name="reject">拒绝</string>
+    <string name="accept">接受</string>
+    <string name="beauty">美颜</string>
+    <string name="camera_switch">切换</string>
+    <string name="hangup">挂断</string>
+    <string name="invite">邀请</string>
+    <string name="tip">提示</string>
+    <string name="close_room">结束直播</string>
+    <string name="close">关闭</string>
+    <string name="just_left_room">仅暂停直播</string>
+    <string name="back_current_room">返回当前直播</string>
+    <string name="record">录制</string>
+    <string name="multiple">倍数</string>
+    <string name="no_more_tips">没有更多了</string>
+    <string name="live_anchor_offline_tip">主播马上回来，敬请期待。</string>
+    <string name="live_room_destroyed_tip">房间已经销毁</string>
+    <string name="live_close_confirm">是否结束直播？</string>
+    <string name="live_close_confirm_desc">结束后，本直播间将关闭</string>
+    <string name="live_float_permission_tip">小窗播放功能需要开启悬浮窗权限</string>
+    <string name="live_goto_float_permission_tip">去开启</string>
+
+    <string name="live_welcome_tip">进入了房间</string>
+    <string name="live_bye_bye_tip">离开了房间</string>
+    <string name="live_permission_check_tip">请同意必要的权限</string>
+
+    <string name="preview_hit_room_title">请输入直播标题</string>
+    <string name="preview_hit_room_notice">请输入直播公告</string>
+    <string name="preview_tip_start_live">开始直播</string>
+    <string name="preview_tip_input_title">请输入标题</string>
+
+    <string name="pk_stop_btn">结束PK</string>
+    <string name="pk_dialog_pkable_title">欢乐pk</string>
+    <string name="pk_dialog_pkable_list_tip">主播列表</string>
+    <string name="pk_dialog_pkable_invite_btn">邀请pk</string>
+    <string name="pk_auto_reject_when_link_tip">%s邀请你PK，连麦中无法PK已为你自动拒绝～</string>
+    <string name="pk_dialog_apply_tittle">pk申请</string>
+    <string name="pk_dialog_apply_content">%s 申请pk，是否接受？</string>
+    <string name="pk_wait_stream_time_out_tip">等待主播 %s 推流超时</string>
+    <string name="pk_start_error_tip">开始pk失败 %s</string>
+    <string name="pk_invite_be_accept_tip">%s接受了pk</string>
+    <string name="pk_invite_be_reject_tip">%s拒绝了pk</string>
+    <string name="pk_invite_linking_tip">当前正在连麦中</string>
+
+
+    <string name="room_list_tittle">直播列表</string>
+    <string name="room_list_create">创建直播间</string>
+    <string name="room_list_item_anchor_offline_str">已暂停</string>
+
+    <string name="link_dialog_apply_tittle">连麦申请</string>
+    <string name="link_dialog_apply_content">%s 申请连麦，是否接受？</string>
+    <string name="link_dialog_apply_audio">语音</string>
+    <string name="link_dialog_apply_video">视频</string>
+    <string name="link_dialog_mylink_info_video">视频连麦</string>
+    <string name="link_dialog_mylink_info_audio">语音连麦</string>
+    <string name="link_dialog_inviteable_tittle">欢乐连麦</string>
+    <string name="link_dialog_inviteable_list_tip">观众列表</string>
+    <string name="link_invite_be_accept_tip">%s接受了连麦</string>
+    <string name="link_invite_be_reject_tip">%s拒绝了连麦</string>
+    <string name="link_invite_pking_tip">主播pk中</string>
+    <string name="link_invite_waiting_tip">等待对方接受</string>
+
+    <string name="invite_be_accept_by_anchor">主播同意你的申请</string>
+    <string name="invite_be_reject_by_anchor">主播拒绝你的连麦申请</string>
+    <string name="invite_waiting_tip">正在申请中，请稍后</string>
+    <string name="invite_wait_anchor_tip">等待主播同意</string>
+    <string name="invite_wait_time_out_tip">等待主播 %s 超时</string>
+    <string name="invite_error_tip">邀请失败:%s</string>
+    <string name="invite_wait_peer_tip">等待对方接受</string>
+
+    <string name="shopping_dialog_goods_list_tittle">商品列表</string>
+    <string name="shopping_dialog_goods_list_manager">管理</string>
+    <string name="shopping_dialog_goods_manager_all">全部(%d)</string>
+    <string name="shopping_dialog_goods_manager_onsale">上架中(%d)</string>
+    <string name="shopping_dialog_goods_manager_pulled">已下架(%d)</string>
+    <string name="shopping_op_on_sale">上架</string>
+    <string name="shopping_op_on_pull">下架</string>
+    <string name="shopping_op_on_remove">移除</string>
+    <string name="shopping_status_explaining_str">讲解中</string>
+    <string name="shopping_status_pulled_str">已下架隐藏</string>
+    <string name="shopping_go_buy_str">去购买</string>
+
+    <string name="shopping_stop_explaining">结束讲解</string>
+    <string name="shopping_explaining">讲解</string>
+    <string name="shopping_go_sale">上架商品</string>
+    <string name="shopping_go_pulled">下架商品</string>
+    <string name="shopping_tip_explaining">商品讲解中～</string>
+    <string name="shopping_is_confirm_sale">确定上架商品吗?</string>
+    <string name="shopping_is_confirm_pulled">确定下架商品吗?</string>
+    <string name="shopping_is_confirm_remove">确定删除商品吗?</string>
+    <string name="shopping_is_confirm_remove_record">确定删除商品讲解录像吗？</string>
+    <string name="shopping_go_watch_explaining">看讲解</string>
+
+    <string name="player_video_buffering">正在准备...</string>
+    <string name="player_video_is_buffering">正在缓冲...</string>
+    <string name="player_replay">重新播放</string>
+    <string name="player_play_error">播放错误，请重试。</string>
+    <string name="player_click_try">点击重试</string>
+    <string name="player_super_quality">超清</string>
+    <string name="player_select_multiple_tittle">选择倍数</string>
+</resources>

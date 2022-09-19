@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_gravity="bottom"
+
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="160dp"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_beauty_options"
+            android:layout_width="match_parent"
+            android:background="#cc000000"
+            android:layout_height="40dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/white" />
+
+    </LinearLayout>
+
+    <com.qlive.uiwidghtbeauty.ui.BeautyViewPage
+        android:id="@+id/vpEffect"
+        tools:background="#cc000000"
+        android:layout_width="match_parent"
+        android:layout_height="234dp" />
+    <TextView
+        android:id="@+id/reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="27dp"
+        android:layout_marginBottom="8dp"
+        android:drawableLeft="@drawable/reset"
+        android:drawablePadding="5dp"
+        android:text="重置"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+         />
+    <TextView
+        android:id="@+id/tv_show_origin"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="27dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_show_origin"
+        android:gravity="center"
+        android:text="对比"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+         />
+</FrameLayout>

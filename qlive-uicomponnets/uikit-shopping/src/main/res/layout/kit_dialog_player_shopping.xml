@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:background="#000000">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="560dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/kit_shape_bg_shopping"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="24dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <ImageView
+                android:id="@+id/ivClose"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical|end"
+                android:padding="15dp"
+                android:src="@mipmap/kit_ic_close_60000000" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/shopping_dialog_goods_list_tittle"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <com.qlive.uikitcore.smartrecycler.SmartRecyclerView
+            android:id="@+id/recyclerViewGoods"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:placeholder_empty_icon="@drawable/kit_pic_empty"
+            app:placeholder_empty_no_net_icon="@drawable/kit_pic_empty_network"
+            app:placeholder_empty_tips="@string/empty_tip_str" />
+    </LinearLayout>
+
+</FrameLayout>

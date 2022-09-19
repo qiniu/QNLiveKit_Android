@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rv_filter_strength"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:clickable="true"
+        android:visibility="invisible"
+        tools:background="#fff888"
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width="35dp"
+            android:layout_height="34dp"
+            android:layout_alignParentLeft="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="#ffffff"
+            android:textSize="16dp" />
+
+        <SeekBar
+            android:id="@+id/sb_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:maxHeight="2dp"
+            android:minHeight="2dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="7dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="7dp"
+            android:progressDrawable="@drawable/bg_seekbar_progressbar"
+            android:thumb="@drawable/seekbar_thumb" />
+
+        <TextView
+            android:id="@+id/tv_filter_strength"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:text="100"
+            android:textColor="#ffffff"
+            android:textSize="16dp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:background="#cc000000">
+
+        <RelativeLayout
+            android:id="@+id/rl_makeup_icons"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:visibility="invisible"
+            tools:visibility="visible">
+
+            <ImageView
+                android:layout_width="6dp"
+                android:layout_height="12dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="36dp"
+                android:src="@drawable/filter_back" />
+
+            <ImageView
+                android:id="@+id/iv_makeup_group"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="48dp"
+                android:src="@drawable/icon_scenery_selected" />
+
+            <TextView
+                android:id="@+id/tv_makeup_group"
+                android:layout_width="40dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="88dp"
+                android:gravity="center_horizontal"
+                android:text="风景"
+                android:textColor="#ffffff"
+                android:textSize="12dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_makeup_icons"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="80dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="20dp"
+                android:scrollbars="none" />
+        </RelativeLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/rl_makeup_groups"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:scrollbars="none">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/ll_makeup_group_lip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_makeup_group_lip"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="25dp"
+                        android:src="@drawable/makeup_lip_unselected" />
+
+                    <TextView
+                        android:id="@+id/tv_makeup_group_lip"
+                        android:layout_width="48dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_horizontal"
+                        android:text="口红"
+                        android:textColor="#ffffff"
+                        android:textSize="14dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_makeup_group_cheeks"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="24dp"
+                    android:layout_toRightOf="@+id/ll_makeup_group_lip"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_makeup_group_cheeks"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="25dp"
+                        android:src="@drawable/makeup_cheeks_unselected" />
+
+                    <TextView
+                        android:id="@+id/tv_makeup_group_cheeks"
+                        android:layout_width="48dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_horizontal"
+                        android:text="腮红"
+                        android:textColor="#ffffff"
+                        android:textSize="14dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_makeup_group_face"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="24dp"
+                    android:layout_toRightOf="@+id/ll_makeup_group_cheeks"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_makeup_group_face"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="25dp"
+                        android:src="@drawable/makeup_face_unselected" />
+
+                    <TextView
+                        android:id="@+id/tv_makeup_group_face"
+                        android:layout_width="48dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_horizontal"
+                        android:text="修容"
+                        android:textColor="#ffffff"
+                        android:textSize="14dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_makeup_group_brow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="24dp"
+                    android:layout_toRightOf="@+id/ll_makeup_group_face"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_makeup_group_brow"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="25dp"
+                        android:src="@drawable/makeup_brow_unselected" />
+
+                    <TextView
+                        android:id="@+id/tv_makeup_group_brow"
+                        android:layout_width="48dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_horizontal"
+                        android:text="眉毛"
+                        android:textColor="#ffffff"
+                        android:textSize="14dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_makeup_group_eye"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="24dp"
+                    android:layout_toRightOf="@+id/ll_makeup_group_brow"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_makeup_group_eye"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="25dp"
+                        android:src="@drawable/makeup_eye_unselected" />
+
+                    <TextView
+                        android:id="@+id/tv_makeup_group_eye"
+                        android:layout_width="48dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_horizontal"
+                        android:text="眼影"
+                        android:textColor="#ffffff"
+                        android:textSize="14dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_makeup_group_eyeliner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="24dp"
+                    android:layout_toRightOf="@+id/ll_makeup_group_eye"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_makeup_group_eyeliner"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="25dp"
+                        android:src="@drawable/makeup_eyeline_unselected" />
+
+                    <TextView
+                        android:id="@+id/tv_makeup_group_eyeliner"
+                        android:layout_width="48dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_horizontal"
+                        android:text="眼线"
+                        android:textColor="#ffffff"
+                        android:textSize="14dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_makeup_group_eyelash"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="24dp"
+                    android:layout_toRightOf="@+id/ll_makeup_group_eyeliner"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_makeup_group_eyelash"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="25dp"
+                        android:src="@drawable/makeup_eyelash_unselected" />
+
+                    <TextView
+                        android:id="@+id/tv_makeup_group_eyelash"
+                        android:layout_width="48dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_horizontal"
+                        android:text="眼睫毛"
+                        android:textColor="#ffffff"
+                        android:textSize="14dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_makeup_group_eyeball"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_toRightOf="@+id/ll_makeup_group_eyelash"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_makeup_group_eyeball"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="25dp"
+                        android:src="@drawable/makeup_eyeball_unselected" />
+
+                    <TextView
+                        android:id="@+id/tv_makeup_group_eyeball"
+                        android:layout_width="48dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_horizontal"
+                        android:text="美瞳"
+                        android:textColor="#ffffff"
+                        android:textSize="14dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_makeup_group_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_toRightOf="@+id/ll_makeup_group_eyeball"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_makeup_group_style"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="25dp"
+                        android:src="@drawable/makeup_all_unselected" />
+
+                    <TextView
+                        android:id="@+id/tv_makeup_group_style"
+                        android:layout_width="48dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_horizontal"
+                        android:text="整妆"
+                        android:textColor="#ffffff"
+                        android:textSize="14dp" />
+                </LinearLayout>
+
+            </RelativeLayout>
+        </HorizontalScrollView>
+
+    </FrameLayout>
+
+</LinearLayout>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rv_filter_strength"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:clickable="true"
+        android:visibility="invisible"
+        tools:background="#fff888"
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width="35dp"
+            android:layout_height="34dp"
+            android:layout_alignParentLeft="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="#ffffff"
+            android:textSize="16dp" />
+
+        <SeekBar
+            android:id="@+id/sb_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:maxHeight="2dp"
+            android:minHeight="2dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="7dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="7dp"
+            android:progressDrawable="@drawable/bg_seekbar_progressbar"
+            android:thumb="@drawable/seekbar_thumb" />
+
+        <TextView
+            android:id="@+id/tv_filter_strength"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:text="100"
+            android:textColor="#ffffff"
+            android:textSize="16dp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:background="#cc000000">
+
+        <RelativeLayout
+            android:id="@+id/rl_filter_icons"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="invisible"
+            android:clickable="true">
+
+            <ImageView
+                android:layout_width="6dp"
+                android:layout_height="12dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="40dp"
+                android:src="@drawable/filter_back" />
+
+            <ImageView
+                android:id="@+id/iv_filter_group"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="58dp"
+                android:src="@drawable/icon_scenery_selected" />
+
+            <TextView
+                android:id="@+id/tv_filter_group"
+                android:layout_width="32dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="95dp"
+                android:gravity="center_horizontal"
+                android:text="风景"
+                android:textColor="#ffffff"
+                android:textSize="14dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_filter_icons"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="70dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="20dp"
+                android:scrollbars="none" />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/ll_filter_groups"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            >
+
+            <LinearLayout
+                android:id="@+id/ll_filter_group_portrait"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/iv_filter_group_portrait"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/icon_portrait_unselected" />
+
+                <TextView
+                    android:id="@+id/tv_filter_group_portrait"
+                    android:layout_width="32dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="人像"
+                    android:textColor="#ffffff"
+                    android:textSize="14dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_filter_group_scenery"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/iv_filter_group_scenery"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/icon_scenery_unselected" />
+
+                <TextView
+                    android:id="@+id/tv_filter_group_scenery"
+                    android:layout_width="32dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="风景"
+                    android:textColor="#ffffff"
+                    android:textSize="14dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_filter_group_still_life"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/iv_filter_group_still_life"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/icon_still_life_unselected" />
+
+                <TextView
+                    android:id="@+id/tv_filter_group_still_life"
+                    android:layout_width="32dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="静物"
+                    android:textColor="#ffffff"
+                    android:textSize="14dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_filter_group_food"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/iv_filter_group_food"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/icon_food_unselected" />
+
+                <TextView
+                    android:id="@+id/tv_filter_group_food"
+                    android:layout_width="32dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="食物"
+                    android:textColor="#ffffff"
+                    android:textSize="14dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>

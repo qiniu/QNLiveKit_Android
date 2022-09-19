@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".WatchExplainingActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/kit_dafault_room_bg" />
+
+    <com.qlive.uikitshopping.palyer.ShoppingPlayerControl
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+    <com.qlive.uikitshopping.palyer.WatchExplainingCardView
+        android:layout_width="113dp"
+        android:layout_height="171dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="122dp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="82dp"
+        android:orientation="horizontal">
+
+        <com.qlive.uikitshopping.palyer.ShoppingPlayerNavigationView
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_e34d59_16"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@mipmap/kit_ic_turn_left" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:text="@string/back_current_room"
+                android:textColor="#ffffff"
+                android:textSize="14sp" />
+        </com.qlive.uikitshopping.palyer.ShoppingPlayerNavigationView>
+
+        <com.qlive.uikitshopping.palyer.ShoppingPlayerGoShoppingView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:src="@mipmap/kit_ic_go_shopping" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/llTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="40dp"
+        android:orientation="horizontal">
+        <!--    房主信息-->
+        <com.qlive.uikitshopping.palyer.RoomDependsHostView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <!--   在线用户-->
+        <com.qlive.uikitshopping.palyer.RoomDependsOnlineUserView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            tools:background="#ee8811" />
+        <!--    在线人数-->
+        <com.qlive.uikitshopping.palyer.RoomDependsMemberCountView
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/kit_shape_40000000_52"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:text="1"
+            android:textColor="#ffffff"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <com.qlive.uikitshopping.palyer.RoomDependsIdView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="83dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical"
+        android:textColor="#ffffff"
+        android:textSize="6sp"
+        tools:text="aaaa" />
+
+</FrameLayout>

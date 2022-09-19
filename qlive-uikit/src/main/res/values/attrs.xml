@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <declare-styleable name="RoomListView">
+        <attr name="empty_placeholder_tips" format="string" />
+        <attr name="empty_placeholder_icon" format="reference" />
+        <attr name="empty_placeholder_no_net_icon" format="reference" />
+    </declare-styleable>
+</resources>

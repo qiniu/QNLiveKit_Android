@@ -1,0 +1,166 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'com.kezong.fat-aar'
+}
+
+//编译sdk模式
+def buidUISdk = false
+def buidQLiveSdk = false
+
+android {
+    compileSdkVersion depend.compileSdkVersion
+    defaultConfig {
+        minSdkVersion depend.minSdkVersion
+        targetSdkVersion depend.targetSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    sourceSets {
+        def localProperties = new Properties()
+        def dis = null
+        try {
+            def localFile = rootProject.file('doc/sdkbuilder/gradle.properties')
+            if (localFile.exists()) {
+                dis = localFile.newDataInputStream();
+                localProperties.load(dis)
+            }
+        } catch (Exception ignored) {
+            println ignored
+        } finally {
+            // 一定要关闭输入流 否则文件会一直被java占用
+            if (dis != null) {
+                dis.close()
+            }
+        }
+        def buidUIKitSH = localProperties.getProperty("buidUIKitSH")
+        main {
+            if (buidUIKitSH == "1") {
+                System.out.println("sourceSets22  选择 AndroidManifest")
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+            } else {
+                System.out.println("sourceSets22  选择 AndroidManifest1")
+                manifest.srcFile 'src/main/AndroidManifest1.xml'
+            }
+        }
+    }
+}
+
+fataar {
+    transitive = true
+}
+def uikitversion = 'qlive-uikit-1.0.3'
+def qliveversion = 'qlive-sdk-1.0.3'
+
+task makeAAR(type: Copy) {
+    def localProperties = new Properties()
+    def dis = null
+    try {
+        def localFile = rootProject.file('doc/sdkbuilder/gradle.properties')
+        if (localFile.exists()) {
+            dis = localFile.newDataInputStream();
+            localProperties.load(dis)
+        }
+    } catch (Exception ignored) {
+        println ignored
+    } finally {
+        // 一定要关闭输入流 否则文件会一直被java占用
+        if (dis != null) {
+            dis.close()
+        }
+    }
+    def buidUIKitSH = localProperties.getProperty("buidUIKitSH")
+    System.out.println("编译UIkit  buidUIKitSH" + buidUIKitSH)
+    if (buidUIKitSH == "1") {
+        buidUISdk = true
+        System.out.println("编译UIkit  makeAAR" + buidUISdk)
+    }
+    if (buidUISdk) {
+        from('build/outputs/aar/')
+        into('../../app-sdk/qlive-sdk-uikit/')
+        include('sdkbuilder-release.aar')
+        rename('sdkbuilder-release', uikitversion)
+    }
+
+    def buidQLiveSH = localProperties.getProperty("buidQLiveSH")
+    if (buidQLiveSH == "1") {
+        buidQLiveSdk = true
+        System.out.println("编译Qlive  buidQLiveSH" + buidQLiveSH)
+    }
+
+    if (buidQLiveSdk) {
+        from('build/outputs/aar/')
+        into('../../app-sdk/qlive-sdk/')
+        include('sdkbuilder-release.aar')
+        rename('sdkbuilder-release', qliveversion)
+    }
+}
+
+makeAAR.dependsOn(build)
+
+dependencies {
+
+    if (buidUISdk) {
+        compileOnly project(':qlivesdk')
+        embed project(':liveroom-uikit-core')
+        embed project(':qlive-uikit')
+        embed project(':qlive-uicomponnets:uikit-user')
+        embed project(':qlive-uicomponnets:uikit-danmaku')
+        embed project(':qlive-uicomponnets:uikit-publicchat')
+        embed project(':qlive-uicomponnets:uikit-linkmic')
+        embed project(':qlive-uicomponnets:uikit-pk')
+        embed project(':qlive-uicomponnets:uiwidget-input')
+        embed project(':qlive-uicomponnets:uikit-shopping')
+        implementation depend.appcompat()
+        implementation depend.cardview()
+    }
+    if (buidQLiveSdk) {
+//        implementation files('libs/qlive-coreimpl.jar')
+//        implementation files('libs/lib-json.jar')
+//        implementation files('libs/comp_rtm.jar')
+        embed project(':liveroom-coreimpl')
+        embed project(':liveroom-libs:lib_json')
+        embed project(':liveroom-libs:comp_rtm')
+
+        embed project(':qlivesdk')
+        embed project(':liveroom-core')
+        embed project(':liveroom-service:linkmicservice')
+        embed project(':liveroom-service:pkservice')
+        embed project(':liveroom-service:chatservice')
+        embed project(':liveroom-service:danmakuservice')
+        embed project(':liveroom-service:publicchatservice')
+        embed project(':liveroom-service:roomservice')
+        embed project(':liveroom-service:shoppingservice')
+        embed project(':liveroom-libs:comp_avparam')
+        embed project(':liveroom-libs:comp_player')
+        embed project(':liveroom-libs:comp_imadapter')
+        embed project(':liveroom-libs:comp_rtclive')
+        embed project(':liveroom-libs:lib_log')
+
+        compileOnly project(':app-sdk:depends_sdk_qnim')
+        compileOnly project(':app-sdk:depends_sdk_qrtc')
+        compileOnly project(':app-sdk:depends_sdk_piliplayer') //七牛播放器
+    }
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}
+

@@ -1,0 +1,51 @@
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "effectsListId": 43,
+    "listName": "tryon口红",
+    "owner": null,
+    "sign": "d8a2636b7fe8a45aa235f0ccf8db6715625e679a",
+    "effects": [
+      {
+        "id": 166,
+        "name": "tryon口红3",
+        "pkgSize": null,
+        "memorySize": null,
+        "sdkVersion": null,
+        "studioVersion": null,
+        "effectsId": "50202204251624230020",
+        "thumbnail": "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fblog%2F202107%2F17%2F20210717232533_2edcf.thumb.1000_0.jpg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654690870&t=17db3a851268a2ee8bed17371b543dec",
+        "pkgUrl": "http://effects-studio-test.oss-cn-hangzhou.aliyuncs.com/material/20/tryon%E5%8F%A3%E7%BA%A23_50202204251624230020.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220429T033355Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86399&X-Amz-Credential=LTAI5tBz2wHYrLtkCmfTnPVa%2F20220429%2Foss%2Fs3%2Faws4_request&X-Amz-Signature=d199f389a0402a78c2887307c388c37b03adae982ccdbbab788e14a44b5d146f",
+        "updateTime": null,
+        "serialNumber": null
+      },
+      {
+        "id": 165,
+        "name": "tryon口红2",
+        "pkgSize": null,
+        "memorySize": null,
+        "sdkVersion": null,
+        "studioVersion": null,
+        "effectsId": "50202204251623386020",
+        "thumbnail": "http://effects-studio-test.oss-cn-hangzhou.aliyuncs.com/material/20/tryon%E5%8F%A3%E7%BA%A22_50202204251623386020.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220429T033355Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86399&X-Amz-Credential=LTAI5tBz2wHYrLtkCmfTnPVa%2F20220429%2Foss%2Fs3%2Faws4_request&X-Amz-Signature=7ac3bc1af188a813274e04609aa80f0c4e2d1dcb0230e40e2b4ff78749a106de",
+        "pkgUrl": "http://effects-studio-test.oss-cn-hangzhou.aliyuncs.com/material/20/tryon%E5%8F%A3%E7%BA%A22_50202204251623386020.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220429T033355Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=LTAI5tBz2wHYrLtkCmfTnPVa%2F20220429%2Foss%2Fs3%2Faws4_request&X-Amz-Signature=cbabced3bcd1d29183e5d5d95f298d6232aaad6ca6f0fea72bfb433513f26f6e",
+        "updateTime": null,
+        "serialNumber": null
+      },
+      {
+        "id": 164,
+        "name": "tryon口红1",
+        "pkgSize": null,
+        "memorySize": null,
+        "sdkVersion": null,
+        "studioVersion": null,
+        "effectsId": "50202204251620540620",
+        "thumbnail": "http://effects-studio-test.oss-cn-hangzhou.aliyuncs.com/material/20/tryon%E5%8F%A3%E7%BA%A21_50202204251620540620.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220429T033355Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86399&X-Amz-Credential=LTAI5tBz2wHYrLtkCmfTnPVa%2F20220429%2Foss%2Fs3%2Faws4_request&X-Amz-Signature=3143b59fe1aab4b66c67023ebd25720bd1fe48970c616ad6a955ee47998c86f3",
+        "pkgUrl": "http://effects-studio-test.oss-cn-hangzhou.aliyuncs.com/material/20/tryon%E5%8F%A3%E7%BA%A21_50202204251620540620.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220429T033355Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86399&X-Amz-Credential=LTAI5tBz2wHYrLtkCmfTnPVa%2F20220429%2Foss%2Fs3%2Faws4_request&X-Amz-Signature=553a2ea8248b4868996e9c90ad952794ebca7ea9d7f61a362874d9afde261cbb",
+        "updateTime": null,
+        "serialNumber": null
+      }
+    ]
+  }
+}

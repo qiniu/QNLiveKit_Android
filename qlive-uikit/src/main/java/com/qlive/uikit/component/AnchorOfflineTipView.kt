@@ -1,0 +1,54 @@
+package com.qlive.uikit.component
+
+import android.content.Context
+import android.util.AttributeSet
+import android.view.View
+import com.qlive.core.QLiveClient
+import com.qlive.core.QLiveStatus
+import com.qlive.core.QLiveStatusListener
+import com.qlive.core.anchorStatusToLiveStatus
+import com.qlive.core.been.QLiveRoomInfo
+import com.qlive.uikit.R
+import com.qlive.uikitcore.QKitTextView
+
+class AnchorOfflineTipView : QKitTextView {
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        visibility = View.GONE
+    }
+
+    private val mQLiveStatusListener = QLiveStatusListener { liveStatus -> //如果房主离线 关闭页面
+        if (liveStatus == QLiveStatus.ANCHOR_OFFLINE) {
+            visibility = View.VISIBLE
+            text = context.getString(R.string.live_anchor_offline_tip)
+            kitContext?.getPlayerRenderViewCall?.invoke()?.view?.visibility = View.INVISIBLE
+        } else {
+            visibility = View.GONE
+            text = ""
+            kitContext?.getPlayerRenderViewCall?.invoke()?.view?.visibility = View.VISIBLE
+        }
+    }
+
+    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
+        super.onJoined(roomInfo, isResumeUIFromFloating)
+        if (roomInfo.anchorStatus.anchorStatusToLiveStatus() == QLiveStatus.ANCHOR_OFFLINE) {
+            visibility = View.VISIBLE
+            text = context.getString(R.string.live_anchor_offline_tip)
+        }
+    }
+
+    override fun attachLiveClient(client: QLiveClient) {
+        super.attachLiveClient(client)
+        client.addLiveStatusListener(mQLiveStatusListener)
+    }
+
+    override fun onDestroyed() {
+        client?.removeLiveStatusListener(mQLiveStatusListener)
+        super.onDestroyed()
+    }
+}

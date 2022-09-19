@@ -1,0 +1,64 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+}
+
+android {
+    compileSdkVersion depend.compileSdkVersion
+    defaultConfig {
+        applicationId "com.qlive.qnlivekit"
+        minSdkVersion depend.minSdkVersion
+        targetSdkVersion depend.targetSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+}
+
+def userAARSDK = false
+
+dependencies {
+
+    implementation project(':app-sdk:depends_sdk_qnim')  //七牛imsdk 必选
+    implementation project(':app-sdk:depends_sdk_qrtc')  //七牛rtc 主播推流必选  观众要连麦必选连麦
+    implementation project(':app-sdk:depends_sdk_piliplayer') //七牛播放器 观众拉流端必选
+    implementation project(":qlive-uicomponnets:uikit-beauty")//七牛美颜模块 可选
+    if (userAARSDK) {
+        //  使用 sdk方式依赖
+        // 无UIsdk
+        implementation project(':app-sdk:qlive-sdk')
+        implementation depend.gson() //必选 json解析
+        implementation depend.okhttp3() //demo依赖
+        //以下为 UIkit 的依赖包 不使用UIkit则不需要
+        implementation project(':app-sdk:qlive-sdk-uikit')  //UIkit包
+        //谷歌官方UI组件
+        implementation depend.runtime_ktx()
+        implementation depend.recyclerview()
+        implementation depend.cardview()
+        //UIkit依赖两个知名的开源库
+        implementation depend.glide()
+    } else {
+        //用源码模块的依赖方式 可以修改源码
+        implementation project(':qlive-uikit')
+    }
+    implementation depend.appcompat()
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation "jp.wasabeef:glide-transformations:3.0.1"
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}
