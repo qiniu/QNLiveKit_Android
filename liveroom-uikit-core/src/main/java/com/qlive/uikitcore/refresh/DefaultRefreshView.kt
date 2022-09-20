@@ -1,17 +1,17 @@
 package com.qlive.uikitcore.refresh
 
-import android.util.DisplayMetrics
-import android.view.animation.Animation
-import com.qlive.uikitcore.refresh.QRefreshLayout.OnRefreshListener
-import android.view.ViewGroup
-import androidx.core.view.ViewCompat
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.util.DisplayMetrics
 import android.view.View
+import android.view.ViewGroup
+import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.Transformation
 import androidx.annotation.ColorInt
+import androidx.core.view.ViewCompat
+import com.qlive.uikitcore.refresh.QRefreshLayout.OnRefreshListener
 
 class DefaultRefreshView(private val mContext: Context, private val mParent: View) : IRefresh {
     private val metrics: DisplayMetrics = mContext.resources.displayMetrics
@@ -23,8 +23,8 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
     // Whether this item is scaled up rather than clipped
     private val mScale = false
     private var mStartingScale = 0f
-    private var mProgressDrawable: ProgressDrawable? = null
-    override var currentTargetOffsetTop: Int = 0
+    private lateinit var mProgressDrawable: MaterialProgressDrawable
+    override var topOffset: Int = 0
     private var mOriginalOffsetTop: Int = 0
     private var mTotalDragDistance = -1f
     override var isRefresh = false
@@ -41,7 +41,7 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
             val targetTop = mFrom + ((endTarget - mFrom) * interpolatedTime).toInt()
             val offset = targetTop - mCircleView.top
             setTargetOffsetTopAndBottom(offset, false /* requires update */)
-            mProgressDrawable!!.setArrowScale(1 - interpolatedTime)
+            mProgressDrawable.setArrowScale(1 - interpolatedTime)
         }
     }
     private var mCircleDiameter: Int = 0
@@ -54,14 +54,14 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
             override fun onAnimationEnd(animation: Animation?) {
                 if (isRefresh) {
                     // Make sure the progress view is fully visible
-                    mProgressDrawable!!.alpha = MAX_ALPHA
-                    mProgressDrawable!!.start()
+                    mProgressDrawable.alpha = MAX_ALPHA
                     if (mNotify && mListener != null) {
                         mListener!!.onStartRefresh()
+                        mProgressDrawable.start()
                     }
-                    currentTargetOffsetTop = mCircleView.top
+                    topOffset = mCircleView.top
                 } else {
-                    reset()
+                    clear()
                 }
             }
         }
@@ -78,9 +78,9 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
     }
 
     //refresh 结束，资源清理
-    override fun reset() {
+    override fun clear() {
         mCircleView.clearAnimation()
-        mProgressDrawable!!.stop()
+        mProgressDrawable.stop()
         mCircleView.visibility = View.GONE
         setColorViewAlpha(MAX_ALPHA)
         // Return the circle to its start position
@@ -88,11 +88,11 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
             setAnimationProgress(0f)
         } else {
             setTargetOffsetTopAndBottom(
-                mOriginalOffsetTop - currentTargetOffsetTop,
+                mOriginalOffsetTop - topOffset,
                 true /* requires update */
             )
         }
-        currentTargetOffsetTop = mCircleView.top
+        topOffset = mCircleView.top
     }
 
     /**
@@ -101,20 +101,20 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
      * @param colors
      */
     fun setProgressColors(@ColorInt vararg colors: Int) {
-        mProgressDrawable!!.setColorSchemeColors(*colors)
+        mProgressDrawable.setColorSchemeColors(*colors)
     }
 
-    override fun startPulling() {
-        mProgressDrawable!!.alpha = STARTING_PROGRESS_ALPHA
+    override fun onPointDown() {
+        mProgressDrawable.alpha = STARTING_PROGRESS_ALPHA
     }
 
     //下拉时，refresh动画
-    override fun showPullRefresh(overscrollTop: Float) {
-        mProgressDrawable!!.showArrow(true)
-        val originalDragPercent = overscrollTop / mTotalDragDistance
+    override fun onPointMove(offset: Float) {
+
+        val originalDragPercent = offset / mTotalDragDistance
         val dragPercent = Math.min(1f, Math.abs(originalDragPercent))
         val adjustedPercent = Math.max(dragPercent - .4, 0.0).toFloat() * 5 / 3
-        val extraOS = Math.abs(overscrollTop) - mTotalDragDistance
+        val extraOS = Math.abs(offset) - mTotalDragDistance
         val slingshotDist = mSpinnerOffsetEnd.toFloat()
         val tensionSlingshotPercent =
             Math.max(0f, Math.min(extraOS, slingshotDist * 2) / slingshotDist)
@@ -132,32 +132,32 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
             ViewCompat.setScaleY(mCircleView, 1f)
         }
         if (mScale) {
-            setAnimationProgress(Math.min(1f, overscrollTop / mTotalDragDistance))
+            setAnimationProgress(Math.min(1f, offset / mTotalDragDistance))
         }
-        if (overscrollTop < mTotalDragDistance) {
-            if (mProgressDrawable!!.alpha > STARTING_PROGRESS_ALPHA
-                && !isAnimationRunning(mAlphaStartAnimation)
-            ) {
-                // Animate the alpha
-                startProgressAlphaStartAnimation()
-            }
-        } else {
-            if (mProgressDrawable!!.alpha < MAX_ALPHA && !isAnimationRunning(mAlphaMaxAnimation)) {
-                // Animate the alpha
-                startProgressAlphaMaxAnimation()
-            }
-        }
+//        if (offset < mTotalDragDistance) {
+//            if (mProgressDrawable!!.alpha > STARTING_PROGRESS_ALPHA
+//                && !isAnimationRunning(mAlphaStartAnimation)
+//            ) {
+//                // Animate the alpha
+//                startProgressAlphaStartAnimation()
+//            }
+//        } else {
+//            if (mProgressDrawable!!.alpha < MAX_ALPHA && !isAnimationRunning(mAlphaMaxAnimation)) {
+//                // Animate the alpha
+//                startProgressAlphaMaxAnimation()
+//            }
+//        }
         val strokeStart = adjustedPercent * .8f
-        mProgressDrawable!!.setStartEndTrim(0f, Math.min(MAX_PROGRESS_ANGLE, strokeStart))
-        mProgressDrawable!!.setArrowScale(Math.min(1f, adjustedPercent))
+        mProgressDrawable.setStartEndTrim(0f, Math.min(MAX_PROGRESS_ANGLE, strokeStart))
+        mProgressDrawable.setArrowScale(Math.min(1f, adjustedPercent))
         val rotation = (-0.25f + .4f * adjustedPercent + tensionPercent * 2) * .5f
-        mProgressDrawable!!.setProgressRotation(rotation)
-        setTargetOffsetTopAndBottom(targetY - currentTargetOffsetTop, true /* requires update */)
+        mProgressDrawable.setProgressRotation(rotation)
+        setTargetOffsetTopAndBottom(targetY - topOffset, true /* requires update */)
     }
 
     override fun setTargetOffsetTopAndBottom(offset: Int, requiresUpdate: Boolean) {
         ViewCompat.offsetTopAndBottom(mCircleView, offset)
-        mCircleView.top.also { currentTargetOffsetTop = it }
+        mCircleView.top.also { topOffset = it }
         if (requiresUpdate && Build.VERSION.SDK_INT < 11) {
             mParent.invalidate()
         }
@@ -168,13 +168,13 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
      *
      * @param overscrollTop 总下拉距离
      */
-    override fun finishPullRefresh(overscrollTop: Float) {
+    override fun onPointUp(overscrollTop: Float) {
         if (overscrollTop > mTotalDragDistance) {
             setRefreshing(true, true /* notify */)
         } else {
             // cancel refresh
             isRefresh = false
-            mProgressDrawable!!.setStartEndTrim(0f, 0f)
+            mProgressDrawable.setStartEndTrim(0f, 0f)
             var listener: Animation.AnimationListener? = null
             if (!mScale) {
                 listener = object : Animation.AnimationListener {
@@ -184,11 +184,11 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
                             startScaleDownAnimation(null)
                         }
                     }
+
                     override fun onAnimationRepeat(animation: Animation) {}
                 }
             }
-            animateOffsetToStartPosition(currentTargetOffsetTop, listener)
-            mProgressDrawable!!.showArrow(false)
+            animateOffsetToStartPosition(topOffset, listener)
         }
     }
 
@@ -202,7 +202,7 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
             isRefresh = refreshing
             val endTarget = mSpinnerOffsetEnd + mOriginalOffsetTop
             setTargetOffsetTopAndBottom(
-                endTarget - currentTargetOffsetTop,
+                endTarget - topOffset,
                 true /* requires update */
             )
             mNotify = false
@@ -212,15 +212,13 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
         }
     }
 
-    override var zIndex: ZOder = ZOder.TOP
-
     private fun setRefreshing(refreshing: Boolean, notify: Boolean) {
         if (isRefresh != refreshing) {
             mNotify = notify
             // ensureTarget();
             isRefresh = refreshing
             if (isRefresh) {
-                animateOffsetToCorrectPosition(currentTargetOffsetTop, mRefreshListener)
+                animateOffsetToCorrectPosition(topOffset, mRefreshListener)
             } else {
                 startScaleDownAnimation(mRefreshListener)
             }
@@ -245,37 +243,37 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
     }
 
     private fun setColorViewAlpha(targetAlpha: Int) {
-        mCircleView!!.background.alpha = targetAlpha
-        mProgressDrawable!!.alpha = targetAlpha
+        mCircleView.background.alpha = targetAlpha
+        mProgressDrawable.alpha = targetAlpha
     }
 
-    private fun startProgressAlphaStartAnimation() {
-        mAlphaStartAnimation =
-            startAlphaAnimation(mProgressDrawable!!.alpha, STARTING_PROGRESS_ALPHA)
-    }
-
-    private fun startProgressAlphaMaxAnimation() {
-        mAlphaMaxAnimation = startAlphaAnimation(mProgressDrawable!!.alpha, MAX_ALPHA)
-    }
-
-    private fun startAlphaAnimation(startingAlpha: Int, endingAlpha: Int): Animation? {
-        // Pre API 11, alpha is used in place of scale. Don't also use it to
-        // show the trigger point.
-        if (mScale && isAlphaUsedForScale) {
-            return null
-        }
-        val alpha: Animation = object : Animation() {
-            public override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
-                mProgressDrawable?.alpha =
-                    (startingAlpha + (endingAlpha - startingAlpha) * interpolatedTime).toInt()
-            }
-        }
-        alpha.duration = ALPHA_ANIMATION_DURATION.toLong()
-        mCircleView.clearAnimation()
-        mCircleView.setAnimationListener(null)
-        mCircleView.startAnimation(alpha)
-        return alpha
-    }
+//    private fun startProgressAlphaStartAnimation() {
+//        mAlphaStartAnimation =
+//            startAlphaAnimation(mProgressDrawable.alpha, STARTING_PROGRESS_ALPHA)
+//    }
+//
+//    private fun startProgressAlphaMaxAnimation() {
+//        mAlphaMaxAnimation = startAlphaAnimation(mProgressDrawable.alpha, MAX_ALPHA)
+//    }
+//
+//    private fun startAlphaAnimation(startingAlpha: Int, endingAlpha: Int): Animation? {
+//        // Pre API 11, alpha is used in place of scale. Don't also use it to
+//        // show the trigger point.
+//        if (mScale && isAlphaUsedForScale) {
+//            return null
+//        }
+//        val alpha: Animation = object : Animation() {
+//            public override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
+//                mCircleView.alpha =
+//                    (startingAlpha + (endingAlpha - startingAlpha) * interpolatedTime).toFloat()
+//            }
+//        }
+//        alpha.duration = ALPHA_ANIMATION_DURATION.toLong()
+//        mCircleView.clearAnimation()
+//        mCircleView.setAnimationListener(null)
+//        mCircleView.startAnimation(alpha)
+//        return alpha
+//    }
 
     fun moveToStart(interpolatedTime: Float) {
         var targetTop = 0
@@ -308,7 +306,7 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
     ) {
         mFrom = from
         mStartingScale = if (isAlphaUsedForScale) {
-            mProgressDrawable!!.alpha.toFloat()
+            mProgressDrawable.alpha.toFloat()
         } else {
             ViewCompat.getScaleX(mCircleView)
         }
@@ -341,9 +339,9 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
 
     @SuppressLint("NewApi")
     private fun startScaleUpAnimation(listener: Animation.AnimationListener?) {
-        mCircleView!!.visibility = View.VISIBLE
+        mCircleView.visibility = View.VISIBLE
         if (Build.VERSION.SDK_INT >= 11) {
-            mProgressDrawable!!.alpha = MAX_ALPHA
+            mProgressDrawable.alpha = MAX_ALPHA
         }
         mScaleAnimation = object : Animation() {
             public override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
@@ -374,7 +372,7 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
      * Pre API 11, alpha is used to make the progress circle appear instead of scale.
      */
     private val isAlphaUsedForScale: Boolean
-        private get() = Build.VERSION.SDK_INT < 11
+        @SuppressLint("ObsoleteSdkInt") get() = Build.VERSION.SDK_INT < 11
 
     companion object {
         //默认circleimage大小
@@ -387,30 +385,27 @@ class DefaultRefreshView(private val mContext: Context, private val mParent: Vie
         // where 1.0 is a full circle
         private const val MAX_PROGRESS_ANGLE = .8f
         private const val MAX_ALPHA = 255
-        private const val STARTING_PROGRESS_ALPHA = (.3f * MAX_ALPHA).toInt()
+        private const val STARTING_PROGRESS_ALPHA = (.1f * MAX_ALPHA).toInt()
         private const val ALPHA_ANIMATION_DURATION = 300
         private const val SCALE_DOWN_DURATION = 150
         private const val DECELERATE_INTERPOLATION_FACTOR = 2f
         private const val ANIMATE_TO_START_DURATION = 200
         private const val ANIMATE_TO_TRIGGER_DURATION = 200
-
-        // Default background for the progress spinner
         private const val CIRCLE_BG_LIGHT = -0x50506
     }
 
     init {
         mCircleDiameter = (CIRCLE_DIAMETER * metrics.density).toInt()
-        currentTargetOffsetTop = -mCircleDiameter
-        mOriginalOffsetTop = currentTargetOffsetTop
+        topOffset = -mCircleDiameter
+        mOriginalOffsetTop = topOffset
         mSpinnerOffsetEnd = (DEFAULT_CIRCLE_TARGET * metrics.density).toInt()
         mTotalDragDistance = mSpinnerOffsetEnd.toFloat()
-
         mCircleView = CircleImageView(mContext, CIRCLE_BG_LIGHT)
-        mProgressDrawable = ProgressDrawable(mContext, mParent)
-        mProgressDrawable!!.setBackgroundColor(CIRCLE_BG_LIGHT)
+        mProgressDrawable = MaterialProgressDrawable(mCircleView)
+        mProgressDrawable.setColorSchemeColors(-0xff6634, -0xbbbc, -0x996700, -0x559934, -0x7800)
         mCircleView.setImageDrawable(mProgressDrawable)
         mCircleView.visibility = View.GONE
-        moveToStart(1.0f)
+        setColorViewAlpha(MAX_ALPHA)
         mCircleView.layoutParams = ViewGroup.LayoutParams(mCircleDiameter, mCircleDiameter)
     }
 }

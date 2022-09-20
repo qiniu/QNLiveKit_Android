@@ -1,38 +1,34 @@
 package com.qlive.uikitcore.refresh
 
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.DisplayMetrics
-import android.view.animation.Animation
-import com.qlive.uikitcore.refresh.QRefreshLayout.OnRefreshListener
+import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup.MarginLayoutParams
+import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.Transformation
-import androidx.annotation.ColorInt
+import android.widget.TextView
 import com.qlive.uikitcore.R
-import java.lang.Exception
+import com.qlive.uikitcore.refresh.QRefreshLayout.OnRefreshListener
 
-open class DefaultLoadView(private val mContext: Context, private val mParent: QRefreshLayout) :
-    ILoadView {
-    private val metrics: DisplayMetrics
+open class DefaultLoadView(mContext: Context, mParent: QRefreshLayout) :
+    ILoadView(mContext, mParent) {
+    private val metrics: DisplayMetrics = mContext.resources.displayMetrics
     private val mDecelerateInterpolator: DecelerateInterpolator
     private val mCircleImageView: CircleImageView
-    private val mProgress: ProgressDrawable
-    private var mDefaultProgressColor = 0
-    override var currentHeight = 0
-    override var isLoading = false
+    private val mProgress: MaterialProgressDrawable
+    private val mAttachView: View
+    private val tvTipView: TextView
 
-    //loadview 大小
-    private val mCircleDiameter: Int
-    private var mMargin = 5
-    override var defaultHeight: Int = 0
+    final override var defaultHeight: Int = 0
 
     //加载更多动画
     private val mAnimationShowLoadMore: Animation = object : Animation() {
         override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
             val offset = ((defaultHeight - currentHeight) * interpolatedTime).toInt()
-            mParent.scrollBy(0, move(offset))
+            mParent.scrollBy(0, onPointMove(offset))
         }
     }
     private var mListener: OnRefreshListener? = null
@@ -42,7 +38,7 @@ open class DefaultLoadView(private val mContext: Context, private val mParent: Q
     private var isLoadAnimation = false
 
     //是否显示没有更多view
-    private var mShowNoMore = false
+    private var isShowingLoadMore = false
 
     //loadmore动画结束，调用回调函数
     private val mLoadMoreListener: Animation.AnimationListener =
@@ -52,7 +48,7 @@ open class DefaultLoadView(private val mContext: Context, private val mParent: Q
             }
 
             override fun onAnimationEnd(animation: Animation) {
-                if (!mShowNoMore) beginLoading()
+                if (!isShowingLoadMore) beginLoading()
                 isLoadAnimation = false
             }
 
@@ -60,35 +56,37 @@ open class DefaultLoadView(private val mContext: Context, private val mParent: Q
         }
 
     override fun getAttachView(): View {
-        return mCircleImageView
+        return mAttachView
     }
 
     override fun setRefreshListener(mListener: OnRefreshListener?) {
         this.mListener = mListener
     }
 
-    override fun setLoadMore(loading: Boolean) {
-        if (isLoading != loading) {
-            isLoading = loading
-            if (loading) {
-                animateShowLoadMore(mLoadMoreListener)
-            } else {
-                animateHideLoadMore()
-            }
+    @SuppressLint("ObsoleteSdkInt")
+    override fun finishLoadMore(isNoMore: Boolean) {
+        isLoading = false
+        isShowingLoadMore = isNoMore
+        stopAnimation()
+        mParent.clearAnimation()
+        if (!isNoMore) {
+            mParent.scrollBy(0, -currentHeight)
+            clear()
+        } else {
+            mCircleImageView.visibility = View.GONE
+            tvTipView.text = "noMore"
         }
     }
 
-    override fun stopAnimation() {
+    override fun checkHideNoMore() {
+        clear()
+    }
+
+    private fun stopAnimation() {
         mProgress.stop()
     }
 
-    /**
-     * 实际移动距离
-     *
-     * @param height
-     * @return
-     */
-    override fun move(height: Int): Int {
+    override fun onPointMove(height: Int): Int {
         currentHeight += height
         if (currentHeight > defaultHeight) {
             val result = height - (currentHeight - defaultHeight)
@@ -111,21 +109,20 @@ open class DefaultLoadView(private val mContext: Context, private val mParent: Q
         }
     }
 
-    override fun reset() {
+    override fun clear() {
+        isShowingLoadMore = false
         isLoading = false
         if (mProgress.isRunning) mProgress.stop()
         currentHeight = 0
+        tvTipView.text = ""
+        mCircleImageView.visibility = View.VISIBLE
     }
 
-    override fun finishPullRefresh(totalDistance: Float): Int {
+    override fun onPointUp(totalDistance: Float): Int {
         if (isLoadAnimation) return 0
         //beginLoading();
         animateShowLoadMore(mLoadMoreListener)
         return 0
-    }
-
-    fun setProgressColors(@ColorInt vararg colors: Int) {
-        mProgress.setColorSchemeColors(*colors)
     }
 
     //显示加载更多view
@@ -139,27 +136,7 @@ open class DefaultLoadView(private val mContext: Context, private val mParent: Q
         mParent.startAnimation(mAnimationShowLoadMore)
     }
 
-    private fun animateHideLoadMore() {
-        mParent.clearAnimation()
-        mParent.scrollBy(0, -currentHeight)
-        reset()
-    }
-
-    override fun showNoMore(show: Boolean) {
-        mShowNoMore = show
-        if (show) {
-            isLoading = false
-        }
-        if (mProgress.isRunning) mProgress.stop()
-    }
-
     companion object {
-        //默认circleimage大小
-        const val CIRCLE_DIAMETER = 40
-
-        // Max amount of circle that can be filled by progress during swipe gesture,
-        // where 1.0 is a full circle
-        private const val MAX_PROGRESS_ANGLE = .8f
         private const val MAX_ALPHA = 255
 
         // Default background for the progress spinner
@@ -168,22 +145,22 @@ open class DefaultLoadView(private val mContext: Context, private val mParent: Q
         private const val DECELERATE_INTERPOLATION_FACTOR = 2f
     }
 
+    private fun dp2px(context: Context, dpVal: Float): Int {
+        val density = context.resources.displayMetrics.density
+        return (dpVal * density + 0.5f).toInt()
+    }
+
     init {
-
-        metrics = mContext.resources.displayMetrics
-        mCircleDiameter = (CIRCLE_DIAMETER * metrics.density).toInt()
-        mMargin = (mMargin * metrics.density).toInt()
-        defaultHeight = mMargin * 2 + mCircleDiameter
+        mAttachView =
+            LayoutInflater.from(mContext).inflate(R.layout.default_loadmore_view, mParent, false)
+        defaultHeight = dp2px(mContext, 40f)
         mDecelerateInterpolator = DecelerateInterpolator(DECELERATE_INTERPOLATION_FACTOR)
-
-        mCircleImageView = CircleImageView(mContext, CIRCLE_BG_LIGHT)
-        mProgress = ProgressDrawable(mContext, mParent)
+        mCircleImageView = mAttachView.findViewById(R.id.pbProgressBar)
+        tvTipView = mAttachView.findViewById(R.id.tvTip)
+        mProgress = MaterialProgressDrawable(mCircleImageView)
         mProgress.setBackgroundColor(CIRCLE_BG_LIGHT)
-        mProgress.setRotation(MAX_PROGRESS_ANGLE)
-
+        mProgress.alpha = 255
+        mProgress.setColorSchemeColors(-0xff6634, -0xbbbc, -0x996700, -0x559934, -0x7800)
         mCircleImageView.setImageDrawable(mProgress)
-        val marginLayoutParams = MarginLayoutParams(mCircleDiameter, mCircleDiameter)
-        marginLayoutParams.setMargins(0, mMargin, 0, mMargin)
-        mCircleImageView.layoutParams = marginLayoutParams
     }
 }
