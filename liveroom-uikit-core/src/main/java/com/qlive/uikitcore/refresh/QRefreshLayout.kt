@@ -7,58 +7,32 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.*
 import android.widget.AbsListView
+import android.widget.FrameLayout
 import android.widget.OverScroller
 import androidx.core.view.*
-import androidx.customview.widget.ViewDragHelper
+import kotlin.math.abs
 
-enum class ZOder(val z: Int) {
-    NORMAL(0),
-    TOP(1),
-    BOTTOM(2)
-}
 
-class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
+class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild {
 
     private val TAG = "QSwipeRefreshLayout"
-    private val mNestedScrollingChildHelper: NestedScrollingChildHelper
-    private val mNestedScrollingParentHelper: NestedScrollingParentHelper
-    private val mParentScrollConsumed = IntArray(2)
-    private val mParentOffsetInWindow = IntArray(2)
-    var circleViewIndex = ZOder.NORMAL.z
-    private var mListener: OnRefreshListener? = null
-    private var mRefreshView: View
-    private var mFooterView: View
-    private lateinit var mScrollView: View
-
-    //上拉距离
-    private var mUpTotalUnconsumed = 0f
-
-    //下拉距离
-    private var mDownTotalUnconsumed = 0f
-
-    private var mInitialMotionY = 0f
-    private var mInitialDownY = 0f
-    private var mIsBeingDragUp = false
-    private var mIsBeingDragDown = false
-    private var mActivePointerId = ViewDragHelper.INVALID_POINTER
-    private val mTouchSlop: Int
-    private var mNestedScrollInProgress = false
-
-    // Target is returning to its start offset because it was cancelled or a
-    // refresh was triggered.
-    private var mReturningToStart = false
-    private val mScroller: OverScroller
-    private var mVelocityTracker: VelocityTracker? = null
-    private val mMaximumVelocity: Int
+    private val mNestedScrollingChildHelper by lazy { NestedScrollingChildHelper(this) }
+    private val mNestedScrollingParentHelper by lazy { NestedScrollingParentHelper(this) }
+    private val configuration by lazy { ViewConfiguration.get(context) }
 
     //fling最小速度
-    private val mMinimumVelocity: Int
-    private var mRefreshController: IRefresh
-    private var mLoadViewController: ILoadView
-    private var mNoMoreView: View? = null
+    private val mMinimumVelocity: Int by lazy { configuration.scaledMinimumFlingVelocity }
+    private val mScroller: OverScroller by lazy { OverScroller(getContext()) }
+    private var mListener: OnRefreshListener? = null
+    private lateinit var mRefreshView: View
+    private lateinit var mFooterView: View
+    private lateinit var mScrollView: View
+    private lateinit var mRefreshController: IRefresh
+    private lateinit var mLoadViewController: ILoadView //上拉距离
+    private var mUpTotalUnconsumed = 0f//下拉距离
+    private var mDownTotalUnconsumed = 0f
+    private var mNestedScrollInProgress = false
 
-    //onInterceptTouchEvent或onTouch move时上一点
-    private var mLastY = 0f
     var isNoMoreEnable = true
     var isReFreshEnable = true
 
@@ -72,6 +46,7 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
         if (childCount >= 3) {
             extCover = getChildAt(3)
         }
+        mRefreshView.bringToFront()
     }
 
     /**
@@ -91,69 +66,14 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
 
     fun finishRefresh(isEmpty: Boolean) {
         mRefreshController.setRefreshing(false)
-        if (!isEmpty && isShowNoMore) {
-            showNoMore(false)
+        if (!isEmpty) {
+            mLoadViewController.checkHideNoMore()
         }
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     fun finishLoadMore(noMore: Boolean) {
-        showNoMore(noMore)
-
-        val height = mLoadViewController.currentHeight
-        val oldStatus = mLoadViewController.isLoading
-        mLoadViewController.setLoadMore(false)
-        if (oldStatus) {
-            mLoadViewController.stopAnimation()
-            mLoadViewController.setLoadMore(false)
-            if (mScrollView is AbsListView) {
-                if (Build.VERSION.SDK_INT > 18) {
-                    (mScrollView as AbsListView).scrollListBy(height)
-                } else {
-                    mScrollView.scrollBy(0, height)
-                }
-            } else {
-                mScrollView.scrollBy(0, height)
-            }
-        }
-    }
-
-    /**
-     * 设置没有更多提示view
-     *
-     * @param view         数据加载完毕没有更多数据时显示
-     * @param layoutParams view 的LayoutParams
-     */
-    fun setNoMoreView(view: View?, layoutParams: LayoutParams?) {
-        mNoMoreView = view
-        mNoMoreView!!.layoutParams = layoutParams
-        // mLoadMoreView.setVisibility(GONE);
-    }
-
-    /**
-     * 显示没有更多提示
-     *
-     * @param show true:滑动到底部时显示没有更多，false:滑动到底部时显示加载更多
-     */
-    private var isShowNoMore = false
-    private fun showNoMore(show: Boolean) {
-        isShowNoMore = show
-        mLoadViewController.showNoMore(show)
-        if (show && mNoMoreView != null && mFooterView !== mNoMoreView) {
-            // 开启 nomore  并且 没有重复mNoMoreView
-            mFooterView.clearAnimation()
-            detachViewFromParent(mFooterView)
-            removeDetachedView(mFooterView, false)
-            mFooterView = mNoMoreView!!
-            addView(mNoMoreView, 0, mNoMoreView!!.layoutParams)
-        } else if (!show && mFooterView !== mLoadViewController.getAttachView()) {
-            //关闭 nomore  并且 不在 load
-            scrollBy(0, -mLoadViewController.currentHeight)
-            mLoadViewController.reset()
-            detachViewFromParent(mFooterView)
-            removeDetachedView(mFooterView, false)
-            mFooterView = mLoadViewController.getAttachView()
-            addView(mFooterView, 0)
-        }
+        mLoadViewController.finishLoadMore(noMore)
     }
 
     override fun setEnabled(enable: Boolean) {
@@ -188,8 +108,8 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
         val loadViewWidth = mFooterView.measuredWidth
         val loadViewHeight = mFooterView.measuredHeight
         mRefreshView.layout(
-            width / 2 - circleWidth / 2, mRefreshController.currentTargetOffsetTop,
-            width / 2 + circleWidth / 2, mRefreshController.currentTargetOffsetTop + circleHeight
+            width / 2 - circleWidth / 2, mRefreshController.topOffset,
+            width / 2 + circleWidth / 2, mRefreshController.topOffset + circleHeight
         )
         val layoutParams = mFooterView.layoutParams
         if (layoutParams is MarginLayoutParams) {
@@ -206,7 +126,6 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
                 height + loadViewHeight + childBottom
             )
         }
-
         extCover?.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight)
     }
 
@@ -214,7 +133,7 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
         if (mScroller.computeScrollOffset()) {
             if (!canChildScrollDown() && canLoadMore()) {
                 val dis =
-                    mLoadViewController.finishPullRefresh((mScroller.finalY - mScroller.currY).toFloat())
+                    mLoadViewController.onPointUp((mScroller.finalY - mScroller.currY).toFloat())
                 scrollBy(0, dis)
                 mScroller.abortAnimation()
             }
@@ -222,304 +141,18 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
         }
     }
 
-    override fun getChildDrawingOrder(childCount: Int, i: Int): Int {
-        return if (circleViewIndex < 0 || mRefreshController.zIndex == ZOder.NORMAL) {
-            i
-        } else if (mRefreshController.zIndex == ZOder.TOP) {
-            if (i == circleViewIndex) {
-                childCount - 1
-            } else if (i > circleViewIndex) {
-                i - 1
-            } else {
-                i
-            }
-        } else {
-            if (i > circleViewIndex) {
-                i + 1
-            } else if (i == circleViewIndex) {
-                0
-            } else {
-                i
-            }
-        }
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        mScrollView.measure(
-            MeasureSpec.makeMeasureSpec(
-                measuredWidth - paddingLeft - paddingRight,
-                MeasureSpec.EXACTLY
-            ), MeasureSpec.makeMeasureSpec(
-                measuredHeight - paddingTop - paddingBottom, MeasureSpec.EXACTLY
-            )
-        )
-        extCover?.let {
-            measureChild(it)
-        }
-        measureChild(mRefreshView)
-        measureChild(mFooterView)
-        circleViewIndex = -1
-        // Get the index of the circleview.
-        for (index in 0 until childCount) {
-            if (getChildAt(index) === mRefreshView) {
-                circleViewIndex = index
-                break
-            }
-        }
-
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        val action = event.actionMasked
-        val pointerIndex: Int
-        if (mReturningToStart && action == MotionEvent.ACTION_DOWN) {
-            mReturningToStart = false
-        }
-        if (!isEnabled || mReturningToStart
-            || mRefreshController.isRefresh || mNestedScrollInProgress
-        ) {
-            // Fail fast if we're not in a state where a swipe is possible
-            return false
-        }
-        when (action) {
-            MotionEvent.ACTION_DOWN -> {
-                mIsBeingDragUp = false
-                mIsBeingDragDown = false
-                mActivePointerId = event.getPointerId(0)
-                pointerIndex = event.findPointerIndex(mActivePointerId)
-                if (pointerIndex < 0) {
-                    return false
-                }
-                mInitialDownY = event.getY(pointerIndex)
-                mLastY = mInitialDownY
-                return false
-            }
-            MotionEvent.ACTION_POINTER_DOWN -> {
-                pointerIndex = MotionEventCompat.getActionIndex(event)
-                if (pointerIndex < 0) {
-                    return false
-                }
-                mActivePointerId = event.getPointerId(pointerIndex)
-            }
-            MotionEvent.ACTION_CANCEL -> return false
-            MotionEvent.ACTION_MOVE -> {
-                pointerIndex = event.findPointerIndex(mActivePointerId)
-                if (pointerIndex < 0) {
-                    return false
-                }
-                val y = event.getY(pointerIndex)
-                startDragging(y)
-                if (mIsBeingDragUp) {
-                    val overscrollTop = (y - mInitialMotionY) * DRAG_RATE
-                    if (overscrollTop > 0) {
-                        mRefreshController.showPullRefresh(overscrollTop)
-                    }
-                } else if (mIsBeingDragDown) {
-                    val dy = (y - mLastY).toInt()
-                    Log.i(TAG, "lasty:$mLastY")
-                    Log.i(TAG, "dy:$dy")
-                    //消除抖动
-                    if (dy >= 0.5) {
-                        hideLoadMoreView(Math.abs(dy))
-                    } else if (dy < -0.5) {
-                        showLoadMoreView(Math.abs(dy))
-                    }
-                }
-                mLastY = y
-            }
-            MotionEvent.ACTION_UP -> {
-                pointerIndex = event.findPointerIndex(mActivePointerId)
-                if (pointerIndex < 0) {
-                    //  Log.e(LOG_TAG, "Got ACTION_UP event but don't have an active pointer id.");
-                    return false
-                }
-                if (mIsBeingDragUp) {
-                    val y = event.getY(pointerIndex)
-                    val overscrollTop = (y - mInitialMotionY) * DRAG_RATE
-                    mIsBeingDragUp = false
-                    mRefreshController.finishPullRefresh(overscrollTop)
-                }
-                if (mIsBeingDragDown) {
-                    val y = event.getY(pointerIndex)
-                    val overscrollBottom = y - mInitialMotionY
-                    mIsBeingDragDown = false
-                    if (overscrollBottom < 0) {
-                        val dis = mLoadViewController.finishPullRefresh(Math.abs(overscrollBottom))
-                        scrollBy(0, dis)
-                    }
-                }
-                mActivePointerId = ViewDragHelper.INVALID_POINTER
-                return false
-            }
-            MotionEvent.ACTION_POINTER_UP -> onSecondaryPointerUp(event)
-        }
-        return true
-    }
-
-    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        val action = ev.actionMasked
-        val pointerIndex: Int
-        if (mReturningToStart && action == MotionEvent.ACTION_DOWN) {
-            mReturningToStart = false
-        }
-        if (!isEnabled || !canLoadMore() && !canRefresh() || mReturningToStart
-            || mRefreshController.isRefresh || mNestedScrollInProgress
-        ) {
-            // Fail fast if we're not in a state where a swipe is possible
-            return false
-        }
-        when (action) {
-            MotionEvent.ACTION_DOWN -> {
-                mRefreshController.setTargetOffsetTopAndBottom(
-                    mRefreshController.currentTargetOffsetTop - mRefreshView.top,
-                    true
-                )
-                mActivePointerId = ev.getPointerId(0)
-                mIsBeingDragUp = false
-                mIsBeingDragDown = false
-                pointerIndex = ev.findPointerIndex(mActivePointerId)
-                if (pointerIndex < 0) {
-                    return false
-                }
-                mInitialDownY = ev.getY(pointerIndex)
-                initVelocityTracker()
-                mVelocityTracker!!.addMovement(ev)
-            }
-            MotionEvent.ACTION_MOVE -> {
-                if (mActivePointerId == ViewDragHelper.INVALID_POINTER) {
-                    return false
-                }
-                if (mVelocityTracker != null) {
-                    mVelocityTracker!!.addMovement(ev)
-                }
-                pointerIndex = ev.findPointerIndex(mActivePointerId)
-                if (pointerIndex < 0) {
-                    return false
-                }
-                val y = ev.getY(pointerIndex)
-                startDragging(y)
-            }
-            MotionEvent.ACTION_POINTER_UP -> onSecondaryPointerUp(ev)
-            MotionEvent.ACTION_UP -> if (mVelocityTracker != null) {
-                val velocityTracker: VelocityTracker = mVelocityTracker!!
-                velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity.toFloat())
-                val initialVelocity = velocityTracker.getYVelocity(mActivePointerId)
-                Log.d(TAG, "fling:$initialVelocity")
-                if (Math.abs(initialVelocity) > mMinimumVelocity) {
-                    flingWithNestedDispatch(0f, -initialVelocity)
-                }
-                releaseVelocityTracker()
-            }
-            MotionEvent.ACTION_CANCEL -> {
-                mIsBeingDragUp = false
-                mActivePointerId = ViewDragHelper.INVALID_POINTER
-            }
-        }
-        return mIsBeingDragUp || mIsBeingDragDown
-    }
-
-    override fun requestDisallowInterceptTouchEvent(b: Boolean) {
-        // if this is a List < L or another view that doesn't support nested
-        // scrolling, ignore this request so that the vertical scroll event
-        // isn't stolen
-        if (Build.VERSION.SDK_INT < 21 && mScrollView is AbsListView
-            || !ViewCompat.isNestedScrollingEnabled(mScrollView)
-        ) {
-            // Nope.
-        } else {
-            super.requestDisallowInterceptTouchEvent(b)
-        }
-    }
-
     private fun reset() {
-        mRefreshController.reset()
+        mRefreshController.clear()
         val height = mLoadViewController.currentHeight
         if (height > 0) {
             clearAnimation()
             scrollBy(0, -height)
         }
-        mLoadViewController.reset()
-    }
-
-
-    private fun initVelocityTracker() {
-        if (mVelocityTracker == null) {
-            mVelocityTracker = VelocityTracker.obtain()
-        } else {
-            mVelocityTracker!!.clear()
-        }
-    }
-
-    private fun releaseVelocityTracker() {
-        if (mVelocityTracker != null) {
-            mVelocityTracker!!.recycle()
-            mVelocityTracker = null
-        }
-    }
-
-    private fun measureChild(view: View?) {
-        if (view == null) {
-            return
-        }
-        val lp = view.layoutParams
-        val width: Int
-        val height: Int
-        if (lp != null) {
-            width = getMeasureSpec(lp.width, measuredWidth)
-            height = getMeasureSpec(lp.height, measuredHeight)
-        } else {
-            width = getMeasureSpec(LayoutParams.MATCH_PARENT, measuredWidth)
-            height = getMeasureSpec(LayoutParams.WRAP_CONTENT, measuredHeight)
-        }
-        view.measure(width, height)
-    }
-
-    private fun getMeasureSpec(size: Int, parentSize: Int): Int {
-        val result: Int
-        result = if (size == LayoutParams.MATCH_PARENT) {
-            MeasureSpec.makeMeasureSpec(parentSize, MeasureSpec.EXACTLY)
-        } else if (size == LayoutParams.WRAP_CONTENT) {
-            MeasureSpec.makeMeasureSpec(parentSize, MeasureSpec.AT_MOST)
-        } else {
-            MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY)
-        }
-        return result
-    }
-
-    private fun startDragging(y: Float) {
-        val yDiff = y - mInitialDownY
-        if (yDiff > mTouchSlop && !mIsBeingDragUp) {
-            if (!canChildScrollUp()) {
-                mInitialMotionY = mInitialDownY + mTouchSlop
-                mIsBeingDragUp = true
-                mRefreshController.startPulling()
-            } else if (mLoadViewController.currentHeight > 0) {
-                hideLoadMoreView(yDiff.toInt())
-            }
-        } else if (yDiff < -mTouchSlop && !mIsBeingDragDown && !canChildScrollDown() && canLoadMore()) {
-            Log.d(TAG, "$yDiff:$mTouchSlop")
-            mInitialMotionY = mInitialDownY + mTouchSlop
-            mLastY = mInitialDownY
-            mIsBeingDragDown = true
-        }
-    }
-
-    private fun onSecondaryPointerUp(ev: MotionEvent) {
-        val pointerIndex = MotionEventCompat.getActionIndex(ev)
-        val pointerId = ev.getPointerId(pointerIndex)
-        if (pointerId == mActivePointerId) {
-            // This was our active pointer going up. Choose a new
-            // active pointer and adjust accordingly.
-            val newPointerIndex = if (pointerIndex == 0) 1 else 0
-            mActivePointerId = ev.getPointerId(newPointerIndex)
-            //mVelocityTracker.addMovement(ev);
-        }
+        mLoadViewController.clear()
     }
 
     private fun flingWithNestedDispatch(velocityX: Float, velocityY: Float): Boolean {
-        val canFling = Math.abs(velocityY) > mMinimumVelocity
+        val canFling = abs(velocityY) > mMinimumVelocity
         if (!dispatchNestedPreFling(velocityX, velocityY)) {
             dispatchNestedFling(velocityX, velocityY, canFling)
             if (canFling) {
@@ -532,7 +165,7 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
     private fun fling(velocityY: Float): Boolean {
         if (velocityY <= 0) {
             if (mLoadViewController.currentHeight > 0) {
-                hideLoadMoreView(mLoadViewController.currentHeight)
+                moveLoadMoreViewDown(mLoadViewController.currentHeight)
             }
             mScroller.abortAnimation()
             return false
@@ -631,11 +264,11 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
         mNestedScrollInProgress = false
         mNestedScrollingParentHelper.onStopNestedScroll(target)
         if (mUpTotalUnconsumed > 0) {
-            mRefreshController.finishPullRefresh(mUpTotalUnconsumed)
+            mRefreshController.onPointUp(mUpTotalUnconsumed)
             mUpTotalUnconsumed = 0f
         }
         if (mDownTotalUnconsumed > 0) {
-            val dis = mLoadViewController.finishPullRefresh(mDownTotalUnconsumed)
+            val dis = mLoadViewController.onPointUp(mDownTotalUnconsumed)
             scrollBy(0, dis)
             mDownTotalUnconsumed = 0f
         }
@@ -649,32 +282,33 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
         dxUnconsumed: Int,
         dyUnconsumed: Int
     ) {
+        // 子view 处理完后让父亲消费
+
+        //dy 《 0 下拉 dy 》0 上拉
+        val mParentOffsetInWindow = IntArray(2)
+
         dispatchNestedScroll(
             dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
             mParentOffsetInWindow
         )
+
         val dy = dyUnconsumed + mParentOffsetInWindow[1]
         if (mRefreshController.isRefresh) {
             return
         }
+        //下拉 并且刚到顶端
         if (dy < 0 && !canChildScrollUp() && canRefresh()) {
+            //下拉距离
             mUpTotalUnconsumed += Math.abs(dy).toFloat()
             //moveSpinner(mUpTotalUnconsumed);
-            mRefreshController.showPullRefresh(mUpTotalUnconsumed)
+            mRefreshController.onPointMove(mUpTotalUnconsumed)
         } else if (dy > 0 && !canChildScrollDown() && canLoadMore()) {
+            //上拉 刚到低端
             mDownTotalUnconsumed += dy.toFloat()
-            showLoadMoreView(dy)
+            moveMoreViewUp(dy)
         }
     }
 
-    /**
-     * parent 消耗的值
-     *
-     * @param target   target view
-     * @param dx       x distance
-     * @param dy       y方向的移动距离
-     * @param consumed parent消耗的值
-     */
     override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray) {
         if (isNoMoreEnable || isReFreshEnable) {
             if (dy > 0 && mUpTotalUnconsumed > 0) {
@@ -685,7 +319,7 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
                     mUpTotalUnconsumed -= dy.toFloat()
                     consumed[1] = dy
                 }
-                mRefreshController.showPullRefresh(mUpTotalUnconsumed)
+                mRefreshController.onPointMove(mUpTotalUnconsumed)
             } else if (dy < -1 && mLoadViewController.currentHeight > 0) {
                 if (dy + mDownTotalUnconsumed < 0) {
                     consumed[1] = dy + mDownTotalUnconsumed.toInt()
@@ -694,11 +328,10 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
                     mDownTotalUnconsumed += dy.toFloat()
                     consumed[1] = dy
                 }
-                hideLoadMoreView(Math.abs(dy))
+                moveLoadMoreViewDown(Math.abs(dy))
             }
         }
-        // Now let our nested parent consume the leftovers
-        val parentConsumed = mParentScrollConsumed
+        val parentConsumed = IntArray(2)
         if (dispatchNestedPreScroll(dx - consumed[0], dy - consumed[1], parentConsumed, null)) {
             consumed[0] += parentConsumed[0]
             consumed[1] += parentConsumed[1]
@@ -725,14 +358,8 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
     override fun getNestedScrollAxes(): Int {
         return mNestedScrollingParentHelper.nestedScrollAxes
     }
-    /********************
-     * parent end
-     */
-    /**
-     * targrt view 是否能向上滑动
-     *
-     * @return target view 是否能向上滑动
-     */
+
+    @SuppressLint("ObsoleteSdkInt")
     private fun canChildScrollUp(): Boolean {
         return if (Build.VERSION.SDK_INT < 14) {
             if (mScrollView is AbsListView) {
@@ -753,6 +380,7 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
      *
      * @return
      */
+    @SuppressLint("ObsoleteSdkInt")
     private fun canChildScrollDown(): Boolean {
         return if (Build.VERSION.SDK_INT < 14) {
             if (mScrollView is AbsListView) {
@@ -768,23 +396,20 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
         }
     }
 
-    private fun showLoadMoreView(height: Int) {
-        if (mFooterView.visibility != VISIBLE) {
-            mFooterView.visibility = VISIBLE
-        }
-        scrollBy(0, mLoadViewController.move(height))
+    private fun moveMoreViewUp(height: Int) {
+        scrollBy(0, mLoadViewController.onPointMove(height))
     }
 
-    private fun hideLoadMoreView(h: Int) {
+    private fun moveLoadMoreViewDown(h: Int) {
         var height = h
         if (mLoadViewController.currentHeight > 0) {
             val currentHeight = mLoadViewController.currentHeight
             if (height > currentHeight) {
                 height = currentHeight
             }
-            scrollBy(0, mLoadViewController.move(-height))
+            scrollBy(0, mLoadViewController.onPointMove(-height))
         } else {
-            mLoadViewController.reset()
+            mLoadViewController.clear()
         }
     }
 
@@ -801,10 +426,6 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
         fun onStartLoadMore()
     }
 
-    companion object {
-        private const val DRAG_RATE = .5f
-    }
-
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -816,13 +437,6 @@ class QRefreshLayout : ViewGroup, NestedScrollingParent, NestedScrollingChild {
             DefaultLoadView(context, this)
         mRefreshController =
             DefaultRefreshView(context, this)
-        val configuration = ViewConfiguration.get(context)
-        mTouchSlop = configuration.scaledTouchSlop
-        mMinimumVelocity = configuration.scaledMinimumFlingVelocity
-        mMaximumVelocity = configuration.scaledMaximumFlingVelocity
-        mNestedScrollingChildHelper = NestedScrollingChildHelper(this)
-        mNestedScrollingParentHelper = NestedScrollingParentHelper(this)
-        mScroller = OverScroller(getContext())
         mRefreshView = mRefreshController.getAttachView()
         mFooterView = mLoadViewController.getAttachView()
         addView(mFooterView, mFooterView.layoutParams)
