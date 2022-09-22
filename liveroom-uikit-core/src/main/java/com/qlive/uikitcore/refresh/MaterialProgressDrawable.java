@@ -5,6 +5,7 @@ package com.qlive.uikitcore.refresh;
 //
 
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -169,6 +170,7 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
         this.invalidateSelf();
     }
 
+    @SuppressLint("WrongConstant")
     public int getOpacity() {
         return -3;
     }

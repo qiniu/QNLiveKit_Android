@@ -54,7 +54,7 @@ class OnlineLinkableUserDialog(private val roomService: QRoomService) : FinalDia
                 val data = suspendLoad(page).filter {
                     it.userId != QLive.getLoginUser().userId
                 }
-                mSmartRecyclerView.onFetchDataFinish(data, true)
+                mSmartRecyclerView.onFetchDataFinish(data, false)
             }
             //运行出错
             catchError {

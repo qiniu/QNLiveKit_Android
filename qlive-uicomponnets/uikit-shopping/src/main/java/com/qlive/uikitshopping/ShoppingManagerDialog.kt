@@ -433,7 +433,7 @@ class ShoppingManagerDialog(
                             it.status == filterStatus
                         }
                     }
-                    onFetchDataFinish(list, true, true)
+                    onFetchDataFinish(list, false)
                 }
                 catchError {
                     onFetchDataError()

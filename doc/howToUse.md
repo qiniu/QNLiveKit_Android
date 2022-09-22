@@ -39,7 +39,7 @@
 ## sdk接入
 
 1 下载sdk
-[下载地址](https://github.com/pili-engineering/QNLiveKit_Android/tree/main/app-sdk)
+[下载地址](https://github.com/qiniu/QNLiveKit_Android/tree/main/app-sdk)
 
 2 参考dome工程的build.gradle文件 配置aar
 
@@ -74,7 +74,7 @@ implementation 'com.github.bumptech.glide:glide:4.11.0'
 > #### implementation project(':qlive-uikit')
 
 3 混淆配置
-如果你的项目需要混淆 [qlivesdk混淆配置参考](https://github.com/pili-engineering/QNLiveKit_Android/blob/main/app/proguard-rules.pro
+如果你的项目需要混淆 [qlivesdk混淆配置参考](https://github.com/qiniu/QNLiveKit_Android/blob/main/app/proguard-rules.pro
 )
 
 ## UIKIT使用说明
@@ -132,9 +132,9 @@ uikit使用sdk依赖
 
 
 拷贝布局文件--只需拷贝需要修改的页面，拷贝至接入的工程并且重新命名
-- kit_activity_room_player.xml //[观众直播间布局 ](https://github.com/pili-engineering/QNLiveKit_Android/blob/main/liveroom-uikit/src/main/res/layout/kit_activity_room_player.xml)
-- kit_activity_room_pusher.xm  //[主播直播间布局](https://github.com/pili-engineering/QNLiveKit_Android/blob/main/liveroom-uikit/src/main/res/layout/kit_activity_room_pusher.xml)
-- kit_activity_room_list.xml   //[房间列表页布局](https://github.com/pili-engineering/QNLiveKit_Android/blob/main/liveroom-uikit/src/main/res/layout/kit_activity_room_list.xml)
+- kit_activity_room_player.xml //[观众直播间布局 ](https://github.com/qiniu/QNLiveKit_Android/blob/main/liveroom-uikit/src/main/res/layout/kit_activity_room_player.xml)
+- kit_activity_room_pusher.xm  //[主播直播间布局](https://github.com/qiniu/QNLiveKit_Android/blob/main/liveroom-uikit/src/main/res/layout/kit_activity_room_pusher.xml)
+- kit_activity_room_list.xml   //[房间列表页布局](https://github.com/qiniu/QNLiveKit_Android/blob/main/liveroom-uikit/src/main/res/layout/kit_activity_room_list.xml)
 
 clear重新编译编译-->androidStudio预览看到如上效果图
 
@@ -553,9 +553,9 @@ client.getService(QPKService::class.java)?.start(20 * 1000, receiverRoomID, rece
 ### 无UISDK实现连麦
 
 
-[多人连麦demo](https://github.com/pili-engineering/QNLiveKit_Android/blob/main/uikit-uicomponnets/uikit-linkmic/src/main/java/com/qlive/uikitlinkmic/MicLinkersView.kt)
+[多人连麦demo](https://github.com/qiniu/QNLiveKit_Android/blob/main/qlive-uicomponnets/uikit-linkmic/src/main/java/com/qlive/uikitlinkmic/MicLinkersView.kt)
 
-[分屏连麦demo](https://github.com/pili-engineering/QNLiveKit_Android/blob/main/uikit-uicomponnets/uikit-linkmic/src/main/java/com/qlive/uikitlinkmic/MicLinkerSplitScreenPreview.java)
+[分屏连麦demo](https://github.com/qiniu/QNLiveKit_Android/blob/main/qive-uicomponnets/uikit-linkmic/src/main/java/com/qlive/uikitlinkmic/MicLinkerSplitScreenPreview.java)
 
 
 ```kotlin

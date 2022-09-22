@@ -1,191 +1,417 @@
 package com.qlive.uikitcore.refresh
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
-import android.view.*
+import android.view.Gravity
+import android.view.View
+import android.view.ViewConfiguration
 import android.widget.AbsListView
 import android.widget.FrameLayout
 import android.widget.OverScroller
 import androidx.core.view.*
 import kotlin.math.abs
 
-
 class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild {
+    interface OnRefreshListener {
+        fun onStartRefresh()
+        fun onStartLoadMore()
+    }
 
     private val TAG = "QSwipeRefreshLayout"
     private val mNestedScrollingChildHelper by lazy { NestedScrollingChildHelper(this) }
     private val mNestedScrollingParentHelper by lazy { NestedScrollingParentHelper(this) }
     private val configuration by lazy { ViewConfiguration.get(context) }
-
-    //fling最小速度
     private val mMinimumVelocity: Int by lazy { configuration.scaledMinimumFlingVelocity }
-    private val mScroller: OverScroller by lazy { OverScroller(getContext()) }
-    private var mListener: OnRefreshListener? = null
-    private lateinit var mRefreshView: View
-    private lateinit var mFooterView: View
+    private val mScroller: OverScroller by lazy { OverScroller(context) }
     private lateinit var mScrollView: View
-    private lateinit var mRefreshController: IRefresh
-    private lateinit var mLoadViewController: ILoadView //上拉距离
     private var mUpTotalUnconsumed = 0f//下拉距离
     private var mDownTotalUnconsumed = 0f
     private var mNestedScrollInProgress = false
-
-    var isNoMoreEnable = true
+    var isLoadMoreEnable = true
     var isReFreshEnable = true
+    var isRefreshing: Boolean = false
+    var onRefreshListener: OnRefreshListener? = null
+        private set
+    var isLoading: Boolean = false
+        private set
 
-    //扩展覆盖
-    private var extCover: View? = null
+    var refreshView: IRefreshView
+        private set
+
+    var loadMoreView: ILoadView //上拉距离
+        private set
+
+    fun setRefreshListener(refreshListener: OnRefreshListener) {
+        onRefreshListener = refreshListener;
+    }
+
+    fun startRefresh() {
+        if (isRefreshing || isLoading) {
+            return
+        }
+        isRefreshing = true
+        refreshView.recoverAnimator?.cancel()
+        if (refreshView.isFloat()) {
+            refreshView.recoverAnimator =
+                ObjectAnimator.ofFloat(
+                    refreshView.getAttachView(),
+                    "translationY",
+                    refreshView.getAttachView().translationY,
+                    refreshView.getFreshTopHeight().toFloat()
+                )
+            refreshView.recoverAnimator?.duration = 300
+            refreshView.recoverAnimator?.start()
+
+        } else {
+            scrollTo(0, (refreshView.getFreshTopHeight()))
+        }
+        refreshView.onPointUp(true)
+        onRefreshListener?.onStartRefresh()
+    }
+
+    fun finishRefresh(isEmpty: Boolean) {
+        if (!isRefreshing) {
+            return
+        }
+        isRefreshing = false
+        refreshView.onFinishRefresh()
+        if (refreshView.isFloat()) {
+            refreshView.recoverAnimator?.cancel()
+            refreshView.recoverAnimator =
+                ObjectAnimator.ofFloat(
+                    refreshView.getAttachView(),
+                    "translationY",
+                    refreshView.getAttachView().translationY,
+                    -refreshView.getFreshHeight().toFloat()
+                )
+            refreshView.recoverAnimator?.duration = 300
+            refreshView.recoverAnimator?.start()
+        }
+        if (!isEmpty) {
+            loadMoreView.checkHideNoMore()
+        }
+        if (scrollY != 0) {
+            scrollTo(0, 0)
+        }
+    }
+
+    fun finishLoadMore(noMore: Boolean, goneIfNoData: Boolean, scrollByAfterAddData: Boolean) {
+        if (!isLoading) {
+            return
+        }
+        isLoading = false
+        if (noMore) {
+            //没有更多了
+            if (goneIfNoData) {
+                //不可见
+                loadMoreView.onFinishLoad(false)
+                scrollTo(0, 0)
+            } else {
+                loadMoreView.onFinishLoad(true)
+            }
+        } else {
+            //还有更多
+            loadMoreView.onFinishLoad(false)
+            if (scrollByAfterAddData) {
+                mScrollView.scrollBy(0, scrollY)
+            }
+            scrollTo(0, 0)
+        }
+    }
+
+    /**
+     * Set refresh view
+     *设置刷新头
+     * @param refreshView
+     */
+    fun setRefreshHeader(refreshView: IRefreshView) {
+        val originHeader = this.refreshView.getAttachView()
+        val index = indexOfChild(originHeader)
+        removeView(originHeader)
+        this.refreshView = refreshView
+        addView(
+            this.refreshView.getAttachView().apply {
+                translationY =
+                    -this@QRefreshLayout.refreshView.getFreshHeight().toFloat()
+            }, index,
+            LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+            }
+        )
+        this.refreshView.getAttachView().bringToFront()
+    }
+
+    /**
+     * Set load view
+     * 设置加载控件
+     * @param loadViewView
+     */
+    fun setLoadFooter(loadViewView: ILoadView) {
+        val originFooter = loadMoreView.getAttachView()
+        val index = indexOfChild(originFooter)
+        removeView(originFooter)
+        loadMoreView = loadViewView
+        addView(
+            loadMoreView.getAttachView(), index,
+            LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+            }
+        )
+    }
+
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        refreshView = DefaultRefreshView(context)
+        addView(
+            refreshView.getAttachView().apply {
+                translationY =
+                    -refreshView.getFreshHeight().toFloat()
+            },
+            LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+            }
+        )
+        refreshView.getAttachView().bringToFront()
+        loadMoreView = DefaultLoadView(context)
+        addView(
+            loadMoreView.getAttachView(),
+            LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+            }
+        )
+        isChildrenDrawingOrderEnabled = true
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        loadMoreView.getAttachView().translationY = measuredHeight.toFloat()
+    }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
         mScrollView = getChildAt(2)
-        //只支持放第三个view 为扩展ui
-        if (childCount >= 3) {
-            extCover = getChildAt(3)
-        }
-        mRefreshView.bringToFront()
     }
 
-    /**
-     * 设置滑动监听
-     *
-     * @param onRefreshListener 刷新回调
-     */
-    fun setOnRefreshListener(onRefreshListener: OnRefreshListener?) {
-        mListener = onRefreshListener
-        mLoadViewController.setRefreshListener(mListener)
-        mRefreshController.setRefreshListener(mListener)
+    override fun onStartNestedScroll(child: View, target: View, nestedScrollAxes: Int): Boolean {
+        return ((isLoadMoreEnable || isReFreshEnable)
+                && !isRefreshing
+                //  && !isLoading
+                && nestedScrollAxes and ViewCompat.SCROLL_AXIS_VERTICAL != 0)
     }
 
-    fun startRefresh() {
-        mRefreshController.setRefreshing(true)
+    override fun onNestedScrollAccepted(child: View, target: View, nestedScrollAxes: Int) {
+        // Reset the counter of how much leftover scroll needs to be consumed.
+        mNestedScrollingParentHelper.onNestedScrollAccepted(child, target, nestedScrollAxes)
+        // Dispatch up to the nested parent
+        startNestedScroll(nestedScrollAxes and ViewCompat.SCROLL_AXIS_VERTICAL)
+        mUpTotalUnconsumed = 0f
+        mDownTotalUnconsumed = scrollY.toFloat()
+        mNestedScrollInProgress = true
     }
 
-    fun finishRefresh(isEmpty: Boolean) {
-        mRefreshController.setRefreshing(false)
-        if (!isEmpty) {
-            mLoadViewController.checkHideNoMore()
-        }
-    }
-
-    @SuppressLint("ObsoleteSdkInt")
-    fun finishLoadMore(noMore: Boolean) {
-        mLoadViewController.finishLoadMore(noMore)
-    }
-
-    override fun setEnabled(enable: Boolean) {
-        super.setEnabled(enable)
-        if (!enable) {
-            reset()
-        }
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        reset()
-    }
-
-    override fun onLayout(b: Boolean, i: Int, i1: Int, i2: Int, i3: Int) {
-        Log.d(TAG, "onLayout: $childCount")
-        val width = measuredWidth
-        val height = measuredHeight
-        if (childCount == 0) {
+    //ziview 滑动之后
+    override fun onNestedScroll(
+        target: View,
+        dxConsumed: Int,
+        dyConsumed: Int,
+        dxUnconsumed: Int,
+        dyUnconsumed: Int
+    ) {
+        //dy 《 0 下拉 dy 》0 上拉
+        val mParentOffsetInWindow = IntArray(2)
+        dispatchNestedScroll(
+            dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
+            mParentOffsetInWindow
+        )
+        //剩余没有消费的y
+        val y = dyUnconsumed + mParentOffsetInWindow[1]
+        if (isRefreshing) {
             return
         }
-        val child = mScrollView
-        val childLeft = paddingLeft
-        val childRight = paddingRight
-        val childTop = paddingTop
-        val childBottom = paddingBottom
-        val childWidth = width - childLeft - childRight
-        val childHeight = height - childTop - childBottom
-        child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight)
-        val circleWidth = mRefreshView.measuredWidth
-        val circleHeight = mRefreshView.measuredHeight
-        val loadViewWidth = mFooterView.measuredWidth
-        val loadViewHeight = mFooterView.measuredHeight
-        mRefreshView.layout(
-            width / 2 - circleWidth / 2, mRefreshController.topOffset,
-            width / 2 + circleWidth / 2, mRefreshController.topOffset + circleHeight
-        )
-        val layoutParams = mFooterView.layoutParams
-        if (layoutParams is MarginLayoutParams) {
-            val lp = mFooterView.layoutParams as MarginLayoutParams
-            mFooterView.layout(
-                width / 2 - loadViewWidth / 2,
-                height - childBottom + lp.topMargin,
-                width / 2 + loadViewWidth / 2,
-                height + loadViewHeight + childBottom + lp.bottomMargin
+        //下拉 并且recyview刚到顶端
+        if (y < 0 && !canChildScrollUp() && isReFreshEnable) {
+            moveRefreshViewDown(y)
+        } else if (y > 0 && !canChildScrollDown() && isLoadMoreEnable && canChildScrollUp()) {
+            //上拉 刚到低端
+            moveMoreViewUP(y)
+        }
+    }
+
+    override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray) {
+        //dy 《 0 下拉 dy 》0 上拉
+        if (isLoadMoreEnable || isReFreshEnable) {
+            //子view滑动之前
+            if (dy > 0 && mUpTotalUnconsumed < 0) {
+                //  刷新已经出现 的时侯 上拉
+                //dy 》0 上拉  刷新已经出现
+                if (dy > -mUpTotalUnconsumed) {
+                    // 已经下拉-5  上拉dy 6
+                    // y 》0 上拉
+                    consumed[1] = -mUpTotalUnconsumed.toInt() //消费 5
+                    mUpTotalUnconsumed = 0f
+                } else {
+                    //已经 已经上拉5 上拉dy 4
+                    mUpTotalUnconsumed += dy.toFloat()
+                    consumed[1] = dy  //消费4
+                }
+                refreshView.onPointMove(mUpTotalUnconsumed, consumed[1].toFloat())
+                //向上滑动
+                if (refreshView.isFloat()) {
+                    refreshView.getAttachView().translationY -= consumed[1]
+                } else {
+                    scrollBy(0, consumed[1])
+                }
+            } else if (dy < -1 && mDownTotalUnconsumed > 0) {
+                //dy < -1 下拉 mLoadViewController.currentHeight 》0 已经出现
+                if (dy + mDownTotalUnconsumed < 0) {
+                    // mDownTotalUnconsumed 上拉了5   dy -6 下拉-6
+                    consumed[1] = -mDownTotalUnconsumed.toInt()
+                    mDownTotalUnconsumed = 0f
+                } else {
+                    // mDownTotalUnconsumed 上拉了5   dy -4 下拉-4
+                    mDownTotalUnconsumed += dy.toFloat()
+                    consumed[1] = dy //消耗-4
+                }
+                refreshView.onPointMove(mDownTotalUnconsumed, consumed[1].toFloat())
+                scrollBy(0, consumed[1])
+            }
+        }
+        val parentConsumed = IntArray(2)
+        if (dispatchNestedPreScroll(dx - consumed[0], dy - consumed[1], parentConsumed, null)) {
+            consumed[0] += parentConsumed[0]
+            consumed[1] += parentConsumed[1]
+        }
+    }
+
+    override fun onStopNestedScroll(target: View) {
+        mNestedScrollInProgress = false
+        mNestedScrollingParentHelper.onStopNestedScroll(target)
+        //dy 《 0 下拉 dy 》0 上拉
+        if (mUpTotalUnconsumed < 0) {
+            //  y 《 0 下拉 刷新已经出现
+            //下拉
+            if (-mUpTotalUnconsumed > refreshView.getFreshHeight()) {
+                //开始刷新
+                refreshView.onPointUp(true)
+                isRefreshing = true
+                onRefreshListener?.onStartRefresh()
+            } else {
+                isRefreshing = false
+                //恢复UI
+                refreshView.onPointUp(false)
+            }
+            mUpTotalUnconsumed = 0f
+            refreshView.recoverAnimator?.cancel()
+            if (refreshView.isFloat()) {
+                refreshView.recoverAnimator =
+                    ObjectAnimator.ofFloat(
+                        refreshView.getAttachView(),
+                        "translationY",
+                        refreshView.getAttachView().translationY,
+                        if (!isRefreshing) {
+                            -refreshView.getFreshHeight().toFloat()
+                        } else {
+                            refreshView.getFreshTopHeight().toFloat()
+                        }
+                    )
+                refreshView.recoverAnimator?.duration = 300
+                refreshView.recoverAnimator?.start()
+
+            } else {
+                scrollTo(
+                    0, if (!isRefreshing) {
+                        0
+                    } else {
+                        refreshView.getFreshTopHeight()
+                    }
+                )
+            }
+        }
+
+        // dy 》0 上拉
+        if (mDownTotalUnconsumed > 0 && !loadMoreView.isShowLoadMore) {
+
+            if (mDownTotalUnconsumed >= loadMoreView.getFreshHeight()) {
+                isLoading = true
+                onRefreshListener?.onStartLoadMore()
+                loadMoreView.onPointUp(true)
+                scrollTo(0, loadMoreView.getFreshHeight())
+            } else {
+                isLoading = false
+                scrollTo(0, 0)
+                loadMoreView.onPointUp(false)
+            }
+            mDownTotalUnconsumed = 0f
+        }
+        stopNestedScroll()
+    }
+
+    private fun moveRefreshViewDown(y: Int) {
+        //下拉距离 <0
+        val maxHeight = refreshView.maxScrollHeight() + refreshView.getFreshHeight()
+        val dy = if (abs(mUpTotalUnconsumed + y) > maxHeight) {
+            // -5  -6  > 10
+            if (-mUpTotalUnconsumed > maxHeight) {
+                0
+            } else {
+                -(maxHeight + mUpTotalUnconsumed)
+            }
+        } else {
+            y
+        }.toFloat()
+        mUpTotalUnconsumed += dy
+        //告诉子view开始下拉距离
+        refreshView.onPointMove(mUpTotalUnconsumed, dy)
+        if (refreshView.isFloat()) {
+            refreshView.getAttachView().translationY -= dy
+            Log.d(
+                "moveRefreshViewDown",
+                "${refreshView.getAttachView().translationY} $mUpTotalUnconsumed"
             )
         } else {
-            mFooterView.layout(
-                width / 2 - loadViewWidth / 2, height - childBottom, width / 2 + loadViewWidth / 2,
-                height + loadViewHeight + childBottom
-            )
+            scrollBy(0, dy.toInt())
         }
-        extCover?.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight)
     }
 
-    override fun computeScroll() {
-        if (mScroller.computeScrollOffset()) {
-            if (!canChildScrollDown() && canLoadMore()) {
-                val dis =
-                    mLoadViewController.onPointUp((mScroller.finalY - mScroller.currY).toFloat())
-                scrollBy(0, dis)
-                mScroller.abortAnimation()
+    //
+    private fun moveMoreViewUP(y: Int) {
+        // y 》0 上拉
+        val viewH = loadMoreView.maxScrollHeight()
+        // 8 4 > 10
+        val dy = if (abs(mDownTotalUnconsumed + y) > viewH) {
+            if (mDownTotalUnconsumed > viewH) {
+                0
+            } else {
+                viewH - mDownTotalUnconsumed
             }
-            ViewCompat.postInvalidateOnAnimation(this)
-        }
-    }
-
-    private fun reset() {
-        mRefreshController.clear()
-        val height = mLoadViewController.currentHeight
-        if (height > 0) {
-            clearAnimation()
-            scrollBy(0, -height)
-        }
-        mLoadViewController.clear()
-    }
-
-    private fun flingWithNestedDispatch(velocityX: Float, velocityY: Float): Boolean {
-        val canFling = abs(velocityY) > mMinimumVelocity
-        if (!dispatchNestedPreFling(velocityX, velocityY)) {
-            dispatchNestedFling(velocityX, velocityY, canFling)
-            if (canFling) {
-                return fling(velocityY)
-            }
-        }
-        return false
-    }
-
-    private fun fling(velocityY: Float): Boolean {
-        if (velocityY <= 0) {
-            if (mLoadViewController.currentHeight > 0) {
-                moveLoadMoreViewDown(mLoadViewController.currentHeight)
-            }
-            mScroller.abortAnimation()
-            return false
-        }
-        mScroller.abortAnimation()
-        mScroller.computeScrollOffset()
-        if (canChildScrollUp() && canLoadMore()) {
-            mScroller.fling(
-                0,
-                mScroller.currY,
-                0,
-                velocityY.toInt(),
-                0,
-                0,
-                Int.MIN_VALUE,
-                Int.MAX_VALUE
-            )
-        }
-        ViewCompat.postInvalidateOnAnimation(this)
-        return false
+        } else {
+            y
+        }.toFloat()
+        mDownTotalUnconsumed += dy
+        loadMoreView.onPointMove(mDownTotalUnconsumed, dy)
+        scrollBy(0, dy.toInt())
+        //Log.d(TAG, "moveMoreView  scrollBy(0, dy)${dy}")
     }
 
     override fun isNestedScrollingEnabled(): Boolean {
@@ -245,99 +471,6 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
         return mNestedScrollingChildHelper.dispatchNestedPreFling(velocityX, velocityY)
     }
 
-    override fun onStartNestedScroll(child: View, target: View, nestedScrollAxes: Int): Boolean {
-        return ((isNoMoreEnable || isReFreshEnable) && !mRefreshController.isRefresh
-                && nestedScrollAxes and ViewCompat.SCROLL_AXIS_VERTICAL != 0)
-    }
-
-    override fun onNestedScrollAccepted(child: View, target: View, nestedScrollAxes: Int) {
-        // Reset the counter of how much leftover scroll needs to be consumed.
-        mNestedScrollingParentHelper.onNestedScrollAccepted(child, target, nestedScrollAxes)
-        // Dispatch up to the nested parent
-        startNestedScroll(nestedScrollAxes and ViewCompat.SCROLL_AXIS_VERTICAL)
-        mUpTotalUnconsumed = 0f
-        mDownTotalUnconsumed = 0f
-        mNestedScrollInProgress = true
-    }
-
-    override fun onStopNestedScroll(target: View) {
-        mNestedScrollInProgress = false
-        mNestedScrollingParentHelper.onStopNestedScroll(target)
-        if (mUpTotalUnconsumed > 0) {
-            mRefreshController.onPointUp(mUpTotalUnconsumed)
-            mUpTotalUnconsumed = 0f
-        }
-        if (mDownTotalUnconsumed > 0) {
-            val dis = mLoadViewController.onPointUp(mDownTotalUnconsumed)
-            scrollBy(0, dis)
-            mDownTotalUnconsumed = 0f
-        }
-        stopNestedScroll()
-    }
-
-    override fun onNestedScroll(
-        target: View,
-        dxConsumed: Int,
-        dyConsumed: Int,
-        dxUnconsumed: Int,
-        dyUnconsumed: Int
-    ) {
-        // 子view 处理完后让父亲消费
-
-        //dy 《 0 下拉 dy 》0 上拉
-        val mParentOffsetInWindow = IntArray(2)
-
-        dispatchNestedScroll(
-            dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
-            mParentOffsetInWindow
-        )
-
-        val dy = dyUnconsumed + mParentOffsetInWindow[1]
-        if (mRefreshController.isRefresh) {
-            return
-        }
-        //下拉 并且刚到顶端
-        if (dy < 0 && !canChildScrollUp() && canRefresh()) {
-            //下拉距离
-            mUpTotalUnconsumed += Math.abs(dy).toFloat()
-            //moveSpinner(mUpTotalUnconsumed);
-            mRefreshController.onPointMove(mUpTotalUnconsumed)
-        } else if (dy > 0 && !canChildScrollDown() && canLoadMore()) {
-            //上拉 刚到低端
-            mDownTotalUnconsumed += dy.toFloat()
-            moveMoreViewUp(dy)
-        }
-    }
-
-    override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray) {
-        if (isNoMoreEnable || isReFreshEnable) {
-            if (dy > 0 && mUpTotalUnconsumed > 0) {
-                if (dy > mUpTotalUnconsumed) {
-                    consumed[1] = dy - mUpTotalUnconsumed.toInt()
-                    mUpTotalUnconsumed = 0f
-                } else {
-                    mUpTotalUnconsumed -= dy.toFloat()
-                    consumed[1] = dy
-                }
-                mRefreshController.onPointMove(mUpTotalUnconsumed)
-            } else if (dy < -1 && mLoadViewController.currentHeight > 0) {
-                if (dy + mDownTotalUnconsumed < 0) {
-                    consumed[1] = dy + mDownTotalUnconsumed.toInt()
-                    mDownTotalUnconsumed = 0f
-                } else {
-                    mDownTotalUnconsumed += dy.toFloat()
-                    consumed[1] = dy
-                }
-                moveLoadMoreViewDown(Math.abs(dy))
-            }
-        }
-        val parentConsumed = IntArray(2)
-        if (dispatchNestedPreScroll(dx - consumed[0], dy - consumed[1], parentConsumed, null)) {
-            consumed[0] += parentConsumed[0]
-            consumed[1] += parentConsumed[1]
-        }
-    }
-
     override fun onNestedFling(
         target: View,
         velocityX: Float,
@@ -357,6 +490,73 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
 
     override fun getNestedScrollAxes(): Int {
         return mNestedScrollingParentHelper.nestedScrollAxes
+    }
+
+    private fun flingWithNestedDispatch(velocityX: Float, velocityY: Float): Boolean {
+        val canFling = abs(velocityY) > mMinimumVelocity
+        if (!dispatchNestedPreFling(velocityX, velocityY)) {
+            dispatchNestedFling(velocityX, velocityY, canFling)
+            if (canFling) {
+                return fling(velocityY)
+            }
+        }
+        return false
+    }
+
+    private fun fling(velocityY: Float): Boolean {
+        //dy 《 0 下拉 dy 》0 上拉
+        if (velocityY <= 0) {
+            //下拉惯性
+            if (scrollY > 0) {
+                scrollTo(0, 0)
+            }
+            mScroller.abortAnimation()
+            return false
+        }
+        mScroller.abortAnimation()
+        mScroller.computeScrollOffset()
+        if (canChildScrollUp() && isLoadMoreEnable) {
+            mScroller.fling(
+                0,
+                scrollY,
+                0,
+                (velocityY).toInt(),
+                0,
+                0,
+                Int.MIN_VALUE,
+                Int.MAX_VALUE
+            )
+        }
+        ViewCompat.postInvalidateOnAnimation(this)
+        return false
+    }
+
+    override fun computeScroll() {
+        if (mScroller.computeScrollOffset()) {
+            if ((isLoading || loadMoreView.isShowLoadMore) && canChildScrollUp() && !canChildScrollDown()) {
+                if (mScroller.currY >= loadMoreView.getFreshHeight()) {
+                    scrollTo(0, loadMoreView.getFreshHeight())
+                    mScroller.abortAnimation()
+                } else {
+                    scrollTo(0, mScroller.currY)
+                }
+                return
+            }
+            if (!canChildScrollDown() && isLoadMoreEnable && canChildScrollUp()) {
+                if (!loadMoreView.isShowLoadMore) {
+                    loadMoreView.onPointMove(
+                        loadMoreView.getFreshHeight().toFloat(),
+                        loadMoreView.getFreshHeight().toFloat()
+                    )
+                    scrollBy(0, loadMoreView.getFreshHeight())
+                    isLoading = true
+                    loadMoreView.onPointUp(true)
+                    onRefreshListener?.onStartLoadMore()
+                }
+                mScroller.abortAnimation()
+            }
+            ViewCompat.postInvalidateOnAnimation(this)
+        }
     }
 
     @SuppressLint("ObsoleteSdkInt")
@@ -394,53 +594,5 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
         } else {
             mScrollView.canScrollVertically(1)
         }
-    }
-
-    private fun moveMoreViewUp(height: Int) {
-        scrollBy(0, mLoadViewController.onPointMove(height))
-    }
-
-    private fun moveLoadMoreViewDown(h: Int) {
-        var height = h
-        if (mLoadViewController.currentHeight > 0) {
-            val currentHeight = mLoadViewController.currentHeight
-            if (height > currentHeight) {
-                height = currentHeight
-            }
-            scrollBy(0, mLoadViewController.onPointMove(-height))
-        } else {
-            mLoadViewController.clear()
-        }
-    }
-
-    private fun canRefresh(): Boolean {
-        return isReFreshEnable
-    }
-
-    private fun canLoadMore(): Boolean {
-        return isNoMoreEnable && canChildScrollUp()
-    }
-
-    interface OnRefreshListener {
-        fun onStartRefresh()
-        fun onStartLoadMore()
-    }
-
-    constructor(context: Context) : this(context, null)
-    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
-        mLoadViewController =
-            DefaultLoadView(context, this)
-        mRefreshController =
-            DefaultRefreshView(context, this)
-        mRefreshView = mRefreshController.getAttachView()
-        mFooterView = mLoadViewController.getAttachView()
-        addView(mFooterView, mFooterView.layoutParams)
-        addView(mRefreshView)
-        isChildrenDrawingOrderEnabled = true
     }
 }

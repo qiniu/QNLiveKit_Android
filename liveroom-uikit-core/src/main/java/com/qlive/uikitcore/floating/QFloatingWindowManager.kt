@@ -17,6 +17,13 @@ import com.qlive.uikitcore.floating.uitls.LifecycleUtils
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * @author: liuzhenfeng
+ * @github：https://github.com/princekin-f
+ * @function: 悬浮窗使用工具类
+ * @date: 2019-06-27  15:22
+ * 修改原作者 https://github.com/princekin-f/EasyFloat
+ */
 @SuppressLint("ViewConstructor")
 internal class QFloatingWindowManager(
     private val activity: Activity,

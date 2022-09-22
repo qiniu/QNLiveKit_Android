@@ -29,7 +29,7 @@ android {
 
 }
 
-def userAARSDK = false
+def userAARSDK = true
 
 dependencies {
 
@@ -42,7 +42,7 @@ dependencies {
         // 无UIsdk
         implementation project(':app-sdk:qlive-sdk')
         implementation depend.gson() //必选 json解析
-        implementation depend.okhttp3() //demo依赖
+        implementation depend.okhttp3() //http依赖
         //以下为 UIkit 的依赖包 不使用UIkit则不需要
         implementation project(':app-sdk:qlive-sdk-uikit')  //UIkit包
         //谷歌官方UI组件
