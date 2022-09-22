@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
@@ -69,8 +70,8 @@ class StickerPageItemView(
                 }
 
                 val position = v.tag.toString().toInt()
-                val stickerItem: StickerItem = getItem(position)
-                if (stickerItem != null && stickerItem.state === EffectState.LOADING_STATE) {
+                val stickerItem: StickerItem = getItem(position)?:return@setClickStickerListener
+                if (stickerItem.state === EffectState.LOADING_STATE) {
                     return@setClickStickerListener
                 }
                 val (_, _, _, _, pkgUrl) = stickerItem.material
@@ -195,16 +196,7 @@ class StickerPageItemView(
         val stickerList = ArrayList<StickerItem>()
         for (i in materials.indices) {
             val (_, name, _, thumbnail, _, zipSdPath) = materials[i]
-            var bitmap: Bitmap? = null
-            try {
-                bitmap = Utils.getImageSync(thumbnail, context)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            if (bitmap == null) {
-                bitmap = BitmapFactory.decodeResource(resources, R.drawable.none)
-            }
-            stickerList.add(StickerItem(name, bitmap, zipSdPath).apply {
+            stickerList.add(StickerItem(name, Uri.parse(thumbnail), zipSdPath).apply {
                 material = materials.get(i)
             })
         }

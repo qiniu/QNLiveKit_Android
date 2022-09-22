@@ -35,7 +35,7 @@ public class NativeStickerAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final FilterViewHolder viewHolder = (FilterViewHolder) holder;
-        viewHolder.imageView.setImageBitmap(mStickerList.get(position).icon);
+        viewHolder.imageView.setImageURI(mStickerList.get(position).icon);
         holder.itemView.setSelected(mSelectedPosition == position);
         if (mOnClickStickerListener != null) {
             holder.itemView.setTag(position);

@@ -1,10 +1,15 @@
 package com.qlive.uiwidghtbeauty.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Log;
 
+
+import androidx.annotation.DrawableRes;
 
 import com.qlive.uiwidghtbeauty.R;
 import com.qlive.uiwidghtbeauty.model.FilterItem;
@@ -109,11 +114,21 @@ public class FileUtils {
         copyFilterIconFiles(context, index);
     }
 
+    private static Uri getResourcesUri(Context context, @DrawableRes int id) {
+        Resources resources = context.getResources();
+        String uriPath = ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+                resources.getResourcePackageName(id) + "/" +
+                resources.getResourceTypeName(id) + "/" +
+                resources.getResourceEntryName(id);
+        return Uri.fromFile(new File(uriPath));
+    }
+
+
     public static ArrayList<StickerItem> getStickerFiles(Context context, String index) {
         ArrayList<StickerItem> stickerFiles = new ArrayList<StickerItem>();
-        Bitmap iconNone = BitmapFactory.decodeResource(context.getResources(), R.drawable.none);
+        Uri iconNone = getResourcesUri(context, R.drawable.none);
         List<String> stickerModels = getStickerZipFilesFromSd(context, index);
-        Map<String, Bitmap> stickerIcons = getStickerIconFilesFromSd(context, index);
+        Map<String, Uri> stickerIcons = getStickerUrlFilesFromSd(context, index);
         List<String> stickerNames = getStickerNames(context, index);
         for (int i = 0; i < stickerModels.size(); i++) {
             if (stickerIcons.get(stickerNames.get(i)) != null) {
@@ -125,6 +140,36 @@ public class FileUtils {
         return stickerFiles;
     }
 
+    public static Map<String, Uri> getStickerUrlFilesFromSd(Context context, String className) {
+        TreeMap<String, Uri> iconFiles = new TreeMap<String, Uri>();
+        String folderpath = null;
+        File dataDir = context.getExternalFilesDir(null);
+        if (dataDir != null) {
+            folderpath = dataDir.getAbsolutePath() + File.separator + className;
+            File folder = new File(folderpath);
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
+        }
+        File file = new File(folderpath);
+        File[] subFile = file.listFiles();
+        if (subFile == null || subFile.length == 0) {
+            return iconFiles;
+        }
+        for (int i = 0; i < subFile.length; i++) {
+            // 判断是否为文件夹
+            if (!subFile[i].isDirectory()) {
+                String filename = subFile[i].getAbsolutePath();
+                String path = subFile[i].getPath();
+                // 判断是否为png结尾
+                if (filename.trim().toLowerCase().endsWith(".png") && filename.indexOf("mode_") == -1) {
+                    String name = subFile[i].getName();
+                    iconFiles.put(getFileNameNoEx(name), Uri.fromFile(new File(filename)));
+                }
+            }
+        }
+        return iconFiles;
+    }
     public static List<String> copyStickerZipFiles(Context context, String className) {
         String[] files = null;
         ArrayList<String> modelFiles = new ArrayList<String>();
