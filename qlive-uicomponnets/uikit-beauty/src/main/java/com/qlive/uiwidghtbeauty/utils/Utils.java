@@ -87,8 +87,6 @@ public final class Utils {
         return flags;
     }
 
-
-
     /**
      * 同步取图片
      *

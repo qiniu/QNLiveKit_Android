@@ -341,6 +341,7 @@ internal class QFloatingWindowManager(
         return isDrag || super.onInterceptTouchEvent(event)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         if (event != null) updateFloat(this, event, windowManager, params)
         return isDrag || super.onTouchEvent(event)
