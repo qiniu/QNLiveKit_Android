@@ -22,15 +22,19 @@ open class SmartRefreshHelper<T>(
      */
     private val fetcherFuc: (page: Int) -> Unit
 ) {
-    private var isLoadMoreing: Boolean = false
-    private var isRefreshing: Boolean = false
+
     private var currentPage = 0
     private var eachPageSize: Int = 0
 
+    val isRefreshing: Boolean
+        get() = refresh_layout.isRefreshing
+    val isLoadMoreing: Boolean
+        get() = refresh_layout.isLoading
+
     init {
-        refresh_layout.isNoMoreEnable = (isNeedLoadMore)
+        refresh_layout.isLoadMoreEnable = (isNeedLoadMore)
         refresh_layout.isReFreshEnable = (refreshNeed)
-        refresh_layout.setOnRefreshListener(object : QRefreshLayout.OnRefreshListener {
+        refresh_layout.setRefreshListener(object : QRefreshLayout.OnRefreshListener {
             override fun onStartRefresh() {
                 startRefresh()
             }
@@ -45,23 +49,18 @@ open class SmartRefreshHelper<T>(
         if (adapter.isCanShowEmptyView()) {
             emptyCustomView?.setStatus(START_REFREASH_WHEN_EMPTY)
         }
-        isRefreshing = true
         fetcherFuc(0)
     }
 
     /**
      * 获取到分页数据 设置下拉刷新和上拉的状态
      */
-    fun onFetchDataFinish(data: MutableList<T>?) {
-        onFetchDataFinish(data, true)
+    fun onFetchDataFinish(data: MutableList<T>?, goneIfNoData: Boolean) {
+        onFetchDataFinish(data, goneIfNoData, sureLoadMoreEnd = false)
     }
 
-    fun onFetchDataFinish(data: MutableList<T>?, goneIfNoData: Boolean, sureLoadMoreEnd: Boolean?) {
-        if (isRefreshing) {
-            refresh_layout.finishRefresh(data?.isEmpty() ?: true)
-        } else {
-            refresh_layout.finishLoadMore(sureLoadMoreEnd ?: false)
-        }
+    private var listSize = 0
+    fun onFetchDataFinish(data: MutableList<T>?, goneIfNoData: Boolean, sureLoadMoreEnd: Boolean) {
         if (data != null) {
             if (currentPage == 0 && isRefreshing) {
                 eachPageSize = data.size
@@ -69,18 +68,24 @@ open class SmartRefreshHelper<T>(
             if (isLoadMoreing) {
                 currentPage++
                 adapter.addDataList(data)
+                listSize += data.size
             } else {
                 adapter.setNewDataList((data))
+                listSize = 0
                 currentPage = 0
             }
         }
+        if (isRefreshing) {
+            refresh_layout.finishRefresh(data?.isEmpty() ?: true)
+        } else {
+            val isNeedLoadMore = if (sureLoadMoreEnd) {
+                true
+            } else {
+                data?.isEmpty() ?: true
+            }
+            refresh_layout.finishLoadMore(isNeedLoadMore, goneIfNoData, true)
+        }
         refreshEmptyView(NODATA)
-        isLoadMoreing = false
-        isRefreshing = false
-    }
-
-    fun onFetchDataFinish(data: MutableList<T>?, goneIfNoData: Boolean) {
-        onFetchDataFinish(data, goneIfNoData, null)
     }
 
     /**
@@ -90,7 +95,7 @@ open class SmartRefreshHelper<T>(
         if (isRefreshing) {
             refresh_layout.finishRefresh(false)
         } else {
-            refresh_layout.finishLoadMore(false)
+            refresh_layout.finishLoadMore(noMore = false, true, scrollByAfterAddData = false)
         }
         val disconnected = !NetUtil.isNetworkAvailable(recycler_view.context)
         if (disconnected) {
@@ -98,8 +103,6 @@ open class SmartRefreshHelper<T>(
         } else {
             refreshEmptyView(NODATA)
         }
-        isLoadMoreing = false
-        isRefreshing = false
     }
 
     private fun refreshEmptyView(type: Int) {
@@ -112,26 +115,10 @@ open class SmartRefreshHelper<T>(
     }
 
     private fun loadMore() {
-        if (isRefreshing || isLoadMoreing) {
-            if (isLoadMoreing) {
-                isLoadMoreing = false
-            }
-            return
-        }
-        isLoadMoreing = true
         fetcherFuc(currentPage + 1)
     }
 
     fun refresh() {
-        if (isRefreshing || isLoadMoreing) {
-            if (isRefreshing) {
-                isRefreshing = false
-            }
-            refresh_layout.startRefresh()
-            startRefresh()
-            return
-        }
         refresh_layout.startRefresh()
-        startRefresh()
     }
 }

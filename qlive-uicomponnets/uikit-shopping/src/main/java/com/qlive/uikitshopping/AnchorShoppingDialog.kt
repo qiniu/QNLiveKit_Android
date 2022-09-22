@@ -137,7 +137,7 @@ class AnchorShoppingDialog(
                         }
                     }
                 }
-                recyclerViewGoods?.onFetchDataFinish(data, true, true)
+                recyclerViewGoods?.onFetchDataFinish(data, false)
 
             }
         })

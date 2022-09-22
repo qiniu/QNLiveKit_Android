@@ -8,7 +8,13 @@ import android.view.WindowManager
 import com.qlive.uikitcore.floating.OnFloatAnimator
 import com.qlive.uikitcore.floating.SidePattern
 import kotlin.math.min
-
+/**
+ * @author: liuzhenfeng
+ * @github：https://github.com/princekin-f
+ * @function: 悬浮窗使用工具类
+ * @date: 2019-06-27  15:22
+ * 修改原作者 https://github.com/princekin-f/EasyFloat 动画实现
+ */
 class DefaultAnimator : OnFloatAnimator {
     override fun enterAnim(
         view: View,

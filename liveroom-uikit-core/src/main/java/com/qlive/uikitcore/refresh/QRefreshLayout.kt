@@ -90,11 +90,12 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
                 )
             refreshView.recoverAnimator?.duration = 300
             refreshView.recoverAnimator?.start()
-        } else {
-            scrollTo(0, 0)
         }
         if (!isEmpty) {
             loadMoreView.checkHideNoMore()
+        }
+        if (scrollY != 0) {
+            scrollTo(0, 0)
         }
     }
 

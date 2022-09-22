@@ -128,7 +128,7 @@ class PlayerShoppingDialog(
                         lastExplainingIndex = index
                     }
                 }
-                recyclerViewGoods?.onFetchDataFinish(data, true, true)
+                recyclerViewGoods?.onFetchDataFinish(data, false)
             }
         })
     }
