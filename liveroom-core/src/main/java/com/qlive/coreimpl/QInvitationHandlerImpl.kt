@@ -8,25 +8,25 @@ import com.qlive.core.*
 import com.qlive.core.been.QInvitation
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
-import com.qlive.coreimpl.datesource.UserDataSource
+import com.qlive.coreimpl.http.HttpService
 import com.qlive.coreimpl.http.NetBzException
-import com.qlive.coreimpl.util.backGround
-import com.qlive.coreimpl.util.getCode
+import com.qlive.jsonutil.ParameterizedTypeImpl
 import java.util.*
 import kotlin.collections.HashMap
 
-open class QInvitationHandlerImpl(val ivName: String) : QInvitationHandler,
+open class QInvitationHandlerImpl(private val ivName: String) : QInvitationHandler,
     QClientLifeCycleListener {
     protected var user: QLiveUser? = null
     protected var currentRoomInfo: QLiveRoomInfo? = null
-    private   val mListeners = LinkedList<QInvitationHandlerListener>()
-    private   val invitationMap = HashMap<Int, Invitation>()
-
+    private val mListeners = LinkedList<QInvitationHandlerListener>()
+    private val invitationMap = HashMap<Int, Invitation>()
+    private val dataSource = QLiveDataSource()
     private val mInvitationProcessor =
         InvitationProcessor(ivName,
             object : InvitationCallBack {
                 override fun onReceiveInvitation(invitation: Invitation) {
-                    val qInvitation = JsonUtils.parseObject(invitation.msg, QInvitation::class.java) ?: return
+                    val qInvitation =
+                        JsonUtils.parseObject(invitation.msg, QInvitation::class.java) ?: return
                     if (qInvitation.receiverRoomID != currentRoomInfo?.liveID) {
                         return
                     }
@@ -96,8 +96,7 @@ open class QInvitationHandlerImpl(val ivName: String) : QInvitationHandler,
         }
         backGround {
             doWork {
-                val receiver =
-                    UserDataSource().searchUserByUserId(receiverUID)
+                val receiver = dataSource.searchUserByUserId(receiverUID)
                 val pkInvitation = QInvitation()
                 pkInvitation.extension = extension
                 pkInvitation.initiator = user
@@ -233,4 +232,6 @@ open class QInvitationHandlerImpl(val ivName: String) : QInvitationHandler,
         mListeners.clear()
         InvitationManager.removeInvitationProcessor(mInvitationProcessor)
     }
+
+
 }

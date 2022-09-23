@@ -1,8 +1,8 @@
 package com.qlive.linkmicservice
 
-import com.qlive.coreimpl.http.QLiveHttpService
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.core.been.QExtension
+import com.qlive.coreimpl.http.HttpService.Companion.httpService
 import com.qlive.coreimpl.model.TokenData
 import com.qlive.jsonutil.ParameterizedTypeImpl
 
@@ -16,7 +16,7 @@ internal class LinkDataSource {
             List::class.java,
             List::class.java
         )
-        val resp: List<QMicLinker> = QLiveHttpService.get(
+        val resp: List<QMicLinker> = httpService.get(
             "/client/mic/room/list/${liveId}",
             null, null, p
         )
@@ -24,11 +24,11 @@ internal class LinkDataSource {
     }
 
     suspend fun upMic(linker: QMicLinker): TokenData {
-        return QLiveHttpService.post("/client/mic/", JsonUtils.toJson(linker), TokenData::class.java)
+        return httpService.post("/client/mic/", JsonUtils.toJson(linker), TokenData::class.java)
     }
 
     suspend fun downMic(linker: QMicLinker) {
-        QLiveHttpService.delete("/client/mic/", JsonUtils.toJson(linker), Any::class.java)
+        httpService.delete("/client/mic/", JsonUtils.toJson(linker), Any::class.java)
     }
 
     suspend fun updateExt(linker: QMicLinker, extension: QExtension) {
@@ -36,7 +36,7 @@ internal class LinkDataSource {
         jsonObj.put("live_id", linker.userRoomID)
         jsonObj.put("user_id", linker.user.userId)
         jsonObj.put("extends", extension)
-        QLiveHttpService.put("/client/mic/room/", jsonObj.toString(), Any::class.java)
+        httpService.put("/client/mic/room/", jsonObj.toString(), Any::class.java)
     }
 
     suspend fun switch(linker: QMicLinker, isMic: Boolean, isOpen: Boolean) {
@@ -53,6 +53,6 @@ internal class LinkDataSource {
         jsonObj.put(
             "status", isOpen
         )
-        QLiveHttpService.put("/client/mic/switch", jsonObj.toString(), Any::class.java)
+        httpService.put("/client/mic/switch", jsonObj.toString(), Any::class.java)
     }
 }

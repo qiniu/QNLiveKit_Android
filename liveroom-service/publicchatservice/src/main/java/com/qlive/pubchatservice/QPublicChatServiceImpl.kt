@@ -1,13 +1,14 @@
 package com.qlive.pubchatservice
 
+import android.content.Context
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.QLiveClient
 import com.qlive.coreimpl.QUserJoinObserver
 import com.qlive.core.been.QLiveStatistics
 import com.qlive.coreimpl.BaseService
-import com.qlive.coreimpl.datesource.RoomDataSource
+import com.qlive.coreimpl.QLiveDataSource
+import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.model.LiveStatistics
-import com.qlive.coreimpl.util.backGround
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.rtm.*
 import com.qlive.rtm.msg.RtmTextMsg
@@ -51,8 +52,8 @@ internal class QPublicChatServiceImpl : QPublicChatService, BaseService() {
         }
     }
 
-    override fun attachRoomClient(client: QLiveClient) {
-        super.attachRoomClient(client)
+    override fun attachRoomClient(client: QLiveClient, appContext: Context) {
+        super.attachRoomClient(client, appContext)
         RtmManager.addRtmChannelListener(mRtmMsgListener)
     }
 
@@ -92,10 +93,10 @@ internal class QPublicChatServiceImpl : QPublicChatService, BaseService() {
         }, callBack)
         backGround {
             doWork {
-                RoomDataSource().liveStatisticsReq(listOf(LiveStatistics().apply {
+                QLiveDataSource().liveStatisticsReq(listOf(LiveStatistics().apply {
                     type = QLiveStatistics.TYPE_PUBCHAT_COUNT
-                    live_id = currentRoomInfo?.liveID?:""
-                    user_id = user?.userId?:""
+                    live_id = currentRoomInfo?.liveID ?: ""
+                    user_id = user?.userId ?: ""
                     count = 1
                 }))
             }

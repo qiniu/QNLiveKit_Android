@@ -1,5 +1,6 @@
 package com.qlive.danmakuservice
 
+import android.content.Context
 import com.qlive.rtm.*
 import com.qlive.rtm.msg.RtmTextMsg
 import com.qlive.jsonutil.JsonUtils
@@ -7,15 +8,16 @@ import com.qlive.coreimpl.BaseService
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.QLiveClient
 import com.qlive.core.been.QLiveStatistics
-import com.qlive.coreimpl.datesource.RoomDataSource
+import com.qlive.coreimpl.QLiveDataSource
+import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.model.LiveStatistics
-import com.qlive.coreimpl.util.backGround
 
 internal class QDanmakuServiceImpl : QDanmakuService, BaseService() {
+    private val roomDataSource = QLiveDataSource()
     private val mDanmakuServiceListeners = ArrayList<QDanmakuServiceListener>()
     private val rtmMsgListener = object : RtmMsgListener {
         override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
-            if(toID!=currentRoomInfo?.chatID){
+            if (toID != currentRoomInfo?.chatID) {
                 return false
             }
             if (msg.optAction() == QDanmaku.action_danmu) {
@@ -29,8 +31,8 @@ internal class QDanmakuServiceImpl : QDanmakuService, BaseService() {
         }
     }
 
-    override fun attachRoomClient(client: QLiveClient) {
-        super.attachRoomClient(client)
+    override fun attachRoomClient(client: QLiveClient, appContext: Context) {
+        super.attachRoomClient(client, appContext)
         RtmManager.addRtmChannelListener(rtmMsgListener)
     }
 
@@ -40,11 +42,11 @@ internal class QDanmakuServiceImpl : QDanmakuService, BaseService() {
         RtmManager.removeRtmChannelListener(rtmMsgListener)
     }
 
-    override fun addDanmakuServiceListener(listener:QDanmakuServiceListener) {
+    override fun addDanmakuServiceListener(listener: QDanmakuServiceListener) {
         mDanmakuServiceListeners.add(listener)
     }
 
-    override fun removeDanmakuServiceListener(listener:QDanmakuServiceListener) {
+    override fun removeDanmakuServiceListener(listener: QDanmakuServiceListener) {
         mDanmakuServiceListeners.remove(listener)
     }
 
@@ -66,7 +68,9 @@ internal class QDanmakuServiceImpl : QDanmakuService, BaseService() {
             QDanmaku.action_danmu,
             mode
         )
-        RtmManager.rtmClient.sendChannelMsg(rtmMsg.toJsonString(), currentRoomInfo?.chatID ?: "", true,
+        RtmManager.rtmClient.sendChannelMsg(rtmMsg.toJsonString(),
+            currentRoomInfo?.chatID ?: "",
+            true,
             object : RtmCallBack {
                 override fun onSuccess() {
                     callBack?.onSuccess(mode)
@@ -78,10 +82,10 @@ internal class QDanmakuServiceImpl : QDanmakuService, BaseService() {
             })
         backGround {
             doWork {
-                RoomDataSource().liveStatisticsReq(listOf(LiveStatistics().apply {
+                roomDataSource.liveStatisticsReq(listOf(LiveStatistics().apply {
                     type = QLiveStatistics.TYPE_PUBCHAT_COUNT
-                    live_id = currentRoomInfo?.liveID?:""
-                    user_id = user?.userId?:""
+                    live_id = currentRoomInfo?.liveID ?: ""
+                    user_id = user?.userId ?: ""
                     count = 1
                 }))
             }

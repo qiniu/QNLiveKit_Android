@@ -1,5 +1,6 @@
 package com.qlive.linkmicservice
 
+import android.content.Context
 import com.qlive.rtm.*
 import com.qlive.rtm.msg.RtmTextMsg
 import com.qlive.jsonutil.JsonUtils
@@ -9,13 +10,10 @@ import com.qlive.core.been.QExtension
 import com.qlive.coreimpl.BaseService
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
-import com.qlive.coreimpl.datesource.UserDataSource
 import com.qlive.coreimpl.model.MuteMode
 import com.qlive.coreimpl.model.UidExtensionMode
 import com.qlive.coreimpl.model.UidMode
 import com.qlive.coreimpl.model.UidMsgMode
-import com.qlive.coreimpl.util.backGround
-import com.qlive.coreimpl.util.getCode
 import com.qlive.avparam.QPushRenderView
 import com.qlive.rtclive.RTCRenderView
 
@@ -47,7 +45,7 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
 
     private val mRtmMsgListener = object : RtmMsgListener {
         override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
-            if(toID!=currentRoomInfo?.chatID){
+            if (toID != currentRoomInfo?.chatID) {
                 return false
             }
             when (msg.optAction()) {
@@ -157,7 +155,10 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
      * @param preview
      */
     override fun setUserPreview(uid: String, preview: QPushRenderView) {
-        mMicLinkContext.mQRtcLiveRoom.setUserCameraWindowView(uid, (preview as RTCRenderView).getQNRender())
+        mMicLinkContext.mQRtcLiveRoom.setUserCameraWindowView(
+            uid,
+            (preview as RTCRenderView).getQNRender()
+        )
     }
 
     /**
@@ -168,7 +169,7 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
     override fun kickOutUser(uid: String, msg: String, callBack: QLiveCallBack<Void>?) {
         backGround {
             doWork {
-                val u = UserDataSource().searchUserByUserId(uid)
+                val u = QLiveDataSource().searchUserByUserId(uid)
                 val uidMsgMode = UidMsgMode()
                 uidMsgMode.msg = msg
                 uidMsgMode.uid = uid
@@ -266,12 +267,12 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
         return mAnchorHostMicLinker
     }
 
-    override fun attachRoomClient(client: QLiveClient) {
-        super.attachRoomClient(client)
+      override fun attachRoomClient(client: QLiveClient, appContext: Context) {
+        super.attachRoomClient(client,appContext)
         if (client.clientType == QClientType.PUSHER) {
-            mAnchorHostMicLinker.attachRoomClient(client)
+            mAnchorHostMicLinker.attachRoomClient(client,appContext)
         } else {
-            mAudienceMicLinker.attachRoomClient(client)
+            mAudienceMicLinker.attachRoomClient(client,appContext)
         }
         mLinkMicInvitationHandler.attach()
         RtmManager.addRtmChannelListener(mRtmMsgListener)
@@ -290,7 +291,7 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
     }
 
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo,isResumeUIFromFloating)
+        super.onJoined(roomInfo, isResumeUIFromFloating)
         //添加一个房主麦位
         mMicLinkContext.addLinker(QMicLinker().apply {
             user = roomInfo.anchor
@@ -300,12 +301,12 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
         })
 
         if (client!!.clientType == QClientType.PUSHER) {
-            mAnchorHostMicLinker.onJoined(roomInfo,isResumeUIFromFloating)
+            mAnchorHostMicLinker.onJoined(roomInfo, isResumeUIFromFloating)
         } else {
-            mAudienceMicLinker.onJoined(roomInfo,isResumeUIFromFloating)
+            mAudienceMicLinker.onJoined(roomInfo, isResumeUIFromFloating)
         }
 
-        mLinkMicInvitationHandler.onJoined(roomInfo,isResumeUIFromFloating)
+        mLinkMicInvitationHandler.onJoined(roomInfo, isResumeUIFromFloating)
     }
 
     override fun onLeft() {

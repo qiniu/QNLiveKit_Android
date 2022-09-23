@@ -5,12 +5,8 @@ import com.qlive.core.QLiveCallBack
 import com.qlive.core.been.QExtension
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveStatistics
-import com.qlive.coreimpl.BaseService
-import com.qlive.coreimpl.Scheduler
-import com.qlive.coreimpl.datesource.RoomDataSource
+import com.qlive.coreimpl.*
 import com.qlive.coreimpl.model.LiveStatistics
-import com.qlive.coreimpl.util.backGround
-import com.qlive.coreimpl.util.getCode
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.rtm.*
 import com.qlive.rtm.msg.RtmTextMsg
@@ -345,7 +341,7 @@ internal class QShoppingServiceImpl : BaseService(), QShoppingService {
     override fun statsQItemClick(item: QItem) {
         backGround {
             doWork {
-                RoomDataSource().liveStatisticsReq(listOf(LiveStatistics().apply {
+                QLiveDataSource().liveStatisticsReq(listOf(LiveStatistics().apply {
                     type = QLiveStatistics.TYPE_QItem_CLICK_COUNT
                     live_id = currentRoomInfo?.liveID?:""
                     user_id = user?.userId?:""

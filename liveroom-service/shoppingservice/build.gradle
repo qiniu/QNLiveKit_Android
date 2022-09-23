@@ -30,7 +30,10 @@ android {
 }
 
 dependencies {
-    implementation project(':liveroom-coreimpl')
+    implementation project(':liveroom-core')
+    implementation project(':liveroom-libs:comp_rtm')
+    implementation project(':liveroom-libs:lib_json')
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

@@ -4,13 +4,11 @@ import android.content.Context;
 
 import com.qlive.core.QLiveConfig;
 import com.qlive.core.been.QLiveUser;
-import com.qlive.coreimpl.QLiveDelegate;
+import com.qlive.sdk.internal.QLiveCoreDelegate;
 import com.qlive.core.QTokenGetter;
-import com.qlive.coreimpl.datesource.UserDataSource;
 import com.qlive.core.QLiveCallBack;
 import com.qlive.playerclient.QPlayerClient;
 import com.qlive.pushclient.QPusherClient;
-import com.qlive.core.QRooms;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class QLive {
 
+    private static QLiveCoreDelegate delegate = new QLiveCoreDelegate();
     /**
      * 初始化
      *
@@ -27,7 +26,7 @@ public class QLive {
      * @param tokenGetter token获取
      */
     public static void init(Context context, QLiveConfig config, QTokenGetter tokenGetter) {
-        QLiveDelegate.INSTANCE.init(context, config, tokenGetter);
+       delegate.init(context, config, tokenGetter);
         getLiveUIKit();
     }
 
@@ -38,7 +37,7 @@ public class QLive {
      * @apiNote 认证成功后才能使用qlive的功能
      */
     public static void auth(@NotNull QLiveCallBack<Void> callBack) {
-        QLiveDelegate.INSTANCE.login(callBack);
+       delegate.login(callBack);
     }
 
     /**
@@ -52,7 +51,7 @@ public class QLive {
         user.avatar = userInfo.avatar;
         user.nick = userInfo.nick;
         user.extensions = userInfo.extension;
-        QLiveDelegate.INSTANCE.setUser(user, callBack);
+       delegate.setUser(user, callBack);
     }
 
     /**
@@ -61,7 +60,7 @@ public class QLive {
      * @return QLiveUser
      */
     public static QLiveUser getLoginUser() {
-        return UserDataSource.loginUser;
+        return delegate.loginUser;
     }
 
     /**
@@ -70,7 +69,7 @@ public class QLive {
      * @return QPusherClient
      */
     public static QPusherClient createPusherClient() {
-        return QLiveDelegate.INSTANCE.createPusherClient();
+        return delegate.createPusherClient();
     }
 
     /**
@@ -79,7 +78,7 @@ public class QLive {
      * @return QPlayerClient
      */
     public static QPlayerClient createPlayerClient() {
-        return QLiveDelegate.INSTANCE.createPlayerClient();
+        return delegate.createPlayerClient();
     }
 
     /**
@@ -88,7 +87,7 @@ public class QLive {
      * @return QRooms
      */
     public static QRooms getRooms() {
-        return QLiveDelegate.INSTANCE.getQRooms();
+        return delegate.getQRooms();
     }
 
     /**
@@ -97,6 +96,6 @@ public class QLive {
      * @return QLiveUIKit
      */
     public static QLiveUIKit getLiveUIKit() {
-        return QLiveDelegate.INSTANCE.getUIKIT();
+        return delegate.getUIKIT();
     }
 }

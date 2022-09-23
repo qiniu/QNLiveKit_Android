@@ -1,5 +1,6 @@
 package com.qlive.chatservice
 
+import android.content.Context
 import com.qlive.rtm.*
 import com.qiniu.droid.imsdk.QNIMClient
 import com.qlive.core.*
@@ -40,7 +41,7 @@ internal class QChatRoomServiceImpl : BaseService(),
          * @return 是否继续分发
          */
         override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
-            if(toID!=currentRoomInfo?.chatID){
+            if (toID != currentRoomInfo?.chatID) {
                 return false
             }
             QLiveLogUtil.d("mGroupRtmMsgListener onNewMsg ${msg}")
@@ -180,8 +181,8 @@ internal class QChatRoomServiceImpl : BaseService(),
         mChatServiceListeners.remove(chatServiceListener)
     }
 
-    override fun attachRoomClient(client: QLiveClient) {
-        super.attachRoomClient(client)
+    override fun attachRoomClient(client: QLiveClient, appContext: Context) {
+        super.attachRoomClient(client, appContext)
         QNIMClient.getChatRoomService().addGroupListener(mBMXGroupServiceListener)
         RtmManager.addRtmC2cListener(mC2CRtmMsgListener)
         RtmManager.addRtmChannelListener(mGroupRtmMsgListener)

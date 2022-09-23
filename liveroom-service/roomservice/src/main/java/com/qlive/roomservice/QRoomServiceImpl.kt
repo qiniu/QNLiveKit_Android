@@ -4,23 +4,24 @@ import com.qlive.rtm.RtmManager
 import com.qlive.rtm.sendChannelMsg
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.coreimpl.model.LiveIdExtensionMode
-import com.qlive.coreimpl.datesource.RoomDataSource
-import com.qlive.coreimpl.datesource.UserDataSource
-import com.qlive.coreimpl.util.backGround
 import com.qlive.core.*
 import com.qlive.core.been.QExtension
 import com.qlive.coreimpl.BaseService
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
-import com.qlive.coreimpl.util.getCode
+import com.qlive.coreimpl.QLiveDataSource
+import com.qlive.coreimpl.backGround
+import com.qlive.coreimpl.getCode
+import com.qlive.coreimpl.http.HttpService
+import com.qlive.coreimpl.http.NetBzException
+import com.qlive.jsonutil.ParameterizedTypeImpl
 import java.lang.Exception
 import java.util.*
 
 internal class QRoomServiceImpl : BaseService(), QRoomService {
 
-    private val roomDataSource = RoomDataSource()
-    private val userDataSource = UserDataSource()
-
+    private val roomDataSource = QLiveDataSource()
+    
     private val mQRoomServiceListeners = LinkedList<QRoomServiceListener>()
 
     override fun addRoomServiceListener(listener: QRoomServiceListener) {
@@ -97,7 +98,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
         backGround {
             doWork {
                 val users =
-                    userDataSource.getOnlineUser(currentRoomInfo?.liveID ?: "", page_num, page_size)
+                    roomDataSource.getOnlineUser(currentRoomInfo?.liveID ?: "", page_num, page_size)
                 callBack?.onSuccess(users.list)
             }
             catchError {
@@ -121,7 +122,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
         backGround {
             doWork {
                 val users =
-                    userDataSource.getOnlineUser(roomId, pageNum, pageSize)
+                    roomDataSource.getOnlineUser(roomId, pageNum, pageSize)
                 callBack?.onSuccess(users.list)
             }
             catchError {
@@ -140,7 +141,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
         backGround {
             doWork {
                 val users =
-                    userDataSource.searchUserByUserId(uid)
+                    roomDataSource.searchUserByUserId(uid)
                 callBack?.onSuccess(users)
             }
             catchError {
@@ -157,8 +158,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
     override fun searchUserByIMUid(imUid: String, callBack: QLiveCallBack<QLiveUser>?) {
         backGround {
             doWork {
-                val users =
-                    userDataSource.searchUserByIMUid(imUid)
+                val users = searchUserByIMUid(imUid)
                 callBack?.onSuccess(users)
             }
             catchError {
@@ -170,5 +170,32 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
     override fun onDestroyed() {
         super.onDestroyed()
         mQRoomServiceListeners.clear()
+    }
+
+    /**
+     * 使用用户im uid 搜索用户
+     *
+     * @param imUid
+     * @param callBack
+     */
+    suspend fun searchUserByIMUid(imUid: String): QLiveUser {
+        val p = ParameterizedTypeImpl(
+            arrayOf(QLiveUser::class.java),
+            List::class.java,
+            List::class.java
+        )
+        val list = HttpService.httpService.get<List<QLiveUser>>(
+            "/client/user/imusers",
+            HashMap<String, String>().apply {
+                put("im_user_ids", imUid)
+            },
+            null,
+            p
+        )
+        return if (list.isEmpty()) {
+            throw NetBzException(-1, "targetUser is null")
+        } else {
+            list[0]
+        }
     }
 }

@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import com.qlive.sdk.QLive
 import com.qlive.sdk.QUserInfo
 import com.qlive.core.QLiveCallBack
+import com.qlive.danmakuservice.QDanmaku
 import com.qlive.qnlivekit.App.Companion.demo_url
 import com.qlive.qnlivekit.App.Companion.user
 import com.qlive.qnlivekit.uitil.BZUser
@@ -25,6 +26,7 @@ import com.qlive.qnlivekit.uitil.OKHttpManger
 import com.qlive.qnlivekit.uitil.SpUtil
 import com.qlive.rtm.RtmManager
 import com.qlive.uikitcore.dialog.LoadingDialog
+import com.qlive.uikitdanmaku.DanmuItemViewOnlyText
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

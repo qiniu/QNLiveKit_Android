@@ -1,4 +1,4 @@
-package com.qlive.coreimpl.datesource
+package com.qlive.coreimpl.model
 
 import com.qlive.coreimpl.model.LiveStatistics
 

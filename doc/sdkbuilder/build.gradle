@@ -135,7 +135,7 @@ dependencies {
 //        implementation files('libs/qlive-coreimpl.jar')
 //        implementation files('libs/lib-json.jar')
 //        implementation files('libs/comp_rtm.jar')
-        embed project(':liveroom-coreimpl')
+
         embed project(':liveroom-libs:lib_json')
         embed project(':liveroom-libs:comp_rtm')
 

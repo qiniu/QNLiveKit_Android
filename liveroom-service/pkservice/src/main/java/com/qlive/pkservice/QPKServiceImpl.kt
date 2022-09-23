@@ -1,5 +1,6 @@
 package com.qlive.pkservice
 
+import android.content.Context
 import android.text.TextUtils
 import android.util.Base64
 import com.qlive.rtm.*
@@ -17,9 +18,6 @@ import com.qlive.avparam.RtcException
 import com.qlive.coreimpl.*
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
-import com.qlive.coreimpl.datesource.UserDataSource
-import com.qlive.coreimpl.util.backGround
-import com.qlive.coreimpl.util.getCode
 import com.qlive.avparam.QPushRenderView
 import com.qlive.rtclive.RTCRenderView
 import kotlinx.coroutines.*
@@ -240,7 +238,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                     }
                 }
             } else {
-                if(TextUtils.isEmpty(p1)){
+                if (TextUtils.isEmpty(p1)) {
                     QLiveLogUtil.d("pk 接收方收到对方流 ")
                     checkReceivePk(null, p0)
                 }
@@ -383,8 +381,8 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         }
     }
 
-    override fun attachRoomClient(client: QLiveClient) {
-        super.attachRoomClient(client)
+      override fun attachRoomClient(client: QLiveClient, appContext: Context) {
+        super.attachRoomClient(client,appContext)
         RtmManager.addRtmC2cListener(mC2cListener)
         RtmManager.addRtmChannelListener(groupListener)
 
@@ -393,7 +391,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
             room.addExtraQNRTCEngineEventListener(defaultExtQNClientEventListener)
             pkPKInvitationHandlerImpl.attach()
         } else {
-            mAudiencePKSynchro.attachRoomClient(client)
+            mAudiencePKSynchro.attachRoomClient(client,appContext)
         }
     }
 
@@ -475,8 +473,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                         receiverUID
                     )
                 val receiver =
-                    UserDataSource().searchUserByUserId(receiverUID)
-
+                    QLiveDataSource().searchUserByUserId(receiverUID)
                 val pkSession = QPKSession()
                 pkSession.extension = extensions
                 pkSession.initiator = user
@@ -649,7 +646,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         } else {
             mPKSession!!.initiator.userId
         }
-        room.setUserCameraWindowView(peer,(view as RTCRenderView).getQNRender())
+        room.setUserCameraWindowView(peer, (view as RTCRenderView).getQNRender())
     }
 
     /**

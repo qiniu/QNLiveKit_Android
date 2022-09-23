@@ -1,7 +1,11 @@
-package com.qlive.coreimpl.util
+package com.qlive.coreimpl
 
+import com.qlive.avparam.RtcException
+import com.qlive.coreimpl.http.NetBzException
+import com.qlive.rtm.RtmException
 import kotlinx.coroutines.*
 import java.lang.Exception
+
 
 class CoroutineScopeWrap {
     var work: (suspend CoroutineScope.() -> Unit) = {}
@@ -39,7 +43,15 @@ fun backGround(
             }
         }
 }
-
-
-
-
+fun Throwable.getCode(): Int {
+    if (this is RtmException) {
+        return this.code
+    }
+    if (this is RtcException) {
+        return this.code
+    }
+    if (this is NetBzException) {
+        return this.code
+    }
+    return -1
+}
