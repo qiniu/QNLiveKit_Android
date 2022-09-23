@@ -1,24 +1,27 @@
-package com.qlive.coreimpl
+package com.qlive.sdk.internal
 
 import com.qlive.core.QClientLifeCycleListener
 import com.qlive.core.*
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
-import com.qlive.coreimpl.datesource.RoomDataSource
+import com.qlive.coreimpl.QLiveDataSource
+import com.qlive.coreimpl.Scheduler
+import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.http.NetBzException
 import com.qlive.coreimpl.model.HearBeatResp
-import com.qlive.coreimpl.util.backGround
 import com.qlive.liblog.QLiveLogUtil
 
 internal open class RoomScheduler : QClientLifeCycleListener {
-
     protected var user: QLiveUser? = null
     protected var roomInfo: QLiveRoomInfo? = null
     var client: QLiveClient? = null
     private var roomStatus = 0
     private var anchorStatus = 1
     var roomStatusChange: (status: QLiveStatus) -> Unit = {}
-    private val roomDataSource = RoomDataSource()
+    private val roomDataSource = QLiveDataSource()
+    private val mHeartBeatJob = Scheduler(8000) {
+        check()
+    }
 
     fun checkStatus(newStatus: Int) {
         check()
@@ -52,7 +55,7 @@ internal open class RoomScheduler : QClientLifeCycleListener {
                     roomStatusChange.invoke(anchorStatus.anchorStatusToLiveStatus())
                 }
                 hearRet ?: HearBeatResp().apply {
-                    liveId = roomInfo?.liveID?: ""
+                    liveId = roomInfo?.liveID ?: ""
                     liveStatus = 3
                 }
                 if (hearRet!!.liveStatus != roomStatus) {
@@ -64,10 +67,6 @@ internal open class RoomScheduler : QClientLifeCycleListener {
             catchError {
             }
         }
-    }
-
-    private val mHeartBeatJob = Scheduler(8000) {
-        check()
     }
 
     override fun onEntering(liveId: String, user: QLiveUser) {

@@ -275,7 +275,8 @@
                 <!--            弹幕轨道-->
                 <com.qlive.uikitdanmaku.DanmakuTrackManagerView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    />
 
             </RelativeLayout>
 

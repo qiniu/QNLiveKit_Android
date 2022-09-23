@@ -28,7 +28,6 @@ include ':liveroom-libs:lib_log'
 include ':liveroom-libs:sensehook'
 
 include ':liveroom-core'
-include ':liveroom-coreimpl'
 include ':liveroom-uikit-core'
 
 include ':qlive-uicomponnets:uikit-user'

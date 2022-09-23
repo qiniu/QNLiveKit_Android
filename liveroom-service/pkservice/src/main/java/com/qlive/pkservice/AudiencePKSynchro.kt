@@ -1,18 +1,18 @@
 package com.qlive.pkservice
 
-import com.qlive.coreimpl.util.backGround
+import android.content.Context
 import com.qlive.core.*
 import com.qlive.coreimpl.BaseService
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
-import com.qlive.coreimpl.datesource.RoomDataSource
-import com.qlive.coreimpl.datesource.UserDataSource
+import com.qlive.coreimpl.QLiveDataSource
+import com.qlive.coreimpl.backGround
 import java.util.*
 
 internal class AudiencePKSynchro() : BaseService() {
 
     private val mPKDateSource = PKDataSource()
-    private val mUserSource = UserDataSource()
+    private val mLiveDataSource = QLiveDataSource()
     var mListenersCall: (() -> LinkedList<QPKServiceListener>)? = null
     var mPKSession: QPKSession? = null
         private set
@@ -39,13 +39,12 @@ internal class AudiencePKSynchro() : BaseService() {
                         mPKSession = null
                     }
                 } else {
-                    val reFreshRoom = RoomDataSource()
-                        .refreshRoomInfo(currentRoomInfo!!.liveID)
-                    if (!reFreshRoom.pkID.isEmpty() && mPKSession == null) {
+                    val reFreshRoom = mLiveDataSource.refreshRoomInfo(currentRoomInfo!!.liveID)
+                    if (reFreshRoom.pkID.isNotEmpty() && mPKSession == null) {
                         val info = mPKDateSource.getPkInfo(reFreshRoom.pkID ?: "")
                         if (info.status == PKStatus.RelaySessionStatusSuccess.intValue) {
-                            val recever = mUserSource.searchUserByUserId(info.recvUserId)
-                            val inver = mUserSource.searchUserByUserId(info.initUserId)
+                            val recever = mLiveDataSource.searchUserByUserId(info.recvUserId)
+                            val inver = mLiveDataSource.searchUserByUserId(info.initUserId)
                             val pk = fromPkInfo(info, inver, recever)
                             mPKSession = pk
                             currentRoomInfo?.pkID = reFreshRoom.pkID
@@ -79,8 +78,8 @@ internal class AudiencePKSynchro() : BaseService() {
         }
     }
 
-    override fun attachRoomClient(client: QLiveClient) {
-        super.attachRoomClient(client)
+    override fun attachRoomClient(client: QLiveClient, appContext: Context) {
+        super.attachRoomClient(client,appContext)
         mListenersCall?.invoke()?.add(mQPKServiceListener)
     }
 
@@ -92,14 +91,14 @@ internal class AudiencePKSynchro() : BaseService() {
     }
 
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo,isResumeUIFromFloating)
+        super.onJoined(roomInfo, isResumeUIFromFloating)
         if (!roomInfo.pkID.isEmpty()) {
             backGround {
                 doWork {
                     val info = mPKDateSource.getPkInfo(roomInfo.pkID ?: "")
                     if (info.status == PKStatus.RelaySessionStatusSuccess.intValue) {
-                        val recever = mUserSource.searchUserByUserId(info.recvUserId)
-                        val inver = mUserSource.searchUserByUserId(info.initUserId)
+                        val recever = mLiveDataSource.searchUserByUserId(info.recvUserId)
+                        val inver = mLiveDataSource.searchUserByUserId(info.initUserId)
                         val pk = fromPkInfo(info, inver, recever)
                         mPKSession = pk
                         mListenersCall?.invoke()?.forEach {

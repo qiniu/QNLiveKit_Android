@@ -30,7 +30,7 @@ android {
 
 dependencies {
 
-    implementation project(':liveroom-coreimpl')
+    implementation project(':liveroom-core')
     api project(':liveroom-libs:comp_imadapter')
     api project(':app-sdk:depends_sdk_qnim')
     testImplementation 'junit:junit:4.13.2'

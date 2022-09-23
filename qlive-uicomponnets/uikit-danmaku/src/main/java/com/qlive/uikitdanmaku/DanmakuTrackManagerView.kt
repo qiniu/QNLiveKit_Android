@@ -1,9 +1,11 @@
 package com.qlive.uikitdanmaku
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import com.qlive.core.QLiveClient
 import com.qlive.core.been.QLiveRoomInfo
@@ -39,8 +41,12 @@ class DanmakuTrackManagerView : LinearLayout, QLiveComponent {
             return 3
         }
 
-        override fun topMargin(): Int {
-            return ViewUtil.dip2px(120f)
+        override fun topMargin(index: Int): Int {
+            return if(index==0){
+                ViewUtil.dip2px(124f)
+            }else{
+                ViewUtil.dip2px(24f)
+            }
         }
     }
 
@@ -65,9 +71,9 @@ class DanmakuTrackManagerView : LinearLayout, QLiveComponent {
             )
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+                ViewGroup.LayoutParams.WRAP_CONTENT,
             )
-            lp.topMargin = mDanmukeViewSlot.topMargin()
+            lp.topMargin = mDanmukeViewSlot.topMargin(i)
             addView(itemView.getView(), lp)
             mTrackManager.addTrackView(itemView)
         }
@@ -113,7 +119,7 @@ class DanmakuTrackManagerView : LinearLayout, QLiveComponent {
          * 距离上一个轨道的上间距
          * @return
          */
-        fun topMargin(): Int
+        fun topMargin(index:Int): Int
     }
 }
 

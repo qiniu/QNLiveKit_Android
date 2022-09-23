@@ -1,4 +1,4 @@
-package com.qlive.coreimpl
+package com.qlive.sdk.internal
 
 import com.qlive.avparam.QPlayerEventListener
 

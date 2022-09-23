@@ -1,4 +1,4 @@
-package com.qlive.coreimpl
+package com.qlive.sdk.internal
 
 import com.qlive.avparam.QIPlayer
 import com.qlive.avparam.QPlayerEventListener
@@ -6,15 +6,17 @@ import com.qlive.avparam.QPlayerProvider
 import com.qlive.avparam.QPlayerRenderView
 import com.qlive.core.*
 import com.qlive.core.been.QLiveRoomInfo
-import com.qlive.coreimpl.datesource.RoomDataSource
-import com.qlive.coreimpl.datesource.UserDataSource
-import com.qlive.coreimpl.util.backGround
-import com.qlive.coreimpl.util.getCode
+import com.qlive.coreimpl.QUserJoinObserver
+import com.qlive.coreimpl.QLiveDataSource
+import com.qlive.coreimpl.backGround
+import com.qlive.coreimpl.getCode
 import com.qlive.playerclient.QPlayerClient
 import com.qlive.qplayer.QMediaPlayer
 import com.qlive.rtm.RtmManager
 import com.qlive.rtm.joinChannel
 import com.qlive.rtm.leaveChannel
+import com.qlive.sdk.QLive
+import com.qlive.sdk.internal.AppCache.Companion.appContext
 
 internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QUserJoinObserver {
     companion object {
@@ -25,13 +27,14 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QUserJoinObse
         }
     }
 
+    private val roomDataSource = QLiveDataSource()
     private val mQPlayerEventListenerWarp = QPlayerEventListenerWarp()
     private val mMediaPlayer by lazy {
-        QMediaPlayer(AppCache.appContext).apply {
+        QMediaPlayer(appContext).apply {
             setEventListener(mQPlayerEventListenerWarp)
         }
     }
-    private val mRoomSource = RoomDataSource()
+
     private var mPlayerRenderView: QPlayerRenderView? = null
     private var mLiveStatusListeners = ArrayList<QLiveStatusListener>()
     private val mLiveContext by lazy {
@@ -78,8 +81,8 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QUserJoinObse
     override fun joinRoom(liveId: String, callBack: QLiveCallBack<QLiveRoomInfo>?) {
         backGround {
             doWork {
-                mLiveContext.enter(liveId, UserDataSource.loginUser)
-                val roomInfo = mRoomSource.joinRoom(liveId)
+                mLiveContext.enter(liveId, QLive.getLoginUser())
+                val roomInfo = roomDataSource.joinRoom(liveId)
                 if (RtmManager.isInit) {
                     RtmManager.rtmClient.joinChannel(roomInfo.chatID)
                 }
@@ -106,7 +109,7 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QUserJoinObse
         backGround {
             doWork {
                 mLiveContext.beforeLeaveRoom()
-                mRoomSource.leaveRoom(mLiveContext.roomInfo?.liveID ?: "")
+                roomDataSource.leaveRoom(mLiveContext.roomInfo?.liveID ?: "")
                 if (RtmManager.isInit) {
                     RtmManager.rtmClient.leaveChannel(mLiveContext.roomInfo?.chatID ?: "")
                 }

@@ -1,5 +1,6 @@
 package com.qlive.linkmicservice
 
+import android.content.Context
 import com.qlive.avparam.QPlayerProvider
 import com.qlive.rtm.RtmException
 import com.qlive.rtm.RtmManager
@@ -15,13 +16,10 @@ import com.qlive.linkmicservice.QLinkMicServiceImpl.Companion.liveroom_miclinker
 import com.qlive.linkmicservice.QLinkMicServiceImpl.Companion.liveroom_miclinker_microphone_mute
 import com.qlive.coreimpl.*
 import com.qlive.core.*
-import com.qlive.coreimpl.BaseService
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.coreimpl.model.MuteMode
 import com.qlive.coreimpl.model.UidMode
 import com.qlive.coreimpl.model.UidMsgMode
-import com.qlive.coreimpl.util.backGround
-import com.qlive.coreimpl.util.getCode
 import com.qlive.liblog.QLiveLogUtil
 import com.qlive.linkmicservice.QLinkMicServiceImpl.Companion.liveroom_miclinker_kick
 import java.util.*
@@ -30,10 +28,10 @@ import kotlin.collections.HashMap
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceMicHandler, BaseService() {
+internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContext) : QAudienceMicHandler, BaseService() {
 
     init {
-        context.hostLeftCall = {
+        micLinkContext.hostLeftCall = {
             if (isLinked()) {
                 QLiveLogUtil.d("房主下麦")
                 stopLink(null)
@@ -46,7 +44,7 @@ internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceM
     private val mLinkMicHandlerListeners = ArrayList<QAudienceMicHandler.LinkMicHandlerListener>()
     private val mMeLinker: QMicLinker?
         get() {
-            return context.getMicLinker(user?.userId ?: "hjhb")
+            return micLinkContext.getMicLinker(user?.userId ?: "hjhb")
         }
 
     private fun compare(old: List<QMicLinker>, new: List<QMicLinker>): Boolean {
@@ -77,7 +75,7 @@ internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceM
             return@Scheduler
         }
         //没有人注册监听不同步麦位
-        if (!context.needSynchro) {
+        if (!micLinkContext.needSynchro) {
             return@Scheduler
         }
         backGround {
@@ -86,11 +84,11 @@ internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceM
                 if (isLinked()) {
                     return@doWork
                 }
-                if (compare(context.allLinker, list)) {
+                if (compare(micLinkContext.allLinker, list)) {
                     return@doWork
                 }
                 val toRemve = LinkedList<QMicLinker>()
-                context.allLinker.forEach { old ->
+                micLinkContext.allLinker.forEach { old ->
                     var isContainer = false
                     if (old.user.userId == currentRoomInfo?.anchor?.userId) {
                         isContainer = true
@@ -106,16 +104,16 @@ internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceM
                     }
                 }
                 toRemve.forEach { linck ->
-                    context.mQLinkMicServiceListeners.forEach {
+                    micLinkContext.mQLinkMicServiceListeners.forEach {
                         it.onLinkerLeft(linck)
                     }
                 }
-                context.allLinker.removeAll(toRemve)
+                micLinkContext.allLinker.removeAll(toRemve)
 
                 list.forEach { linck ->
                     //新加的麦位
-                    if (context.addLinker(linck)) {
-                        context.mQLinkMicServiceListeners.forEach {
+                    if (micLinkContext.addLinker(linck)) {
+                        micLinkContext.mQLinkMicServiceListeners.forEach {
                             it.onLinkerJoin(linck)
                         }
                     }
@@ -150,13 +148,13 @@ internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceM
         }
     }
 
-    override fun attachRoomClient(client: QLiveClient) {
-        super.attachRoomClient(client)
+    override fun attachRoomClient(client: QLiveClient, appContext: Context) {
+        super.attachRoomClient(client,appContext)
         mPlayer = playerGetter
-        context.mQRtcLiveRoom = QRtcLiveRoom(AppCache.appContext)
-        context.mQRtcLiveRoom.addExtraQNRTCEngineEventListener(context.mExtQNClientEventListener)
-        context.mQRtcLiveRoom.addExtraQNRTCEngineEventListener(mAudienceExtQNClientEventListener)
-        context.onKickCall = { linker, m ->
+        micLinkContext.mQRtcLiveRoom = QRtcLiveRoom(appContext)
+        micLinkContext.mQRtcLiveRoom.addExtraQNRTCEngineEventListener(micLinkContext.mExtQNClientEventListener)
+        micLinkContext.mQRtcLiveRoom.addExtraQNRTCEngineEventListener(mAudienceExtQNClientEventListener)
+        micLinkContext.onKickCall = { linker, m ->
             if (linker.user.userId == user?.userId) {
                 stopInner(true, null, false, true, m)
             }
@@ -166,7 +164,7 @@ internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceM
     override fun onDestroyed() {
         mLinkMicHandlerListeners.clear()
         super.onDestroyed()
-        context.mQRtcLiveRoom.close()
+        micLinkContext.mQRtcLiveRoom.close()
     }
 
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
@@ -201,23 +199,23 @@ internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceM
                     currentRoomInfo!!.chatID, false
                 )
                 cameraParams?.let {
-                    context.mQRtcLiveRoom.enableCamera(it)
+                    micLinkContext.mQRtcLiveRoom.enableCamera(it)
                 }
                 microphoneParams?.let {
-                    context.mQRtcLiveRoom.enableMicrophone(it)
+                    micLinkContext.mQRtcLiveRoom.enableMicrophone(it)
                 }
-                context.mQRtcLiveRoom.joinRtc(token.rtc_token, JsonUtils.toJson(linker))
+                micLinkContext.mQRtcLiveRoom.joinRtc(token.rtc_token, JsonUtils.toJson(linker))
 //                val users = ArrayList<QNMicLinker>()
 //                context.mRtcLiveRoom.mClient.remoteUsers.forEach {
 //                    if (it.userID != roomInfo?.anchor?.userId) {
 //                        val linck = JsonUtils.parseObject(it.userData, QNMicLinker::class.java)
 //                    }
 //                }
-                context.mQRtcLiveRoom.publishLocal()
+                micLinkContext.mQRtcLiveRoom.publishLocal()
                 mLinkMicHandlerListeners.forEach {
                     it.onRoleChange(true)
                 }
-                context.mExtQNClientEventListener.onUserJoined(
+                micLinkContext.mExtQNClientEventListener.onUserJoined(
                     user?.userId ?: "",
                     JsonUtils.toJson(linker)
                 )
@@ -284,14 +282,14 @@ internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceM
                         e.printStackTrace()
                     }
                 }
-                context.mQRtcLiveRoom.leaveBgDestroyTrack()
+                micLinkContext.mQRtcLiveRoom.leaveBgDestroyTrack()
                 QLiveLogUtil.d("leaveBgDestroyTrack", "onLinkStatusChange")
                 mPlayer?.onLinkStatusChange(false)
                 QLiveLogUtil.d("leaveBgDestroyTrack", "onLinkStatusChange")
-                context.mExtQNClientEventListener.onUserLeft(
+                micLinkContext.mExtQNClientEventListener.onUserLeft(
                     user?.userId ?: ""
                 )
-                context.removeLinker(user!!.userId)
+                micLinkContext.removeLinker(user!!.userId)
                 mLinkMicHandlerListeners.forEach {
                     it.onRoleChange(false)
                 }
@@ -333,7 +331,7 @@ internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceM
             callBack?.onError(-1, "not in seat")
             return
         }
-        context.mQRtcLiveRoom.switchCamera() { it, msg ->
+        micLinkContext.mQRtcLiveRoom.switchCamera() { it, msg ->
             if (it !== null) {
                 callBack?.onSuccess(
                     if (it) {
@@ -359,7 +357,7 @@ internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceM
         }
         backGround {
             doWork {
-                if (context.mQRtcLiveRoom.muteLocalCamera(muted)) {
+                if (micLinkContext.mQRtcLiveRoom.muteLocalCamera(muted)) {
                     mLinkDateSource.switch(
                         mMeLinker!!, false, !muted
                     )
@@ -393,7 +391,7 @@ internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceM
         }
         backGround {
             doWork {
-                if (context.mQRtcLiveRoom.muteLocalMicrophone(muted)) {
+                if (micLinkContext.mQRtcLiveRoom.muteLocalMicrophone(muted)) {
                     mLinkDateSource.switch(
                         mMeLinker!!, true, !muted
                     )
@@ -417,15 +415,15 @@ internal class QAudienceMicHandlerImpl(val context: MicLinkContext) : QAudienceM
     }
 
     override fun setVideoFrameListener(frameListener: QVideoFrameListener?) {
-        context.mQRtcLiveRoom.setVideoFrameListener(QVideoFrameListenerWrap(frameListener))
+        micLinkContext.mQRtcLiveRoom.setVideoFrameListener(QVideoFrameListenerWrap(frameListener))
     }
 
     override fun setAudioFrameListener(frameListener: QAudioFrameListener?) {
-        context.mQRtcLiveRoom.setAudioFrameListener(QAudioFrameListenerWrap(frameListener))
+        micLinkContext.mQRtcLiveRoom.setAudioFrameListener(QAudioFrameListenerWrap(frameListener))
     }
 
     override fun setDefaultBeauty(beautySetting: QBeautySetting) {
-        context.mQRtcLiveRoom.localVideoTrack?.setBeauty(beautySetting.toQNBeautySetting())
+        micLinkContext.mQRtcLiveRoom.localVideoTrack?.setBeauty(beautySetting.toQNBeautySetting())
     }
 
     private val playerGetter by lazy {

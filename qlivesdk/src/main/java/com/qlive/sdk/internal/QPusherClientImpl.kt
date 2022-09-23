@@ -1,4 +1,4 @@
-package com.qlive.coreimpl
+package com.qlive.sdk.internal
 
 import com.qlive.rtm.RtmManager
 import com.qlive.rtm.joinChannel
@@ -6,15 +6,16 @@ import com.qlive.rtm.leaveChannel
 import com.qlive.rtclive.*
 import com.qiniu.droid.rtc.*
 import com.qlive.avparam.*
-import com.qlive.coreimpl.util.backGround
 import com.qlive.core.*
 import com.qlive.core.QLiveService
 import com.qlive.core.been.QLiveRoomInfo
-import com.qlive.coreimpl.datesource.RoomDataSource
-import com.qlive.coreimpl.datesource.UserDataSource
-import com.qlive.coreimpl.util.getCode
+import com.qlive.coreimpl.QLiveDataSource
+import com.qlive.coreimpl.backGround
+import com.qlive.coreimpl.getCode
 import com.qlive.liblog.QLiveLogUtil
 import com.qlive.pushclient.QPusherClient
+import com.qlive.sdk.QLive
+import com.qlive.sdk.internal.AppCache.Companion.appContext
 
 internal class QPusherClientImpl : QPusherClient, QRTCProvider {
 
@@ -26,7 +27,7 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider {
         }
     }
 
-    private val mRoomSource = RoomDataSource()
+    private val mRoomSource = QLiveDataSource()
     private var mLiveStatusListeners = ArrayList<QLiveStatusListener>()
     private var mLocalPreView: QPushRenderView? = null
     private var mCameraParams: QCameraParam =
@@ -35,7 +36,7 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider {
         QMicrophoneParam()
     private var mConnectionStatusLister: QConnectionStatusLister? = null
     private val mRtcRoom by lazy {
-        QRtcLiveRoom(AppCache.appContext).apply {
+        QRtcLiveRoom(appContext).apply {
             addExtraQNRTCEngineEventListener(
                 object : DefaultExtQNClientEventListener {
                     override fun onConnectionStateChanged(
@@ -90,7 +91,7 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider {
     override fun joinRoom(roomID: String, callBack: QLiveCallBack<QLiveRoomInfo>?) {
         backGround {
             doWork {
-                mLiveContext.enter(roomID, UserDataSource.loginUser)
+                mLiveContext.enter(roomID, QLive.getLoginUser())
                 //业务接口发布房间
                 val roomInfo = mRoomSource.pubRoom(roomID)
                 //加群

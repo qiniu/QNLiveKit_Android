@@ -31,10 +31,14 @@ android {
 dependencies {
 
     api project(':liveroom-libs:comp_avparam')
-    implementation project(':liveroom-libs:comp_rtm')
-    implementation project(':liveroom-libs:lib_json')
     api project(':liveroom-libs:lib_log')
     api depend.coroutines()
+
+    implementation project(':liveroom-libs:comp_rtm')
+    implementation project(':liveroom-libs:lib_json')
+    compileOnly project(':liveroom-libs:comp_rtclive')
+    compileOnly project(':liveroom-libs:comp_player')
+
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

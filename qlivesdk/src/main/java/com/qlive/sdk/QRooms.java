@@ -1,5 +1,6 @@
-package com.qlive.core;
+package com.qlive.sdk;
 
+import com.qlive.core.QLiveCallBack;
 import com.qlive.core.been.QCreateRoomParam;
 import com.qlive.core.been.QLiveRoomInfo;
 import com.qlive.core.been.QLiveStatistics;

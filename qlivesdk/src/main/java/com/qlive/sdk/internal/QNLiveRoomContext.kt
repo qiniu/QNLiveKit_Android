@@ -1,4 +1,4 @@
-package com.qlive.coreimpl
+package com.qlive.sdk.internal
 
 import com.qlive.core.QClientLifeCycleListener
 import com.qlive.core.QLiveClient
@@ -6,14 +6,15 @@ import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
 
 import com.qlive.core.QLiveService
-import com.qlive.coreimpl.datesource.UserDataSource
+import com.qlive.coreimpl.BaseService
+import com.qlive.sdk.QLive
 
 internal class QNLiveRoomContext(private val mClient: QLiveClient) {
 
     private val serviceMap = HashMap<String, Any>()
     private val mLifeCycleListener = ArrayList<QClientLifeCycleListener>()
     val mRoomScheduler by lazy {
-        com.qlive.coreimpl.RoomScheduler().apply {
+        RoomScheduler().apply {
             client = mClient
         }
     }
@@ -29,12 +30,12 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
             val obj = constructor.newInstance() as BaseService
             serviceMap[serviceClass] = obj
             mLifeCycleListener.add(obj)
-            obj.attachRoomClient(mClient)
+            obj.attachRoomClient(mClient,AppCache.appContext)
             if (liveId.isNotEmpty()) {
-                obj.onEntering(liveId, UserDataSource.loginUser)
+                obj.onEntering(liveId, QLive.getLoginUser())
             }
             if (roomInfo != null) {
-                obj.onJoined(roomInfo!!,false)
+                obj.onJoined(roomInfo!!, false)
             }
         } catch (e: ClassNotFoundException) {
             e.printStackTrace()
@@ -84,7 +85,7 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
     fun joinedRoom(roomInfo: QLiveRoomInfo) {
         this.roomInfo = roomInfo
         mLifeCycleListener.forEach {
-            it.onJoined(roomInfo,false)
+            it.onJoined(roomInfo, false)
         }
     }
 

@@ -138,6 +138,4 @@
         app:layout_constraintHorizontal_bias="0.536"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
