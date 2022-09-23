@@ -29,7 +29,7 @@ android {
 
 }
 
-def userAARSDK = true
+def userAARSDK = false
 
 dependencies {
 

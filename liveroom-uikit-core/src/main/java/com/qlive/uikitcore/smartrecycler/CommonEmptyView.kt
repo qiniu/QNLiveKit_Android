@@ -13,9 +13,7 @@ import com.qlive.uikitcore.R
 /**
  * 通用empty 待替换ui设计
  */
-class CommonEmptyView : FrameLayout, View.OnClickListener, IEmptyView {
-    private var clickEnable = true
-    private var listener: OnClickListener? = null
+class CommonEmptyView : FrameLayout, IEmptyView {
 
     /**
      * 获取当前错误状态
@@ -26,7 +24,9 @@ class CommonEmptyView : FrameLayout, View.OnClickListener, IEmptyView {
         private set
     private var strNoDataContent = ""
     var img: ImageView? = null
+        private set
     var emptyText: TextView? = null
+        private set
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -44,10 +44,8 @@ class CommonEmptyView : FrameLayout, View.OnClickListener, IEmptyView {
         LayoutInflater.from(context).inflate(R.layout.kit_view_custom_empty, this)
         visibility = GONE
         // setBackgroundColor(-1);
-        setOnClickListener(this)
         img = findViewById(R.id.img)
         emptyText = findViewById(R.id.empty_text)
-        img?.setOnClickListener(this)
     }
 
     /**
@@ -82,7 +80,6 @@ class CommonEmptyView : FrameLayout, View.OnClickListener, IEmptyView {
      * @param i
      */
     override fun setStatus(i: Int) {
-        val disconnected = !NetUtil.isNetworkAvailable(context)
         if (refreshingView != null) {
             refreshingView!!.visibility = GONE
         }
@@ -93,7 +90,6 @@ class CommonEmptyView : FrameLayout, View.OnClickListener, IEmptyView {
                 emptyText!!.text = "网络错误"
                 img!!.setImageResource(emptyNoNetIcon)
                 img!!.visibility = VISIBLE
-                clickEnable = true
             }
             IEmptyView.NODATA -> {
                 visibility = VISIBLE
@@ -101,7 +97,6 @@ class CommonEmptyView : FrameLayout, View.OnClickListener, IEmptyView {
                 img!!.setImageResource(emptyIcon)
                 img!!.visibility = VISIBLE
                 refreshEmptyView()
-                clickEnable = true
             }
             IEmptyView.HIDE_LAYOUT -> visibility = GONE
             IEmptyView.START_REFREASH_WHEN_EMPTY -> if (refreshingView != null) {
@@ -113,6 +108,7 @@ class CommonEmptyView : FrameLayout, View.OnClickListener, IEmptyView {
     }
 
     private var refreshingView: View? = null
+
     fun setRefreshingView(view: View?) {
         refreshingView = view
         refreshingView!!.visibility = GONE
@@ -123,10 +119,6 @@ class CommonEmptyView : FrameLayout, View.OnClickListener, IEmptyView {
         emptyText!!.text = if (TextUtils.isEmpty(strNoDataContent)) "" else strNoDataContent
     }
 
-    fun setOnLayoutClickListener(listener: OnClickListener?) {
-        this.listener = listener
-    }
-
     override fun setVisibility(visibility: Int) {
         if (visibility == GONE) {
             errorState = IEmptyView.HIDE_LAYOUT
@@ -134,14 +126,4 @@ class CommonEmptyView : FrameLayout, View.OnClickListener, IEmptyView {
         super.setVisibility(visibility)
     }
 
-    override fun onClick(v: View) {
-        if (clickEnable) {
-            if (errorState == IEmptyView.NETWORK_ERROR) {
-                return
-            }
-            if (listener != null) {
-                listener!!.onClick(v)
-            }
-        }
-    }
 }
