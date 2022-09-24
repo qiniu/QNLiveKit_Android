@@ -1,9 +1,9 @@
 package com.qlive.uikitcore.refresh
 
 import android.content.Context
-import android.util.DisplayMetrics
+import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import com.qlive.uikitcore.R
 
 class DefaultRefreshView(context: Context) : IRefreshView(context) {
 
@@ -21,17 +21,18 @@ class DefaultRefreshView(context: Context) : IRefreshView(context) {
     private var mCircleDiameter: Int = 0
     private var maxScrollHeight = 0
     private var reFreshTopHeight = 0
+    private var attchView: View
 
     init {
+        attchView = LayoutInflater.from(context).inflate(R.layout.default_refresh_view, null, false)
         maxScrollHeight = dp2px(context, 65f)
         reFreshTopHeight = dp2px(context, 10f)
-        mCircleDiameter = dp2px(context, 40f)
-        mCircleView = CircleImageView(context, CIRCLE_BG_LIGHT)
+        mCircleDiameter = dp2px(context, 45f)
+        mCircleView = attchView.findViewById(R.id.pbProgressBar)
         mProgressDrawable = MaterialProgressDrawable(mCircleView)
         mProgressDrawable.setColorSchemeColors(-0xff6634, -0xbbbc, -0x996700, -0x559934, -0x7800)
         mProgressDrawable.alpha = 255
         mCircleView.setImageDrawable(mProgressDrawable)
-        mCircleView.layoutParams = ViewGroup.LayoutParams(mCircleDiameter, mCircleDiameter)
     }
 
     override fun getFreshTopHeight(): Int {
@@ -47,7 +48,7 @@ class DefaultRefreshView(context: Context) : IRefreshView(context) {
     }
 
     override fun getAttachView(): View {
-        return mCircleView
+        return attchView
     }
 
     override fun isFloat(): Boolean {

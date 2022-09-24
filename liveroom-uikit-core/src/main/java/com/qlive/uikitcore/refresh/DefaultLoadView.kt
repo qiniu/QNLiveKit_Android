@@ -4,12 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.widget.ImageView
 import android.widget.TextView
 import com.qlive.uikitcore.R
 
 class DefaultLoadView(context: Context) : ILoadView(context) {
 
-    private val mCircleImageView: CircleImageView
+    private val mCircleImageView: ImageView
     private val mProgress: MaterialProgressDrawable
     private val mAttachView: View
     private val tvTipView: TextView

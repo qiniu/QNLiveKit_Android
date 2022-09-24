@@ -141,7 +141,7 @@ class RoomListView : FrameLayout, QComponent {
         kitContext?.lifecycleOwner?.bg {
             doWork {
                 val list = suspendLoad(page)
-                    mSmartRecyclerView.onFetchDataFinish(list, false)
+                mSmartRecyclerView.onFetchDataFinish(list, false)
             }
             catchError {
                 mSmartRecyclerView.onFetchDataError()
