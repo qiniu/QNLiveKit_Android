@@ -45,7 +45,6 @@ dependencies {
     }
     implementation depend.lifecycle()
     api depend.glide()
-    api depend.swiperefreshlayout()
     api depend.runtime_ktx()
     api depend.recyclerview()
     api depend.appcompat()

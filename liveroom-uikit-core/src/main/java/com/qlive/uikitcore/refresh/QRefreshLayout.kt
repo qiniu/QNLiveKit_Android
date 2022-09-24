@@ -210,6 +210,7 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
     override fun onFinishInflate() {
         super.onFinishInflate()
         mScrollView = getChildAt(2)
+        this.refreshView.getAttachView().bringToFront()
     }
 
     override fun onStartNestedScroll(child: View, target: View, nestedScrollAxes: Int): Boolean {
@@ -249,7 +250,7 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
             return
         }
         //下拉 并且recyview刚到顶端
-        if (y < 0 && !canChildScrollUp() && isReFreshEnable) {
+        if (y < 0 && !canChildScrollUp() && isReFreshEnable && !isLoading) {
             moveRefreshViewDown(y)
         } else if (y > 0 && !canChildScrollDown() && isLoadMoreEnable && canChildScrollUp()) {
             //上拉 刚到低端
@@ -668,7 +669,6 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
                                 moveRefreshViewUp(dy.toInt(), IntArray(2))
                             }
                         }
-                        return true
                     }
                 }
                 MotionEvent.ACTION_UP -> {
@@ -693,11 +693,11 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
                 }
             }
         }
-        if (isReFreshEnable) {
+        return if(mUpTotalUnconsumed != 0f){
             super.onTouchEvent(ev)
-            return mUpTotalUnconsumed != 0f
-        } else {
-            return super.onTouchEvent(ev)
+            true
+        }else{
+            super.onTouchEvent(ev)
         }
     }
 }
