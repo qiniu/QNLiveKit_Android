@@ -6,13 +6,12 @@ import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
-import android.view.Gravity
-import android.view.View
-import android.view.ViewConfiguration
+import android.view.*
 import android.widget.AbsListView
 import android.widget.FrameLayout
 import android.widget.OverScroller
 import androidx.core.view.*
+import androidx.customview.widget.ViewDragHelper
 import kotlin.math.abs
 
 class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild {
@@ -30,7 +29,7 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
     private lateinit var mScrollView: View
     private var mUpTotalUnconsumed = 0f//下拉距离
     private var mDownTotalUnconsumed = 0f
-    private var mNestedScrollInProgress = false
+    private var isNestedScrollInProgress = false
     var isLoadMoreEnable = true
     var isReFreshEnable = true
     var isRefreshing: Boolean = false
@@ -227,7 +226,7 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
         startNestedScroll(nestedScrollAxes and ViewCompat.SCROLL_AXIS_VERTICAL)
         mUpTotalUnconsumed = 0f
         mDownTotalUnconsumed = scrollY.toFloat()
-        mNestedScrollInProgress = true
+        isNestedScrollInProgress = true
     }
 
     //ziview 滑动之后
@@ -265,23 +264,7 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
             if (dy > 0 && mUpTotalUnconsumed < 0) {
                 //  刷新已经出现 的时侯 上拉
                 //dy 》0 上拉  刷新已经出现
-                if (dy > -mUpTotalUnconsumed) {
-                    // 已经下拉-5  上拉dy 6
-                    // y 》0 上拉
-                    consumed[1] = -mUpTotalUnconsumed.toInt() //消费 5
-                    mUpTotalUnconsumed = 0f
-                } else {
-                    //已经 已经上拉5 上拉dy 4
-                    mUpTotalUnconsumed += dy.toFloat()
-                    consumed[1] = dy  //消费4
-                }
-                refreshView.onPointMove(mUpTotalUnconsumed, consumed[1].toFloat())
-                //向上滑动
-                if (refreshView.isFloat()) {
-                    refreshView.getAttachView().translationY -= consumed[1]
-                } else {
-                    scrollBy(0, consumed[1])
-                }
+                moveRefreshViewUp(dy, consumed)
             } else if (dy < -1 && mDownTotalUnconsumed > 0) {
                 //dy < -1 下拉 mLoadViewController.currentHeight 》0 已经出现
                 if (dy + mDownTotalUnconsumed < 0) {
@@ -293,7 +276,7 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
                     mDownTotalUnconsumed += dy.toFloat()
                     consumed[1] = dy //消耗-4
                 }
-                refreshView.onPointMove(mDownTotalUnconsumed, consumed[1].toFloat())
+                loadMoreView.onPointMove(mDownTotalUnconsumed, consumed[1].toFloat())
                 scrollBy(0, consumed[1])
             }
         }
@@ -305,50 +288,14 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
     }
 
     override fun onStopNestedScroll(target: View) {
-        mNestedScrollInProgress = false
+        isNestedScrollInProgress = false
         mNestedScrollingParentHelper.onStopNestedScroll(target)
         //dy 《 0 下拉 dy 》0 上拉
         if (mUpTotalUnconsumed < 0) {
             //  y 《 0 下拉 刷新已经出现
             //下拉
-            if (-mUpTotalUnconsumed > refreshView.getFreshHeight()) {
-                //开始刷新
-                refreshView.onPointUp(true)
-                isRefreshing = true
-                onRefreshListener?.onStartRefresh()
-            } else {
-                isRefreshing = false
-                //恢复UI
-                refreshView.onPointUp(false)
-            }
-            mUpTotalUnconsumed = 0f
-            refreshView.recoverAnimator?.cancel()
-            if (refreshView.isFloat()) {
-                refreshView.recoverAnimator =
-                    ObjectAnimator.ofFloat(
-                        refreshView.getAttachView(),
-                        "translationY",
-                        refreshView.getAttachView().translationY,
-                        if (!isRefreshing) {
-                            -refreshView.getFreshHeight().toFloat()
-                        } else {
-                            refreshView.getFreshTopHeight().toFloat()
-                        }
-                    )
-                refreshView.recoverAnimator?.duration = 300
-                refreshView.recoverAnimator?.start()
-
-            } else {
-                scrollTo(
-                    0, if (!isRefreshing) {
-                        0
-                    } else {
-                        refreshView.getFreshTopHeight()
-                    }
-                )
-            }
+            checkRefreshViewPointUp()
         }
-
         // dy 》0 上拉
         if (mDownTotalUnconsumed > 0 && !loadMoreView.isShowLoadMore) {
 
@@ -365,6 +312,65 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
             mDownTotalUnconsumed = 0f
         }
         stopNestedScroll()
+    }
+
+    private fun moveRefreshViewUp(dy: Int, consumed: IntArray) {
+        if (dy > -mUpTotalUnconsumed) {
+            // 已经下拉-5  上拉dy 6
+            // y 》0 上拉
+            consumed[1] = -mUpTotalUnconsumed.toInt() //消费 5
+            mUpTotalUnconsumed = 0f
+        } else {
+            //已经 已经上拉5 上拉dy 4
+            mUpTotalUnconsumed += dy.toFloat()
+            consumed[1] = dy  //消费4
+        }
+        refreshView.onPointMove(mUpTotalUnconsumed, consumed[1].toFloat())
+        //向上滑动
+        if (refreshView.isFloat()) {
+            refreshView.getAttachView().translationY -= consumed[1]
+        } else {
+            scrollBy(0, consumed[1])
+        }
+    }
+
+    private fun checkRefreshViewPointUp() {
+        if (-mUpTotalUnconsumed > refreshView.getFreshHeight()) {
+            //开始刷新
+            refreshView.onPointUp(true)
+            isRefreshing = true
+            onRefreshListener?.onStartRefresh()
+        } else {
+            isRefreshing = false
+            //恢复UI
+            refreshView.onPointUp(false)
+        }
+        mUpTotalUnconsumed = 0f
+        refreshView.recoverAnimator?.cancel()
+        if (refreshView.isFloat()) {
+            refreshView.recoverAnimator =
+                ObjectAnimator.ofFloat(
+                    refreshView.getAttachView(),
+                    "translationY",
+                    refreshView.getAttachView().translationY,
+                    if (!isRefreshing) {
+                        -refreshView.getFreshHeight().toFloat()
+                    } else {
+                        refreshView.getFreshTopHeight().toFloat()
+                    }
+                )
+            refreshView.recoverAnimator?.duration = 300
+            refreshView.recoverAnimator?.start()
+
+        } else {
+            scrollTo(
+                0, if (!isRefreshing) {
+                    0
+                } else {
+                    refreshView.getFreshTopHeight()
+                }
+            )
+        }
     }
 
     private fun moveRefreshViewDown(y: Int) {
@@ -559,6 +565,11 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
         }
     }
 
+    /**
+     * Can child scroll up
+     * 下拉
+     * @return
+     */
     @SuppressLint("ObsoleteSdkInt")
     private fun canChildScrollUp(): Boolean {
         return if (Build.VERSION.SDK_INT < 14) {
@@ -577,7 +588,7 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
 
     /**
      * target view 是否能向下滑动
-     *
+     * 上拉
      * @return
      */
     @SuppressLint("ObsoleteSdkInt")
@@ -593,6 +604,100 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
             }
         } else {
             mScrollView.canScrollVertically(1)
+        }
+    }
+
+    private var lastTouchY = 0f
+    private var pointDownY = 0f
+    private val mTouchSlop by lazy { configuration.scaledTouchSlop }
+    private var mActivePointerId = ViewDragHelper.INVALID_POINTER
+
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        if (!isRefreshing && !isLoading && isReFreshEnable && !isNestedScrollInProgress && !canChildScrollUp()) {
+            val y = ev.y
+            when (ev.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    mActivePointerId = ev.getPointerId(0)
+                    lastTouchY = y
+                    pointDownY = y
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val dy = lastTouchY - y
+                    lastTouchY = y
+                    if (dy < 0 && abs(pointDownY - y) > mTouchSlop) {
+                        return true
+                    }
+                }
+                MotionEvent.ACTION_UP -> {
+                    lastTouchY = 0f
+                    pointDownY = 0f
+                    mActivePointerId = ViewDragHelper.INVALID_POINTER
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    lastTouchY = 0f
+                    pointDownY = 0f
+                    mActivePointerId = ViewDragHelper.INVALID_POINTER
+                }
+            }
+        }
+        return super.onInterceptTouchEvent(ev)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
+        if (!isRefreshing && !isLoading && isReFreshEnable && !isNestedScrollInProgress && !canChildScrollUp()) {
+            val y = ev.y
+            when (ev.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    mActivePointerId = ev.getPointerId(0)
+                    lastTouchY = y
+                    pointDownY = y
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val dy = lastTouchY - y
+                    lastTouchY = y
+                    if ((abs(y - pointDownY) > mTouchSlop) || mUpTotalUnconsumed != 0f) {
+                        if (dy < 0) {
+                            //下拉
+                            moveRefreshViewDown(dy.toInt())
+                        } else {
+                            //上拉
+                            if (dy > 0 && mUpTotalUnconsumed < 0) {
+                                //  刷新已经出现 的时侯 上拉
+                                //dy 》0 上拉  刷新已经出现
+                                moveRefreshViewUp(dy.toInt(), IntArray(2))
+                            }
+                        }
+                        return true
+                    }
+                }
+                MotionEvent.ACTION_UP -> {
+                    if (mUpTotalUnconsumed < 0) {
+                        //  y 《 0 下拉 刷新已经出现
+                        //下拉
+                        checkRefreshViewPointUp()
+                    }
+                    lastTouchY = 0f
+                    pointDownY = 0f
+                    mActivePointerId = ViewDragHelper.INVALID_POINTER
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    if (mUpTotalUnconsumed < 0) {
+                        //  y 《 0 下拉 刷新已经出现
+                        //下拉
+                        checkRefreshViewPointUp()
+                    }
+                    lastTouchY = 0f
+                    pointDownY = 0f
+                    mActivePointerId = ViewDragHelper.INVALID_POINTER
+                }
+            }
+        }
+        if (isReFreshEnable) {
+            super.onTouchEvent(ev)
+            return mUpTotalUnconsumed != 0f
+        } else {
+            return super.onTouchEvent(ev)
         }
     }
 }
