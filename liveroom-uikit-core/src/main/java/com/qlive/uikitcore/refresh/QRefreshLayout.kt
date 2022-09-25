@@ -98,7 +98,11 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
         }
     }
 
-    fun finishLoadMore(noMore: Boolean, goneIfNoData: Boolean, scrollByAfterAddData: Boolean) {
+    fun finishLoadMore(
+        noMore: Boolean,
+        goneIfNoData: Boolean,
+        scrollToNextPageVisibility: Boolean
+    ) {
         if (!isLoading) {
             return
         }
@@ -115,7 +119,7 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
         } else {
             //还有更多
             loadMoreView.onFinishLoad(false)
-            if (scrollByAfterAddData) {
+            if (scrollToNextPageVisibility) {
                 mScrollView.scrollBy(0, scrollY)
             }
             scrollTo(0, 0)
@@ -387,17 +391,20 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
         } else {
             y
         }.toFloat()
-        mUpTotalUnconsumed += dy
+
+        // mUpTotalUnconsumed += dy
         //告诉子view开始下拉距离
-        refreshView.onPointMove(mUpTotalUnconsumed, dy)
+        val moveY = refreshView.onPointMove(mUpTotalUnconsumed, dy)
+        mUpTotalUnconsumed += moveY
+
         if (refreshView.isFloat()) {
-            refreshView.getAttachView().translationY -= dy
+            refreshView.getAttachView().translationY -= moveY
             Log.d(
                 "moveRefreshViewDown",
                 "${refreshView.getAttachView().translationY} $mUpTotalUnconsumed"
             )
         } else {
-            scrollBy(0, dy.toInt())
+            scrollBy(0, moveY.toInt())
         }
     }
 
@@ -693,10 +700,10 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
                 }
             }
         }
-        return if(mUpTotalUnconsumed != 0f){
+        return if (mUpTotalUnconsumed != 0f) {
             super.onTouchEvent(ev)
             true
-        }else{
+        } else {
             super.onTouchEvent(ev)
         }
     }

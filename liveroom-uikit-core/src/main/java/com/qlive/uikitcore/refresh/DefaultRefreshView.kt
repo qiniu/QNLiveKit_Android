@@ -1,8 +1,13 @@
 package com.qlive.uikitcore.refresh
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Paint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
 import com.qlive.uikitcore.R
 
 class DefaultRefreshView(context: Context) : IRefreshView(context) {
@@ -16,23 +21,35 @@ class DefaultRefreshView(context: Context) : IRefreshView(context) {
         return (dpVal * density + 0.5f).toInt()
     }
 
-    private var mProgressDrawable: MaterialProgressDrawable
+    private var circularProgressDrawable: CircularProgressDrawable
     private var mCircleView: CircleImageView
     private var mCircleDiameter: Int = 0
     private var maxScrollHeight = 0
     private var reFreshTopHeight = 0
-    private var attchView: View
 
     init {
-        attchView = LayoutInflater.from(context).inflate(R.layout.default_refresh_view, null, false)
         maxScrollHeight = dp2px(context, 65f)
         reFreshTopHeight = dp2px(context, 10f)
         mCircleDiameter = dp2px(context, 45f)
-        mCircleView = attchView.findViewById(R.id.pbProgressBar)
-        mProgressDrawable = MaterialProgressDrawable(mCircleView)
-        mProgressDrawable.setColorSchemeColors(-0xff6634, -0xbbbc, -0x996700, -0x559934, -0x7800)
-        mProgressDrawable.alpha = 255
-        mCircleView.setImageDrawable(mProgressDrawable)
+        mCircleView = CircleImageView(context, CIRCLE_BG_LIGHT)
+        circularProgressDrawable = CircularProgressDrawable(context)
+        mCircleView.size = dp2px(context, 40f)
+        mCircleView.setImageDrawable(circularProgressDrawable)
+
+        circularProgressDrawable.setColorSchemeColors(
+            -0xff6634,
+            -0xbbbc,
+            -0x996700,
+            -0x559934,
+            -0x7800
+        )
+        circularProgressDrawable.alpha = 255
+        circularProgressDrawable.setStyle(CircularProgressDrawable.DEFAULT)
+        // 设置环形的宽度
+        circularProgressDrawable.strokeWidth = 8f
+        // 设置环形的节点显示(Paint.Cap.ROUND即圆角)
+        circularProgressDrawable.strokeCap = Paint.Cap.ROUND
+        circularProgressDrawable.backgroundColor = Color.parseColor("#00000000")
     }
 
     override fun getFreshTopHeight(): Int {
@@ -44,47 +61,71 @@ class DefaultRefreshView(context: Context) : IRefreshView(context) {
     }
 
     override fun maxScrollHeight(): Int {
-        return mCircleDiameter
+        return maxScrollHeight
     }
 
     override fun getAttachView(): View {
-        return attchView
+        return mCircleView
     }
 
     override fun isFloat(): Boolean {
         return true
     }
 
-    override fun onPointMove(totalY: Float, dy: Float) {
-        val originalDragPercent = totalY / maxScrollHeight
-        val dragPercent = Math.min(1f, Math.abs(originalDragPercent))
-        val adjustedPercent = Math.max(dragPercent - .4, 0.0).toFloat() * 5 / 3
-        val extraOS = Math.abs(totalY) - maxScrollHeight
-        val slingshotDist = 1f
-        val tensionSlingshotPercent =
-            Math.max(0f, Math.min(extraOS, slingshotDist * 2) / slingshotDist)
-        val tensionPercent = (tensionSlingshotPercent / 4 - Math.pow(
-            (tensionSlingshotPercent / 4).toDouble(), 2.0
-        )).toFloat() * 2f
-        val extraMove = slingshotDist * tensionPercent * 2
-        val targetY = totalY + (slingshotDist * dragPercent + extraMove).toInt()
-        val strokeStart = adjustedPercent * .8f
-        val MAX_PROGRESS_ANGLE = .8f
-        mProgressDrawable.setStartEndTrim(0f, Math.min(MAX_PROGRESS_ANGLE, strokeStart))
-        mProgressDrawable.setArrowScale(Math.min(1f, adjustedPercent))
-        val rotation = (-0.25f + .4f * adjustedPercent + tensionPercent * 2) * .5f
-        mProgressDrawable.setProgressRotation(rotation)
+    private val decelerateInterpolator = DecelerateInterpolator()
+    override fun onPointMove(totalY: Float, dy: Float): Float {
+        // 启用箭头
+        circularProgressDrawable.arrowEnabled = true
+
+        // 设置绘制进度弧长
+        circularProgressDrawable.setStartEndTrim(0f, -totalY * 0.4f / maxScrollHeight)
+        circularProgressDrawable.progressRotation = -totalY / maxScrollHeight
+        // 设置箭头的尺寸
+        circularProgressDrawable.setArrowDimensions(
+            4f + 4 * Math.abs(totalY / maxScrollHeight),
+            4f + 4 * Math.abs(totalY / maxScrollHeight)
+        )
+        // 设置环形的半径(控制环形的尺寸)
+        circularProgressDrawable.centerRadius = 27f
+        // 在箭头的尺寸上缩放倍数, 如果没有设置尺寸则无效
+        circularProgressDrawable.arrowScale = 2f
+        val alpha = 0.2f + Math.abs(totalY / (maxScrollHeight + mCircleDiameter))
+        mCircleView.alpha = (alpha)
+        circularProgressDrawable.alpha = (255 * alpha).toInt()
+
+        val scale = decelerateInterpolator.getInterpolation(Math.min(maxScrollHeight.toFloat(),Math.abs(totalY) )/ maxScrollHeight)
+        mCircleView.scaleY = scale
+        mCircleView.scaleX = scale
+
+        if (Math.abs(totalY) > mCircleDiameter) {
+            val ratio =
+                decelerateInterpolator.getInterpolation((Math.abs(totalY) - mCircleDiameter) / (maxScrollHeight))
+            Log.d(
+                "onPointMove",
+                " ratio ${ratio}   ${totalY} ${(maxScrollHeight + mCircleDiameter)} "
+            )
+            return (1 - ratio) * dy
+        } else {
+            return dy
+        }
+
     }
 
     override fun onPointUp(toStartRefresh: Boolean) {
+        mCircleView.scaleY = 1f
+        mCircleView.scaleX = 1f
         if (toStartRefresh) {
-            mProgressDrawable.start()
+            circularProgressDrawable.arrowEnabled = false
+            circularProgressDrawable.alpha = 255
+            mCircleView.alpha = 1f
+            circularProgressDrawable.start()
         } else {
-            mProgressDrawable.stop()
+            circularProgressDrawable.arrowEnabled = true
+            circularProgressDrawable.stop()
         }
     }
 
     override fun onFinishRefresh() {
-        mProgressDrawable.stop()
+        circularProgressDrawable.stop()
     }
 }

@@ -14,7 +14,7 @@ abstract class IRefreshView(val context: Context) {
     abstract fun getAttachView(): View
     abstract fun isFloat(): Boolean
 
-    abstract fun onPointMove(totalY: Float, dy: Float)
+    abstract fun onPointMove(totalY: Float, dy: Float):Float
     abstract fun onPointUp(toStartRefresh: Boolean)
     abstract fun onFinishRefresh()
 }
