@@ -10,7 +10,6 @@ abstract class IRefreshView(val context: Context) {
     internal var recoverAnimator: ObjectAnimator? = null
     abstract fun getFreshTopHeight():Int
     abstract fun getFreshHeight(): Int
-    abstract fun maxScrollHeight(): Int
     abstract fun getAttachView(): View
     abstract fun isFloat(): Boolean
 

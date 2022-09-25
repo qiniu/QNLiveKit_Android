@@ -14,10 +14,10 @@ abstract class ILoadView(val context: Context) {
 
     abstract fun checkHideNoMore()
     abstract fun getFreshHeight(): Int
-    abstract fun maxScrollHeight(): Int
+
     abstract fun getAttachView(): View
 
-    abstract fun onPointMove(totalY: Float, dy: Float)
+    abstract fun onPointMove(totalY: Float, dy: Float):Float
     open fun onPointUp(toStartLoad: Boolean) {
         isShowLoading = toStartLoad
     }

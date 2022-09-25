@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import com.qlive.uikitcore.R
+import kotlin.math.abs
 
 class DefaultRefreshView(context: Context) : IRefreshView(context) {
 
@@ -60,10 +61,6 @@ class DefaultRefreshView(context: Context) : IRefreshView(context) {
         return mCircleDiameter
     }
 
-    override fun maxScrollHeight(): Int {
-        return maxScrollHeight
-    }
-
     override fun getAttachView(): View {
         return mCircleView
     }
@@ -86,29 +83,51 @@ class DefaultRefreshView(context: Context) : IRefreshView(context) {
             4f + 4 * Math.abs(totalY / maxScrollHeight)
         )
         // 设置环形的半径(控制环形的尺寸)
-        circularProgressDrawable.centerRadius = 27f
+        circularProgressDrawable.centerRadius = 22f
         // 在箭头的尺寸上缩放倍数, 如果没有设置尺寸则无效
         circularProgressDrawable.arrowScale = 2f
         val alpha = 0.2f + Math.abs(totalY / (maxScrollHeight + mCircleDiameter))
-        mCircleView.alpha = (alpha)
-        circularProgressDrawable.alpha = (255 * alpha).toInt()
 
-        val scale = decelerateInterpolator.getInterpolation(Math.min(maxScrollHeight.toFloat(),Math.abs(totalY) )/ maxScrollHeight)
+        mCircleView.alpha = (alpha)
+
+        val scale = decelerateInterpolator.getInterpolation(
+            Math.min(
+                maxScrollHeight.toFloat(),
+                Math.abs(totalY)
+            ) / maxScrollHeight
+        )
         mCircleView.scaleY = scale
         mCircleView.scaleX = scale
-
-        if (Math.abs(totalY) > mCircleDiameter) {
-            val ratio =
-                decelerateInterpolator.getInterpolation((Math.abs(totalY) - mCircleDiameter) / (maxScrollHeight))
-            Log.d(
-                "onPointMove",
-                " ratio ${ratio}   ${totalY} ${(maxScrollHeight + mCircleDiameter)} "
-            )
-            return (1 - ratio) * dy
-        } else {
-            return dy
+        Log.d(
+            "onPointMove",
+            " alpha ${alpha}   ${totalY} ${(maxScrollHeight + mCircleDiameter)} "
+        )
+        if (dy < 0) {
+            //下拉
+            val maxHeight = maxScrollHeight + mCircleDiameter
+            val dyNew = if (abs(dy + totalY) > maxHeight) {
+                // -5  -6  > 10
+                if (-totalY > maxHeight) {
+                    0
+                } else {
+                    -(maxHeight + totalY)
+                }
+            } else {
+                dy
+            }.toFloat()
+            if (Math.abs(totalY) > mCircleDiameter) {
+                val ratio =
+                    decelerateInterpolator.getInterpolation((Math.abs(totalY) - mCircleDiameter) / (maxScrollHeight))
+                Log.d(
+                    "onPointMove",
+                    " ratio ${ratio}   ${totalY} ${(maxScrollHeight + mCircleDiameter)} "
+                )
+                return (1 - ratio) * dyNew
+            } else {
+                return dyNew
+            }
         }
-
+        return dy
     }
 
     override fun onPointUp(toStartRefresh: Boolean) {
