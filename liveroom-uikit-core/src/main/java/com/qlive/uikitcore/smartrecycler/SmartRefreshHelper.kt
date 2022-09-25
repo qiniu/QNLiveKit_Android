@@ -95,7 +95,7 @@ open class SmartRefreshHelper<T>(
         if (isRefreshing) {
             refresh_layout.finishRefresh(false)
         } else {
-            refresh_layout.finishLoadMore(noMore = false, true, scrollByAfterAddData = false)
+            refresh_layout.finishLoadMore(noMore = false, true, scrollToNextPageVisibility = false)
         }
         val disconnected = !NetUtil.isNetworkAvailable(recycler_view.context)
         if (disconnected) {

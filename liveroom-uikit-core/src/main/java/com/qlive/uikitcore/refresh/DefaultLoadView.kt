@@ -1,9 +1,10 @@
 package com.qlive.uikitcore.refresh
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
-import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import com.qlive.uikitcore.R
@@ -11,7 +12,7 @@ import com.qlive.uikitcore.R
 class DefaultLoadView(context: Context) : ILoadView(context) {
 
     private val mCircleImageView: ImageView
-    private val mProgress: MaterialProgressDrawable
+    private val circularProgressDrawable: CircularProgressDrawable
     private val mAttachView: View
     private val tvTipView: TextView
     var defaultHeight: Int = 0
@@ -33,11 +34,24 @@ class DefaultLoadView(context: Context) : ILoadView(context) {
 
         mCircleImageView = mAttachView.findViewById(R.id.pbProgressBar)
         tvTipView = mAttachView.findViewById(R.id.tvTip)
-        mProgress = MaterialProgressDrawable(mCircleImageView)
-        mProgress.setBackgroundColor(CIRCLE_BG_LIGHT)
-        mProgress.alpha = 255
-        mProgress.setColorSchemeColors(-0xff6634, -0xbbbc, -0x996700, -0x559934, -0x7800)
-        mCircleImageView.setImageDrawable(mProgress)
+        circularProgressDrawable = CircularProgressDrawable(context)
+        circularProgressDrawable.setBackgroundColor(CIRCLE_BG_LIGHT)
+        circularProgressDrawable.alpha = 255
+        circularProgressDrawable.setColorSchemeColors(
+            -0xff6634,
+            -0xbbbc,
+            -0x996700,
+            -0x559934,
+            -0x7800
+        )
+        mCircleImageView.setImageDrawable(circularProgressDrawable)
+        // 设置环形的半径(控制环形的尺寸)
+        circularProgressDrawable.centerRadius = dp2px(context, 10f).toFloat()
+        // 设置环形的宽度
+        circularProgressDrawable.strokeWidth = 8f
+        // 设置环形的节点显示(Paint.Cap.ROUND即圆角)
+        circularProgressDrawable.strokeCap = Paint.Cap.ROUND
+        circularProgressDrawable.backgroundColor = Color.parseColor("#00000000")
     }
 
     override fun checkHideNoMore() {
@@ -60,38 +74,32 @@ class DefaultLoadView(context: Context) : ILoadView(context) {
         if (isShowLoading || isShowLoadMore) {
             return
         }
-        val originalDragPercent = totalY / defaultHeight
-        val dragPercent = Math.min(1f, Math.abs(originalDragPercent))
-        val adjustedPercent = Math.max(dragPercent - .4, 0.0).toFloat() * 5 / 3
-        val extraOS = Math.abs(totalY) - defaultHeight
-        val slingshotDist = 1f
-        val tensionSlingshotPercent =
-            Math.max(0f, Math.min(extraOS, slingshotDist * 2) / slingshotDist)
-        val tensionPercent = (tensionSlingshotPercent / 4 - Math.pow(
-            (tensionSlingshotPercent / 4).toDouble(), 2.0
-        )).toFloat() * 2f
-        val extraMove = slingshotDist * tensionPercent * 2
-        val targetY = totalY + (slingshotDist * dragPercent + extraMove).toInt()
-        val strokeStart = adjustedPercent * .8f
-        val MAX_PROGRESS_ANGLE = .8f
-        mProgress.setStartEndTrim(0f, Math.min(MAX_PROGRESS_ANGLE, strokeStart))
-        mProgress.setArrowScale(Math.min(1f, adjustedPercent))
-        val rotation = (-0.25f + .4f * adjustedPercent + tensionPercent * 2) * .5f
-        mProgress.setProgressRotation(rotation)
+        // 设置绘制进度弧长
+        // 设置绘制进度弧长
+        circularProgressDrawable.setStartEndTrim(0f,totalY * 0.4f / defaultHeight)
+        circularProgressDrawable.progressRotation = totalY / defaultHeight
+        // 设置箭头的尺寸
+        circularProgressDrawable.setArrowDimensions(8f, 8f)
+        circularProgressDrawable.arrowEnabled = true
+        // 设置箭头的尺寸
+        // 在箭头的尺寸上缩放倍数, 如果没有设置尺寸则无效
+        circularProgressDrawable.arrowScale = 2f
+
     }
 
     override fun onPointUp(toStartLoad: Boolean) {
         super.onPointUp(toStartLoad)
         if (toStartLoad) {
-            mProgress.start()
+            circularProgressDrawable.arrowEnabled = false
+            circularProgressDrawable.start()
         } else {
-            mProgress.stop()
+            circularProgressDrawable.stop()
         }
     }
 
     override fun onFinishLoad(showNoMore: Boolean) {
         super.onFinishLoad(showNoMore)
-        mProgress.stop()
+        circularProgressDrawable.stop()
         if (showNoMore) {
             mCircleImageView.visibility = View.GONE
             tvTipView.visibility = View.VISIBLE

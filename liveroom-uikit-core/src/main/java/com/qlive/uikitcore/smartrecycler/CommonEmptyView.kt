@@ -10,13 +10,13 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.widget.NestedScrollView
 import com.qlive.uikitcore.R
 
 /**
  * 通用empty 待替换ui设计
  */
 class CommonEmptyView : FrameLayout, IEmptyView {
-
     /**
      * 获取当前错误状态
      *
@@ -48,6 +48,7 @@ class CommonEmptyView : FrameLayout, IEmptyView {
         // setBackgroundColor(-1);
         img = findViewById(R.id.img)
         emptyText = findViewById(R.id.empty_text)
+        setOnClickListener { }
     }
 
     /**
