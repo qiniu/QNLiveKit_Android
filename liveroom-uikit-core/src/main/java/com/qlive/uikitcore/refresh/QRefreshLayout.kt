@@ -281,7 +281,9 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
                     mDownTotalUnconsumed += dy.toFloat()
                     consumed[1] = dy //消耗-4
                 }
-                loadMoreView.onPointMove(mDownTotalUnconsumed, consumed[1].toFloat())
+                val consumedByFooter =
+                    loadMoreView.onPointMove(mDownTotalUnconsumed, consumed[1].toFloat())
+                consumed[1] = consumedByFooter.toInt()
                 scrollBy(0, consumed[1])
             }
         }
@@ -330,7 +332,8 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
             mUpTotalUnconsumed += dy.toFloat()
             consumed[1] = dy  //消费4
         }
-        refreshView.onPointMove(mUpTotalUnconsumed, consumed[1].toFloat())
+        val dyNew = refreshView.onPointMove(mUpTotalUnconsumed, consumed[1].toFloat())
+        consumed[1] = dyNew.toInt()
         //向上滑动
         if (refreshView.isFloat()) {
             refreshView.getAttachView().translationY -= consumed[1]
@@ -380,21 +383,9 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
 
     private fun moveRefreshViewDown(y: Int) {
         //下拉距离 <0
-        val maxHeight = refreshView.maxScrollHeight() + refreshView.getFreshHeight()
-        val dy = if (abs(mUpTotalUnconsumed + y) > maxHeight) {
-            // -5  -6  > 10
-            if (-mUpTotalUnconsumed > maxHeight) {
-                0
-            } else {
-                -(maxHeight + mUpTotalUnconsumed)
-            }
-        } else {
-            y
-        }.toFloat()
-
         // mUpTotalUnconsumed += dy
         //告诉子view开始下拉距离
-        val moveY = refreshView.onPointMove(mUpTotalUnconsumed, dy)
+        val moveY = refreshView.onPointMove(mUpTotalUnconsumed, y.toFloat())
         mUpTotalUnconsumed += moveY
 
         if (refreshView.isFloat()) {
@@ -411,17 +402,7 @@ class QRefreshLayout : FrameLayout, NestedScrollingParent, NestedScrollingChild 
     //
     private fun moveMoreViewUP(y: Int) {
         // y 》0 上拉
-        val viewH = loadMoreView.maxScrollHeight()
-        // 8 4 > 10
-        val dy = if (abs(mDownTotalUnconsumed + y) > viewH) {
-            if (mDownTotalUnconsumed > viewH) {
-                0
-            } else {
-                viewH - mDownTotalUnconsumed
-            }
-        } else {
-            y
-        }.toFloat()
+        val dy = loadMoreView.onPointMove(mDownTotalUnconsumed, y.toFloat())
         mDownTotalUnconsumed += dy
         loadMoreView.onPointMove(mDownTotalUnconsumed, dy)
         scrollBy(0, dy.toInt())

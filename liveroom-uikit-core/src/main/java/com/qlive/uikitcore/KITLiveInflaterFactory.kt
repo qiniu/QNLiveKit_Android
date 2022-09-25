@@ -51,32 +51,18 @@ class KITLiveInflaterFactory(
         attrs: AttributeSet
     ): View? {
         //优先匹配已知的类 减少反射次数
-        var view = checkCreateView(name, context, attrs)
-        QLiveLogUtil.d("onCreateView", "$name  ==  ${view == null} ")
-        if (view == null) {
-            var viewClass: Class<*>? = null
-            try {
-                viewClass = Class.forName(name)
-            } catch (e: Exception) {
-            }
-            view =
-                if (viewClass != null && QLiveComponent::class.java.isAssignableFrom(viewClass)) {
-                    //使用反射创建没有匹配的类
-                    val constructor =
-                        viewClass.getConstructor(Context::class.java, AttributeSet::class.java)
-                    constructor.newInstance(context, attrs) as View
-                } else {
-                    //默认安卓系统创建
-                    appDelegate.createView(parent, name, context, attrs)
-                }
-        }
+        val view = checkCreateView(name, context, attrs) ?: appDelegate.createView(
+            parent,
+            name,
+            context,
+            attrs
+        )
         if (view is QLiveComponent) {
             //   QLiveLogUtil.d("KITInflaterFactory", "onCreateView " + name + " attachKitContext ")
             (view as QLiveComponent).attachKitContext(kitContext)
             (view as QLiveComponent).attachLiveClient(roomClient)
             mComponents.add(view)
         }
-
         return view
     }
 
@@ -144,23 +130,12 @@ class KITInflaterFactory(
         context: Context,
         attrs: AttributeSet
     ): View? {
-
-        var view = checkCreateView(name, context, attrs)
-        if (view == null) {
-            var viewClass: Class<*>? = null
-            try {
-                viewClass = Class.forName(name)
-            } catch (e: Exception) {
-            }
-            view = if (viewClass != null && QComponent::class.java.isAssignableFrom(viewClass)) {
-                val constructor =
-                    viewClass.getConstructor(Context::class.java, AttributeSet::class.java)
-                constructor.newInstance(context, attrs) as View
-            } else {
-                appDelegate.createView(parent, name, context, attrs)
-            }
-        }
-
+        val view = checkCreateView(name, context, attrs) ?: appDelegate.createView(
+            parent,
+            name,
+            context,
+            attrs
+        )
         if (view is QComponent) {
             mComponents.add(view)
             (view as QComponent).attachKitContext(kitContext)

@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.qlive.uikitcore.R
+import kotlin.math.abs
 
 class DefaultLoadView(context: Context) : ILoadView(context) {
 
@@ -61,30 +62,38 @@ class DefaultLoadView(context: Context) : ILoadView(context) {
     override fun getFreshHeight(): Int {
         return defaultHeight
     }
-
-    override fun maxScrollHeight(): Int {
-        return defaultHeight
-    }
-
     override fun getAttachView(): View {
         return mAttachView
     }
 
-    override fun onPointMove(totalY: Float, dy: Float) {
-        if (isShowLoading || isShowLoadMore) {
-            return
+    override fun onPointMove(totalY: Float, dy: Float): Float {
+        if (!isShowLoading && !isShowLoadMore) {
+            // 设置绘制进度弧长
+            // 设置绘制进度弧长
+            circularProgressDrawable.setStartEndTrim(0f, totalY * 0.4f / defaultHeight)
+            circularProgressDrawable.progressRotation = totalY / defaultHeight
+            // 设置箭头的尺寸
+            circularProgressDrawable.setArrowDimensions(8f, 8f)
+            circularProgressDrawable.arrowEnabled = true
+            // 设置箭头的尺寸
+            // 在箭头的尺寸上缩放倍数, 如果没有设置尺寸则无效
+            circularProgressDrawable.arrowScale = 2f
         }
-        // 设置绘制进度弧长
-        // 设置绘制进度弧长
-        circularProgressDrawable.setStartEndTrim(0f,totalY * 0.4f / defaultHeight)
-        circularProgressDrawable.progressRotation = totalY / defaultHeight
-        // 设置箭头的尺寸
-        circularProgressDrawable.setArrowDimensions(8f, 8f)
-        circularProgressDrawable.arrowEnabled = true
-        // 设置箭头的尺寸
-        // 在箭头的尺寸上缩放倍数, 如果没有设置尺寸则无效
-        circularProgressDrawable.arrowScale = 2f
-
+        if (dy > 0) {
+            val viewH = defaultHeight
+            // 8 4 > 10
+            val dyNew = if (abs(totalY + dy) > viewH) {
+                if (totalY > viewH) {
+                    0
+                } else {
+                    viewH - totalY
+                }
+            } else {
+                dy
+            }.toFloat()
+            return dyNew
+        }
+        return dy
     }
 
     override fun onPointUp(toStartLoad: Boolean) {
