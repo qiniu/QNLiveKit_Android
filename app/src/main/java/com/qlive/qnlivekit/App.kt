@@ -1,6 +1,7 @@
 package com.qlive.qnlivekit
 
 import android.app.Application
+import android.util.Log
 import android.view.View
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.QLiveClient
@@ -18,7 +19,6 @@ import okhttp3.Request
 
 class App : Application() {
     companion object {
-
         val demo_url = "https://niucube-api.qiniu.com"
         //val demo_url="http://10.200.20.28:5080"
         var user: BZUser? = null
@@ -27,8 +27,10 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         AppCache.setContext(this)
+        Log.d("App","onCreate")
         QLive.init(this, QLiveConfig()) { callback ->
             //业务方获取token
+            Log.d("QTokenGetter","QTokenGetter ${user?.data?.loginToken}")
             getLoginToken(callback)
         }
 

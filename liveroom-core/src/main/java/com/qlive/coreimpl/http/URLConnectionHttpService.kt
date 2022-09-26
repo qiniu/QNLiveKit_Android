@@ -115,7 +115,8 @@ internal class URLConnectionHttpService : HttpService() {
                 ))
             }
         } else {
-            if (499 == resultCode) {
+            if (499 == resultCode || 401 == resultCode) {
+                QLiveLogUtil.d("QLiveHttpService", "token过期 ${resultCode}")
                 tokenGetter?.getTokenInfo(object : QLiveCallBack<String> {
                     override fun onError(code: Int, msg: String?) {
                     }

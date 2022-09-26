@@ -1,7 +1,6 @@
 package com.qlive.roomservice
 
-import com.qlive.rtm.RtmManager
-import com.qlive.rtm.sendChannelMsg
+import android.content.Context
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.coreimpl.model.LiveIdExtensionMode
 import com.qlive.core.*
@@ -15,14 +14,64 @@ import com.qlive.coreimpl.getCode
 import com.qlive.coreimpl.http.HttpService
 import com.qlive.coreimpl.http.NetBzException
 import com.qlive.jsonutil.ParameterizedTypeImpl
+import com.qlive.rtm.*
+import com.qlive.rtm.msg.RtmTextMsg
 import java.lang.Exception
 import java.util.*
 
 internal class QRoomServiceImpl : BaseService(), QRoomService {
+    companion object {
+        private const val liveroom_extension_change = "liveroom_extension_change"
+        private const val censor_notify = "censor_notify"
+        private const val censor_stop = "censor_stop"
+    }
 
     private val roomDataSource = QLiveDataSource()
-    
+
     private val mQRoomServiceListeners = LinkedList<QRoomServiceListener>()
+
+    private val mRtmListener = object : RtmMsgListener {
+        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
+            val action = msg.optAction()
+            when (action) {
+                liveroom_extension_change -> {
+                    if (toID !== roomInfo?.chatID) {
+                        return true
+                    }
+                    val data = JsonUtils.parseObject(msg.optData(), LiveIdExtensionMode::class.java)
+                        ?: return true
+                    mQRoomServiceListeners.forEach {
+                        it.onRoomExtensionUpdate(data.extension)
+                    }
+                    return true
+                }
+                censor_notify -> {
+                    if (toID !== user?.imUid) {
+                        return true
+                    }
+                    val data = JsonUtils.parseObject(msg.optData(), Censor::class.java)
+                        ?: return true
+                    mQRoomServiceListeners.forEach {
+                        it.onReceivedCensorNotify(data.message)
+                    }
+                    return true
+                }
+                censor_stop -> {
+                    if (toID !== roomInfo?.chatID) {
+                        return true
+                    }
+                    val data = JsonUtils.parseObject(msg.optData(), Censor::class.java)
+                        ?: return true
+                    mQRoomServiceListeners.forEach {
+                        it.onReceivedCensorStop(data.message)
+                    }
+                    return true
+                }
+            }
+            return false
+        }
+    }
+
 
     override fun addRoomServiceListener(listener: QRoomServiceListener) {
         mQRoomServiceListeners.add(listener)
@@ -72,11 +121,15 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
                     mode.liveId = currentRoomInfo?.liveID ?: ""
                     mode.extension = extension
                     RtmManager.rtmClient.sendChannelMsg(
-                        JsonUtils.toJson(mode),
+                        RtmTextMsg<LiveIdExtensionMode>(
+                            liveroom_extension_change,
+                            mode
+                        ).toJsonString(),
                         currentRoomInfo?.chatID ?: "",
                         true
                     )
                 } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
             catchError {
@@ -158,7 +211,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
     override fun searchUserByIMUid(imUid: String, callBack: QLiveCallBack<QLiveUser>?) {
         backGround {
             doWork {
-                val users = searchUserByIMUid(imUid)
+                val users = roomDataSource.searchUserByIMUid(imUid)
                 callBack?.onSuccess(users)
             }
             catchError {
@@ -167,35 +220,17 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
         }
     }
 
+    override fun attachRoomClient(client: QLiveClient, appContext: Context) {
+        super.attachRoomClient(client, appContext)
+        RtmManager.addRtmChannelListener(mRtmListener)
+        RtmManager.addRtmC2cListener(mRtmListener)
+    }
+
     override fun onDestroyed() {
         super.onDestroyed()
         mQRoomServiceListeners.clear()
+        RtmManager.removeRtmChannelListener(mRtmListener)
+        RtmManager.removeRtmC2cListener(mRtmListener)
     }
 
-    /**
-     * 使用用户im uid 搜索用户
-     *
-     * @param imUid
-     * @param callBack
-     */
-    suspend fun searchUserByIMUid(imUid: String): QLiveUser {
-        val p = ParameterizedTypeImpl(
-            arrayOf(QLiveUser::class.java),
-            List::class.java,
-            List::class.java
-        )
-        val list = HttpService.httpService.get<List<QLiveUser>>(
-            "/client/user/imusers",
-            HashMap<String, String>().apply {
-                put("im_user_ids", imUid)
-            },
-            null,
-            p
-        )
-        return if (list.isEmpty()) {
-            throw NetBzException(-1, "targetUser is null")
-        } else {
-            list[0]
-        }
-    }
 }
