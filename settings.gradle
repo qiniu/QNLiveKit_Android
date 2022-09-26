@@ -42,3 +42,5 @@ include ':qlive-uicomponnets:uikit-pk'
 include ':qlivesdk'
 include ':qlive-uikit'
 
+include ':liveroom-service:giftservice'
+include ':liveroom-service:likeservice'
