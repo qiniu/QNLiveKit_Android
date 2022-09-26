@@ -17,12 +17,14 @@ class RoomDependsIdView : TextView, QRoomComponent {
     override var user: QLiveUser? = null
     override var client: QLiveClient? = null
     override var kitContext: QLiveUIKitContext? = null
-    companion object{
+
+    companion object {
         //文本显示
         var getShowTextCall: ((roomInfo: QLiveRoomInfo) -> String) = { info ->
             "<font color='#ffffff'>${info.liveID}</font>"
         }
     }
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(

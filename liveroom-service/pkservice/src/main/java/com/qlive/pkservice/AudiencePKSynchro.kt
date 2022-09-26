@@ -39,7 +39,7 @@ internal class AudiencePKSynchro() : BaseService() {
                         mPKSession = null
                     }
                 } else {
-                    val reFreshRoom = mLiveDataSource.refreshRoomInfo(currentRoomInfo!!.liveID)
+                    val reFreshRoom = currentRoomInfo?:return@doWork
                     if (reFreshRoom.pkID.isNotEmpty() && mPKSession == null) {
                         val info = mPKDateSource.getPkInfo(reFreshRoom.pkID ?: "")
                         if (info.status == PKStatus.RelaySessionStatusSuccess.intValue) {

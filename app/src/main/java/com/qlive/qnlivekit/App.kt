@@ -52,9 +52,9 @@ class App : Application() {
         Thread {
             try {
                 val requestToken = Request.Builder()
-                    .url("${demo_url}/v1/live/auth_token?userID=${user!!.data.accountId}&deviceID=adjajdasod")
+                    .url("${demo_url}/v1/live/auth_token?userID=${user?.data?.accountId}&deviceID=adjajdasod")
                     .addHeader("Content-Type", "application/json")
-                    .addHeader("Authorization", "Bearer " + user!!.data.loginToken)
+                    .addHeader("Authorization", "Bearer " + user?.data?.loginToken)
                     .get()
                     .build();
                 val callToken = OKHttpManger.okHttp.newCall(requestToken);

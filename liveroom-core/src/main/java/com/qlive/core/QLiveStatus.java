@@ -13,6 +13,10 @@ public enum QLiveStatus {
      */
     ON(),
     /**
+     * 强制关闭
+     */
+    FORCE_CLOSE(),
+    /**
      * 主播上线
      */
     ANCHOR_ONLINE(),

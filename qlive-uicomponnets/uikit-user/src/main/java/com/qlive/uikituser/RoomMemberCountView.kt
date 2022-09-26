@@ -15,6 +15,7 @@ import com.qlive.uikitcore.QKitTextView
 import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.Scheduler
 import com.qlive.uikitcore.ext.ViewUtil
+
 //在线人数
 class RoomMemberCountView : QKitTextView {
 
@@ -22,8 +23,8 @@ class RoomMemberCountView : QKitTextView {
         /**
          * 点击事件回调
          */
-        var onClickListener: (context: QLiveUIKitContext?,client:QLiveClient?, view: View) -> Unit =
-            { _, _,_ -> }
+        var onClickListener: (context: QLiveUIKitContext?, client: QLiveClient?, view: View) -> Unit =
+            { _, _, _ -> }
     }
 
     constructor(context: Context) : this(context, null)
@@ -32,9 +33,9 @@ class RoomMemberCountView : QKitTextView {
         context,
         attrs,
         defStyleAttr
-    ){
+    ) {
         setOnClickListener {
-            onClickListener.invoke(kitContext,client,this)
+            onClickListener.invoke(kitContext, client, this)
         }
     }
 
@@ -81,9 +82,9 @@ class RoomMemberCountView : QKitTextView {
 
     private fun checkTextSize() {
         if (text.length > 2) {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP,10f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
         } else {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP,14f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
         }
     }
 
@@ -92,22 +93,16 @@ class RoomMemberCountView : QKitTextView {
             return@Scheduler
         }
         try {
-            val room = client?.getService(QRoomService::class.java)?.getRoomInfo(object :
-                QLiveCallBack<QLiveRoomInfo> {
-                override fun onError(code: Int, msg: String?) {
-                }
-                override fun onSuccess(data: QLiveRoomInfo) {
-                    text = data.onlineCount.toString()
-                    checkTextSize()
-                }
-            })
+            val room = client?.getService(QRoomService::class.java)?.roomInfo
+            text = room?.onlineCount.toString()
+            checkTextSize()
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo,isResumeUIFromFloating)
+        super.onJoined(roomInfo, isResumeUIFromFloating)
         mScheduler.start()
     }
 

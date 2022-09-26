@@ -2,6 +2,7 @@ package com.qlive.uikitpublicchat
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.widget.Toast
 import com.qlive.core.QLiveCallBack
 import com.qlive.pubchatservice.QPublicChat
@@ -31,6 +32,7 @@ class InputView : QKitFrameLayout {
         defStyleAttr
     ) {
         setOnClickListener {
+            Log.d("mjl","kitContext"+kitContext.toString())
             RoomInputDialog().apply {
                 sendPubCall = { msg ->
                     if (kitContext != null) {

@@ -3,7 +3,7 @@ package com.qlive.pubchatservice
 import android.content.Context
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.QLiveClient
-import com.qlive.coreimpl.QUserJoinObserver
+import com.qlive.coreimpl.QLiveServiceObserver
 import com.qlive.core.been.QLiveStatistics
 import com.qlive.coreimpl.BaseService
 import com.qlive.coreimpl.QLiveDataSource
@@ -33,14 +33,14 @@ internal class QPublicChatServiceImpl : QPublicChatService, BaseService() {
             ) {
                 val mode = JsonUtils.parseObject(msg.optData(), QPublicChat::class.java)
                 if (msg.optAction() == QPublicChat.action_welcome
-                    && client is QUserJoinObserver
+                    && client is QLiveServiceObserver
                 ) {
-                    (client as QUserJoinObserver?)?.notifyUserJoin(mode?.sendUser?.userId ?: "")
+                    (client as QLiveServiceObserver?)?.notifyUserJoin(mode?.sendUser?.userId ?: "")
                 }
                 if (msg.optAction() == QPublicChat.action_bye
-                    && client is QUserJoinObserver
+                    && client is QLiveServiceObserver
                 ) {
-                    (client as QUserJoinObserver?)?.notifyUserLeft(mode?.sendUser?.userId ?: "")
+                    (client as QLiveServiceObserver?)?.notifyUserLeft(mode?.sendUser?.userId ?: "")
                 }
                 mListeners.forEach {
                     it.onReceivePublicChat(mode)

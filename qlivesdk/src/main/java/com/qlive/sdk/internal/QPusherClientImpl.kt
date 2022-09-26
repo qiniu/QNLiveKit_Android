@@ -10,6 +10,7 @@ import com.qlive.core.*
 import com.qlive.core.QLiveService
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.coreimpl.QLiveDataSource
+import com.qlive.coreimpl.QLiveServiceObserver
 import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.getCode
 import com.qlive.liblog.QLiveLogUtil
@@ -17,13 +18,11 @@ import com.qlive.pushclient.QPusherClient
 import com.qlive.sdk.QLive
 import com.qlive.sdk.internal.AppCache.Companion.appContext
 
-internal class QPusherClientImpl : QPusherClient, QRTCProvider {
+internal class QPusherClientImpl : QPusherClient, QRTCProvider, QLiveServiceObserver {
 
     companion object {
         fun create(): QPusherClient {
-            val client = QPusherClientImpl()
-            client.init()
-            return client
+            return QPusherClientImpl()
         }
     }
 
@@ -52,7 +51,7 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider {
     }
     private val mLiveContext by lazy {
         QNLiveRoomContext(this).apply {
-            mRoomScheduler.roomStatusChange = { status ->
+            roomStatusChange = { status ->
                 mLiveStatusListeners.forEach {
                     it.onLiveStatusChanged(status)
                 }
@@ -79,9 +78,6 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider {
         mLiveStatusListeners.remove(liveStatusListener)
     }
 
-    fun init() {
-        mLiveContext.checkInit()
-    }
 
     /**
      * 加入房间
@@ -258,4 +254,11 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider {
     override var rtcRoomGetter: (() -> QRtcLiveRoom) = {
         mRtcRoom
     }
+
+    override fun notifyUserJoin(userId: String) {}
+    override fun notifyUserLeft(userId: String) {}
+    override fun notifyCheckStatus(newStatus: QLiveStatus, msg: String) {
+        mLiveContext.forceSetStatus(newStatus, msg)
+    }
+
 }

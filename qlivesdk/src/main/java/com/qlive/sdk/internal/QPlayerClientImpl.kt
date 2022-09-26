@@ -6,7 +6,7 @@ import com.qlive.avparam.QPlayerProvider
 import com.qlive.avparam.QPlayerRenderView
 import com.qlive.core.*
 import com.qlive.core.been.QLiveRoomInfo
-import com.qlive.coreimpl.QUserJoinObserver
+import com.qlive.coreimpl.QLiveServiceObserver
 import com.qlive.coreimpl.QLiveDataSource
 import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.getCode
@@ -18,12 +18,10 @@ import com.qlive.rtm.leaveChannel
 import com.qlive.sdk.QLive
 import com.qlive.sdk.internal.AppCache.Companion.appContext
 
-internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QUserJoinObserver {
+internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QLiveServiceObserver {
     companion object {
         fun create(): QPlayerClient {
-            val client = QPlayerClientImpl()
-            client.init()
-            return client
+            return QPlayerClientImpl()
         }
     }
 
@@ -39,7 +37,7 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QUserJoinObse
     private var mLiveStatusListeners = ArrayList<QLiveStatusListener>()
     private val mLiveContext by lazy {
         QNLiveRoomContext(this).apply {
-            mRoomScheduler.roomStatusChange = { status ->
+            roomStatusChange = { status ->
                 if (status == QLiveStatus.ANCHOR_ONLINE) {
                     mMediaPlayer.start()
                 }
@@ -48,10 +46,6 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QUserJoinObse
                 }
             }
         }
-    }
-
-    private fun init() {
-        mLiveContext.checkInit()
     }
 
     /**
@@ -168,7 +162,7 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QUserJoinObse
             return
         }
         if (userId == mLiveContext.roomInfo?.anchor?.userId) {
-            mLiveContext.mRoomScheduler.checkStatus(1)
+            mLiveContext.checkStatus()
         }
     }
 
@@ -177,7 +171,11 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QUserJoinObse
             return
         }
         if (userId == mLiveContext.roomInfo?.anchor?.userId) {
-            mLiveContext.mRoomScheduler.checkStatus(0)
+            mLiveContext.checkStatus()
         }
+    }
+
+    override fun notifyCheckStatus(newStatus: QLiveStatus, msg: String) {
+        mLiveContext.forceSetStatus(newStatus, msg)
     }
 }

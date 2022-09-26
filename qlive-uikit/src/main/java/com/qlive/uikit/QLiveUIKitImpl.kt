@@ -20,6 +20,7 @@ import com.qlive.uikitlinkmic.StartLinkView
 import com.qlive.uikitpk.FuncCPTPKApplyMonitor
 import com.qlive.uikitpk.PKAnchorPreview
 import com.qlive.uikitpk.PKCoverView
+import com.qlive.uikitpk.PKPlayerPreview
 import com.qlive.uikitpublicchat.PublicChatView
 import com.qlive.uikitpublicchat.RoomNoticeView
 import com.qlive.uikitshopping.ExplainingQItemCardView
@@ -38,7 +39,7 @@ class QLiveUIKitImpl(val appContext: Context) : QLiveUIKit {
     companion object {
         private val mRoomListPage = RoomListPage()
         private val mRoomPage = RoomPage()
-        private val mWatchExplainingPage=WatchExplainingPage()
+        private val mWatchExplainingPage = WatchExplainingPage()
     }
 
     init {
@@ -63,13 +64,26 @@ class QLiveUIKitImpl(val appContext: Context) : QLiveUIKit {
                                                    attrs: AttributeSet
             ->
             when (name) {
-                FuncCPTPKApplyMonitor::class.java.canonicalName ->FuncCPTPKApplyMonitor(context)
-                FuncCPTLinkMicApplyMonitor::class.java.canonicalName -> FuncCPTLinkMicApplyMonitor(context)
-                FuncCPTBeInvitedLinkMicMonitor::class.java.canonicalName ->FuncCPTBeInvitedLinkMicMonitor(context)
-                FuncCPTRoomStatusMonitor::class.java.canonicalName ->FuncCPTRoomStatusMonitor(context)
-                FuncCPTAnchorStatusMonitor::class.java.canonicalName->FuncCPTAnchorStatusMonitor(context)
-                FuncCPTDefaultKeyDownMonitor::class.java.canonicalName ->FuncCPTDefaultKeyDownMonitor(context)
-                AnchorOfflineTipView::class.java.canonicalName ->AnchorOfflineTipView(context, attrs)
+                FuncCPTPKApplyMonitor::class.java.canonicalName -> FuncCPTPKApplyMonitor(context)
+                FuncCPTLinkMicApplyMonitor::class.java.canonicalName -> FuncCPTLinkMicApplyMonitor(
+                    context
+                )
+                FuncCPTBeInvitedLinkMicMonitor::class.java.canonicalName -> FuncCPTBeInvitedLinkMicMonitor(
+                    context
+                )
+                FuncCPTRoomStatusMonitor::class.java.canonicalName -> FuncCPTRoomStatusMonitor(
+                    context
+                )
+                FuncCPTAnchorStatusMonitor::class.java.canonicalName -> FuncCPTAnchorStatusMonitor(
+                    context
+                )
+                FuncCPTDefaultKeyDownMonitor::class.java.canonicalName -> FuncCPTDefaultKeyDownMonitor(
+                    context
+                )
+                AnchorOfflineTipView::class.java.canonicalName -> AnchorOfflineTipView(
+                    context,
+                    attrs
+                )
                 QKitImageView::class.java.canonicalName -> QKitImageView(context, attrs)
                 PKAnchorPreview::class.java.canonicalName -> PKAnchorPreview(context, attrs)
                 MicLinkersView::class.java.canonicalName -> MicLinkersView(context, attrs)
@@ -109,24 +123,42 @@ class QLiveUIKitImpl(val appContext: Context) : QLiveUIKit {
                 )
                 CloseRoomView::class.java.canonicalName -> CloseRoomView(context, attrs)
                 StartLinkView::class.java.canonicalName -> StartLinkView(context, attrs)
+                PKPlayerPreview::class.java.canonicalName -> PKPlayerPreview(context, attrs)
                 else -> null
             }
         }
-        KITRoomDependsInflaterFactory.checkCreateView = {
-                name: String,
-                context: Context,
-                attrs: AttributeSet
+        KITRoomDependsInflaterFactory.checkCreateView = { name: String,
+                                                          context: Context,
+                                                          attrs: AttributeSet
             ->
-            when (name){
-                RoomDependsHostView::class.java.canonicalName ->RoomDependsHostView(context, attrs)
-                RoomDependsIdView::class.java.canonicalName  ->RoomDependsIdView(context,attrs)
-                RoomDependsMemberCountView::class.java.canonicalName  ->RoomDependsMemberCountView(context,attrs)
-                RoomDependsOnlineUserView::class.java.canonicalName  -> RoomDependsOnlineUserView(context,attrs)
-                ShoppingPlayerControl::class.java.canonicalName  -> ShoppingPlayerControl(context,attrs)
-                ShoppingPlayerGoShoppingView::class.java.canonicalName  ->ShoppingPlayerGoShoppingView(context,attrs)
-                ShoppingPlayerNavigationView::class.java.canonicalName  ->ShoppingPlayerNavigationView(context,attrs)
-                WatchExplainingCardView::class.java.canonicalName  ->WatchExplainingCardView(context,attrs)
-                else ->null
+            when (name) {
+                RoomDependsHostView::class.java.canonicalName -> RoomDependsHostView(context, attrs)
+                RoomDependsIdView::class.java.canonicalName -> RoomDependsIdView(context, attrs)
+                RoomDependsMemberCountView::class.java.canonicalName -> RoomDependsMemberCountView(
+                    context,
+                    attrs
+                )
+                RoomDependsOnlineUserView::class.java.canonicalName -> RoomDependsOnlineUserView(
+                    context,
+                    attrs
+                )
+                ShoppingPlayerControl::class.java.canonicalName -> ShoppingPlayerControl(
+                    context,
+                    attrs
+                )
+                ShoppingPlayerGoShoppingView::class.java.canonicalName -> ShoppingPlayerGoShoppingView(
+                    context,
+                    attrs
+                )
+                ShoppingPlayerNavigationView::class.java.canonicalName -> ShoppingPlayerNavigationView(
+                    context,
+                    attrs
+                )
+                WatchExplainingCardView::class.java.canonicalName -> WatchExplainingCardView(
+                    context,
+                    attrs
+                )
+                else -> null
             }
         }
     }

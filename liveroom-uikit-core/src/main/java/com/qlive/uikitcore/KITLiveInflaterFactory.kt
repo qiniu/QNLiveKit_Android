@@ -2,6 +2,7 @@ package com.qlive.uikitcore
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
@@ -51,12 +52,29 @@ class KITLiveInflaterFactory(
         attrs: AttributeSet
     ): View? {
         //优先匹配已知的类 减少反射次数
-        val view = checkCreateView(name, context, attrs) ?: appDelegate.createView(
+        var view: View? = checkCreateView(name, context, attrs) ?: appDelegate.createView(
             parent,
             name,
             context,
             attrs
         )
+
+        val len = name.split(".").size
+        if (view == null && len > 1) {
+            QLiveLogUtil.d("createView by appDelegate == null $name")
+            try {
+                val viewClass = Class.forName(name)
+                if (QLiveComponent::class.java.isAssignableFrom(viewClass)) {
+                    QLiveLogUtil.d("createView by constructor.newInstance $name")
+                    //使用反射创建没有匹配的类
+                    val constructor =
+                        viewClass.getConstructor(Context::class.java, AttributeSet::class.java)
+                    view = constructor.newInstance(context, attrs) as View
+                }
+            } catch (e: ClassNotFoundException) {
+                QLiveLogUtil.d("createView $name" + e.message ?: "")
+            }
+        }
         if (view is QLiveComponent) {
             //   QLiveLogUtil.d("KITInflaterFactory", "onCreateView " + name + " attachKitContext ")
             (view as QLiveComponent).attachKitContext(kitContext)
@@ -130,12 +148,27 @@ class KITInflaterFactory(
         context: Context,
         attrs: AttributeSet
     ): View? {
-        val view = checkCreateView(name, context, attrs) ?: appDelegate.createView(
+        var view = checkCreateView(name, context, attrs) ?: appDelegate.createView(
             parent,
             name,
             context,
             attrs
         )
+        val len = name.split(".").size
+        if (view == null && len > 1) {
+            try {
+                val viewClass = Class.forName(name)
+                if (QComponent::class.java.isAssignableFrom(viewClass)) {
+                    QLiveLogUtil.d("createView by constructor.newInstance $name")
+                    //使用反射创建没有匹配的类
+                    val constructor =
+                        viewClass.getConstructor(Context::class.java, AttributeSet::class.java)
+                    view = constructor.newInstance(context, attrs) as View
+                }
+            } catch (e: ClassNotFoundException) {
+                QLiveLogUtil.d("createView $name" + e.message ?: "")
+            }
+        }
         if (view is QComponent) {
             mComponents.add(view)
             (view as QComponent).attachKitContext(kitContext)
@@ -189,22 +222,26 @@ class KITRoomDependsInflaterFactory(
         attrs: AttributeSet
     ): View? {
 
-        var view = checkCreateView(name, context, attrs)
-        if (view == null) {
-            var viewClass: Class<*>? = null
+        var view = checkCreateView(name, context, attrs) ?: appDelegate.createView(
+            parent,
+            name,
+            context,
+            attrs
+        )
+
+        val len = name.split(".").size
+        if (view == null && len > 1) {
             try {
-                viewClass = Class.forName(name)
-            } catch (e: Exception) {
-            }
-            view = if (viewClass != null && QRoomComponent::class.java.isAssignableFrom(
-                    viewClass
-                )
-            ) {
-                val constructor =
-                    viewClass.getConstructor(Context::class.java, AttributeSet::class.java)
-                constructor.newInstance(context, attrs) as View
-            } else {
-                appDelegate.createView(parent, name, context, attrs)
+                val viewClass = Class.forName(name)
+                if (QRoomComponent::class.java.isAssignableFrom(viewClass)) {
+                    QLiveLogUtil.d("createView by constructor.newInstance $name")
+                    //使用反射创建没有匹配的类
+                    val constructor =
+                        viewClass.getConstructor(Context::class.java, AttributeSet::class.java)
+                    view = constructor.newInstance(context, attrs) as View
+                }
+            } catch (e: ClassNotFoundException) {
+                QLiveLogUtil.d("createView $name" + e.message ?: "")
             }
         }
 
