@@ -99,16 +99,9 @@ class RoomDependsMemberCountView : TextView, QRoomComponent {
             return@Scheduler
         }
         try {
-            val room = client?.getService(QRoomService::class.java)?.getRoomInfo(object :
-                QLiveCallBack<QLiveRoomInfo> {
-                override fun onError(code: Int, msg: String?) {
-                }
-
-                override fun onSuccess(data: QLiveRoomInfo) {
-                    text = data.onlineCount.toString()
-                    checkTextSize()
-                }
-            })
+            val room = client?.getService(QRoomService::class.java)?.roomInfo
+            text = room?.onlineCount.toString()
+            checkTextSize()
         } catch (e: Exception) {
             e.printStackTrace()
         }

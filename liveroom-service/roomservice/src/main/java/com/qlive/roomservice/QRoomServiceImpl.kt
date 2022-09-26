@@ -5,15 +5,9 @@ import com.qlive.jsonutil.JsonUtils
 import com.qlive.coreimpl.model.LiveIdExtensionMode
 import com.qlive.core.*
 import com.qlive.core.been.QExtension
-import com.qlive.coreimpl.BaseService
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
-import com.qlive.coreimpl.QLiveDataSource
-import com.qlive.coreimpl.backGround
-import com.qlive.coreimpl.getCode
-import com.qlive.coreimpl.http.HttpService
-import com.qlive.coreimpl.http.NetBzException
-import com.qlive.jsonutil.ParameterizedTypeImpl
+import com.qlive.coreimpl.*
 import com.qlive.rtm.*
 import com.qlive.rtm.msg.RtmTextMsg
 import java.lang.Exception
@@ -62,8 +56,11 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
                     }
                     val data = JsonUtils.parseObject(msg.optData(), Censor::class.java)
                         ?: return true
-                    mQRoomServiceListeners.forEach {
-                        it.onReceivedCensorStop(data.message)
+                    if (client is QLiveServiceObserver) {
+                        (client as QLiveServiceObserver?)?.notifyCheckStatus(
+                            QLiveStatus.FORCE_CLOSE,
+                            data.message
+                        )
                     }
                     return true
                 }
@@ -87,7 +84,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
      * @return
      */
     override fun getRoomInfo(): QLiveRoomInfo? {
-        return currentRoomInfo
+        return currentRoomInfo?.clone()
     }
 
     /**
@@ -97,7 +94,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
         backGround {
             doWork {
                 val room = roomDataSource.refreshRoomInfo(currentRoomInfo?.liveID ?: "")
-                currentRoomInfo = room
+                currentRoomInfo?.copyRoomInfo(room)
                 callBack?.onSuccess(currentRoomInfo)
             }
             catchError {

@@ -1,6 +1,7 @@
 package com.qlive.coreimpl
 
 import com.qlive.avparam.RtcException
+import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.coreimpl.http.NetBzException
 import com.qlive.rtm.RtmException
 import kotlinx.coroutines.*
@@ -43,6 +44,7 @@ fun backGround(
             }
         }
 }
+
 fun Throwable.getCode(): Int {
     if (this is RtmException) {
         return this.code
@@ -54,4 +56,28 @@ fun Throwable.getCode(): Int {
         return this.code
     }
     return -1
+}
+
+fun QLiveRoomInfo.copyRoomInfo(newRoomInfo: QLiveRoomInfo) {
+    this.title = newRoomInfo.title
+    this.notice = newRoomInfo.notice
+    this.coverURL = newRoomInfo.coverURL
+    this.extension = newRoomInfo.extension
+    this.anchor = newRoomInfo.anchor
+    this.roomToken = newRoomInfo.roomToken
+    this.pkID = newRoomInfo.pkID
+    this.onlineCount = newRoomInfo.onlineCount
+    this.startTime = newRoomInfo.startTime
+    this.endTime = newRoomInfo.endTime
+    this.chatID = newRoomInfo.chatID
+    this.pushURL = newRoomInfo.pushURL
+    this.hlsURL = newRoomInfo.hlsURL
+    this.rtmpURL = newRoomInfo.rtmpURL
+    this.flvURL = newRoomInfo.flvURL
+    this.pv = newRoomInfo.pv
+    this.uv = newRoomInfo.uv
+    this.totalCount = newRoomInfo.totalCount
+    this.totalMics = newRoomInfo.totalMics
+    this.liveStatus = newRoomInfo.liveStatus
+    this.anchorStatus = newRoomInfo.anchorStatus
 }

@@ -8,6 +8,7 @@ fun Int.roomStatusToLiveStatus(): QLiveStatus {
     return when (this) {
         0 -> QLiveStatus.PREPARE
         1 -> QLiveStatus.ON
+        2 -> QLiveStatus.FORCE_CLOSE
         else -> QLiveStatus.OFF
     }
 }

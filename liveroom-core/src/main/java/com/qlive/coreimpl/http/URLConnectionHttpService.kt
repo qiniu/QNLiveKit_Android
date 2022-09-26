@@ -9,6 +9,7 @@ import java.io.*
 import java.lang.reflect.Type
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.concurrent.CountDownLatch
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -22,6 +23,28 @@ internal class URLConnectionHttpService : HttpService() {
         clazz: Class<T>? = null,
         type: Type? = null
     ): T {
+        var ret = req(method, path, jsonString, clazz, type)
+        if (ret.code == 200 || ret.code == 0) {
+            return ret.data
+        }
+        if (ret.code == 499 || ret.code == 401) {
+            if (reGetTokenInfo()) {
+                ret = req(method, path, jsonString, clazz, type)
+            }
+        }
+        if (ret.code == 200 || ret.code == 0) {
+            return ret.data
+        }
+        throw NetBzException(ret.code, ret.message)
+    }
+
+    private fun <T> req(
+        method: String,
+        path: String,
+        jsonString: String,
+        clazz: Class<T>? = null,
+        type: Type? = null
+    ): HttpResp<T> {
         val url = URL(baseUrl + path)
         val urlConnection: HttpURLConnection = url.openConnection() as HttpURLConnection
         var writer: BufferedWriter? = null
@@ -104,33 +127,33 @@ internal class URLConnectionHttpService : HttpService() {
                 com.qlive.coreimpl.http.HttpResp::class.java,
                 com.qlive.coreimpl.http.HttpResp::class.java
             )
-            val obj = JsonUtils.parseObject<com.qlive.coreimpl.http.HttpResp<T>>(resultStr, p)
-            val code = obj?.code ?: -1
-            if ((code == bzCodeNoError || code == 200) && obj != null) {
-                return (obj.data)
-            } else {
-                throw (NetBzException(
-                    code,
-                    obj?.message ?: resultMsg
-                ))
-            }
+            val obj = JsonUtils.parseObject<HttpResp<T>>(resultStr, p)
+            return obj!!
         } else {
-            if (499 == resultCode || 401 == resultCode) {
-                QLiveLogUtil.d("QLiveHttpService", "token过期 ${resultCode}")
-                tokenGetter?.getTokenInfo(object : QLiveCallBack<String> {
-                    override fun onError(code: Int, msg: String?) {
-                    }
-
-                    override fun onSuccess(data: String?) {
-                        token = data ?: ""
-                    }
-                })
+            return HttpResp<T>().apply {
+                code = resultCode
+                message = resultMsg
             }
-            throw (NetBzException(
-                resultCode,
-                resultMsg
-            ))
         }
+    }
+
+    private fun reGetTokenInfo(): Boolean {
+        val latch = CountDownLatch(1)
+        var reGet = false
+        tokenGetter!!.getTokenInfo(object : QLiveCallBack<String> {
+            override fun onError(code: Int, msg: String?) {
+                reGet = false
+                latch.countDown()
+            }
+
+            override fun onSuccess(data: String?) {
+                reGet = true
+                token = data ?: ""
+                latch.countDown()
+            }
+        })
+        latch.await()
+        return reGet
     }
 
     override suspend fun <T> put(path: String, jsonString: String, clazz: Class<T>?, type: Type?) =

@@ -20,11 +20,4 @@ public interface QRoomServiceListener {
      */
     void onReceivedCensorNotify(String message);
 
-    /**
-     * 收到管理员关播通知
-     * 收到后 房间状态将会变成管理员关闭
-     *
-     * @param message 消息提示
-     */
-    void onReceivedCensorStop(String message);
 }

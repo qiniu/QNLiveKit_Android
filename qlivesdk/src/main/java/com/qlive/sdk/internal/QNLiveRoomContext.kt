@@ -1,23 +1,19 @@
 package com.qlive.sdk.internal
 
-import com.qlive.core.QClientLifeCycleListener
-import com.qlive.core.QLiveClient
+import com.qlive.core.*
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
+import com.qlive.coreimpl.*
 
-import com.qlive.core.QLiveService
-import com.qlive.coreimpl.BaseService
+import com.qlive.coreimpl.http.NetBzException
+import com.qlive.coreimpl.model.HearBeatResp
+import com.qlive.liblog.QLiveLogUtil
 import com.qlive.sdk.QLive
 
 internal class QNLiveRoomContext(private val mClient: QLiveClient) {
 
     private val serviceMap = HashMap<String, Any>()
     private val mLifeCycleListener = ArrayList<QClientLifeCycleListener>()
-    val mRoomScheduler by lazy {
-        RoomScheduler().apply {
-            client = mClient
-        }
-    }
     var roomInfo: QLiveRoomInfo? = null
         private set
     private var liveId = ""
@@ -30,7 +26,7 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
             val obj = constructor.newInstance() as BaseService
             serviceMap[serviceClass] = obj
             mLifeCycleListener.add(obj)
-            obj.attachRoomClient(mClient,AppCache.appContext)
+            obj.attachRoomClient(mClient, AppCache.appContext)
             if (liveId.isNotEmpty()) {
                 obj.onEntering(liveId, QLive.getLoginUser())
             }
@@ -51,13 +47,63 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
         return serviceObj
     }
 
-    private var isInit = false
-    fun checkInit() {
-        if (isInit) {
+    private val roomDataSource = QLiveDataSource()
+    private var roomStatus = QLiveStatus.OFF
+    private var anchorStatus = 1
+    var roomStatusChange: (status: QLiveStatus) -> Unit = {}
+    private val mHeartBeatJob = Scheduler(8000) {
+        check()
+    }
+
+    fun checkStatus() {
+        check()
+    }
+
+    fun forceSetStatus(qLiveStatus: QLiveStatus, msg: String) {
+        if (roomStatus != qLiveStatus) {
+            roomStatus = qLiveStatus
+            roomStatusChange.invoke(roomStatus)
+        }
+    }
+
+    private fun check() {
+        if (roomInfo == null) {
             return
         }
-        mLifeCycleListener.add(mRoomScheduler)
-        isInit = true
+        backGround {
+            doWork {
+                var hearRet: HearBeatResp? = null
+                try {
+                    hearRet = roomDataSource.heartbeat(roomInfo?.liveID ?: "")
+                } catch (e: NetBzException) {
+                    if (e.code == 500) {
+                        QLiveLogUtil.d("res.liveStatus 心跳超时 ")
+                        //心跳超时从新进入房间
+                        if (mClient.clientType == QClientType.PUSHER) {
+                        } else {
+                            roomDataSource.joinRoom(roomInfo!!.liveID)
+                        }
+                    }
+                }
+                val room = roomDataSource.refreshRoomInfo(roomInfo?.liveID ?: "")
+                roomInfo?.copyRoomInfo(room)
+                if (anchorStatus != room.anchorStatus) {
+                    anchorStatus = room.anchorStatus
+                    roomStatusChange.invoke(anchorStatus.anchorStatusToLiveStatus())
+                }
+                hearRet ?: HearBeatResp().apply {
+                    liveId = roomInfo?.liveID ?: ""
+                    liveStatus = 3
+                }
+                if (hearRet!!.liveStatus.roomStatusToLiveStatus() != roomStatus) {
+                    roomStatus = hearRet.liveStatus.roomStatusToLiveStatus()
+                    roomStatusChange.invoke(roomStatus)
+                }
+                QLiveLogUtil.d("res.liveStatus ${hearRet.liveStatus}   room.anchorStatus ${room.anchorStatus} ")
+            }
+            catchError {
+            }
+        }
     }
 
     fun enter(liveId: String, user: QLiveUser) {
@@ -68,6 +114,7 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
     }
 
     fun leaveRoom() {
+        mHeartBeatJob.cancel()
         mLifeCycleListener.forEach {
             it.onLeft()
         }
@@ -84,12 +131,16 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
 
     fun joinedRoom(roomInfo: QLiveRoomInfo) {
         this.roomInfo = roomInfo
+        roomStatus = roomInfo.liveStatus.roomStatusToLiveStatus()
+        anchorStatus = roomInfo.anchorStatus
+        mHeartBeatJob.start()
         mLifeCycleListener.forEach {
             it.onJoined(roomInfo, false)
         }
     }
 
     fun destroy() {
+        mHeartBeatJob.cancel()
         mLifeCycleListener.forEach {
             it.onDestroyed()
         }
