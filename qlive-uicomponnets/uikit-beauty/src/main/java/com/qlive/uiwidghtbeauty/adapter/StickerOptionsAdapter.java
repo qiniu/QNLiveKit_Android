@@ -37,15 +37,13 @@ public class StickerOptionsAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final FilterViewHolder viewHolder = (FilterViewHolder) holder;
-        viewHolder.mIcon.setImageBitmap(mStickerOptions.get(position).unselectedtIcon);
+        viewHolder.mIcon.setImageURI(mStickerOptions.get(position).unselectedtIcon);
         viewHolder.mFlag.setVisibility(View.INVISIBLE);
         holder.itemView.setTag(position);
         holder.itemView.setSelected(mSelectedPosition == position);
         if (mSelectedPosition == position) {
-            viewHolder.mIcon.setImageBitmap(mStickerOptions.get(position).selectedtIcon);
+            viewHolder.mIcon.setImageURI(mStickerOptions.get(position).selectedtIcon);
             viewHolder.mFlag.setVisibility(View.VISIBLE);
-
-            return;
         }
     }
 

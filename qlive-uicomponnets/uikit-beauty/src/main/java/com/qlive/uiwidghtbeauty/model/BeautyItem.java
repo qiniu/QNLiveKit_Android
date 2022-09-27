@@ -1,15 +1,16 @@
 package com.qlive.uiwidghtbeauty.model;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 
 public class BeautyItem {
 
     private int progress;
-    private Bitmap unselectedtIcon;
-    private Bitmap selectedIcon;
+    private Uri unselectedtIcon;
+    private Uri selectedIcon;
     private String text;
 
-    public BeautyItem(String text, Bitmap unselectedtIcon, Bitmap selectedtIcon){
+    public BeautyItem(String text, Uri unselectedtIcon, Uri selectedtIcon){
         this.text = text;
         this.unselectedtIcon = unselectedtIcon;
         this.selectedIcon = selectedtIcon;
@@ -23,19 +24,19 @@ public class BeautyItem {
         this.progress = progress;
     }
 
-    public Bitmap getUnselectedtIcon() {
+    public Uri getUnselectedtIcon() {
         return unselectedtIcon;
     }
 
-    public void setUnselectedtIcon(Bitmap unselectedtIcon) {
+    public void setUnselectedtIcon(Uri unselectedtIcon) {
         this.unselectedtIcon = unselectedtIcon;
     }
 
-    public Bitmap getSelectedIcon() {
+    public Uri getSelectedIcon() {
         return selectedIcon;
     }
 
-    public void setSelectedIcon(Bitmap selectedIcon) {
+    public void setSelectedIcon(Uri selectedIcon) {
         this.selectedIcon = selectedIcon;
     }
 

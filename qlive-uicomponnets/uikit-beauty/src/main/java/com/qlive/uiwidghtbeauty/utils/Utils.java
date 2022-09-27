@@ -87,38 +87,6 @@ public final class Utils {
         return flags;
     }
 
-    /**
-     * 同步取图片
-     *
-     * @param url 图片地址
-     * @return
-     * @throws Exception
-     */
-    public static Bitmap getImageSync(String url, Context context) throws Exception {
-        if (TextUtils.isEmpty(url)) {
-            return null;
-        }
-        String imageName = md5(url);
-        String subPath = "/images/";
-        File imageFile = new File(context.getCacheDir().getAbsolutePath() + subPath + imageName + ".png");
-        if (imageFile.exists()) {
-            Log.d("ImageUtiles", "cache read image :" + imageFile.toString());
-            return BitmapFactory.decodeFile(imageFile.toString());
-        }
-        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        conn.setConnectTimeout(5000);
-        conn.setRequestMethod("GET");
-        if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-            InputStream inStream = conn.getInputStream();
-            Bitmap bitmap = BitmapFactory.decodeStream(inStream);
-            inStream.close();
-            new File(context.getCacheDir().getAbsolutePath() + subPath).mkdirs();
-            saveImageFile(imageFile, bitmap);
-            return bitmap;
-        }
-        return null;
-    }
-
     public static String md5(String string) {
         if (TextUtils.isEmpty(string)) {
             return "";

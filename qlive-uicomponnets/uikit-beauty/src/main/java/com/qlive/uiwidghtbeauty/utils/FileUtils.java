@@ -3,8 +3,6 @@ package com.qlive.uiwidghtbeauty.utils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 
@@ -114,15 +112,14 @@ public class FileUtils {
         copyFilterIconFiles(context, index);
     }
 
-    private static Uri getResourcesUri(Context context, @DrawableRes int id) {
+    public static Uri getResourcesUri(Context context, @DrawableRes int id) {
         Resources resources = context.getResources();
         String uriPath = ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
                 resources.getResourcePackageName(id) + "/" +
                 resources.getResourceTypeName(id) + "/" +
                 resources.getResourceEntryName(id);
-        return Uri.fromFile(new File(uriPath));
+        return Uri.parse(uriPath);
     }
-
 
     public static ArrayList<StickerItem> getStickerFiles(Context context, String index) {
         ArrayList<StickerItem> stickerFiles = new ArrayList<StickerItem>();
@@ -170,6 +167,7 @@ public class FileUtils {
         }
         return iconFiles;
     }
+
     public static List<String> copyStickerZipFiles(Context context, String className) {
         String[] files = null;
         ArrayList<String> modelFiles = new ArrayList<String>();
@@ -242,9 +240,9 @@ public class FileUtils {
         return modelFiles;
     }
 
-    public static Map<String, Bitmap> copyStickerIconFiles(Context context, String className) {
+    public static Map<String, Uri> copyStickerIconFiles(Context context, String className) {
         String[] files = null;
-        TreeMap<String, Bitmap> iconFiles = new TreeMap<String, Bitmap>();
+        TreeMap<String, Uri> iconFiles = new TreeMap<String, Uri>();
         try {
             files = context.getAssets().list(className);
         } catch (IOException e) {
@@ -280,15 +278,15 @@ public class FileUtils {
                 // 判断是否为png结尾
                 if (filename.trim().toLowerCase().endsWith(".png") && filename.indexOf("mode_") == -1) {
                     String name = subFile[i].getName();
-                    iconFiles.put(getFileNameNoEx(name), BitmapFactory.decodeFile(filename));
+                    iconFiles.put(getFileNameNoEx(name), Uri.fromFile(new File(filename)));
                 }
             }
         }
         return iconFiles;
     }
 
-    public static Map<String, Bitmap> getStickerIconFilesFromSd(Context context, String className) {
-        TreeMap<String, Bitmap> iconFiles = new TreeMap<String, Bitmap>();
+    public static Map<String, Uri> getStickerIconFilesFromSd(Context context, String className) {
+        TreeMap<String, Uri> iconFiles = new TreeMap<String, Uri>();
         String folderpath = null;
         File dataDir = context.getExternalFilesDir(null);
         if (dataDir != null) {
@@ -311,7 +309,7 @@ public class FileUtils {
                 // 判断是否为png结尾
                 if (filename.trim().toLowerCase().endsWith(".png") && filename.indexOf("mode_") == -1) {
                     String name = subFile[i].getName();
-                    iconFiles.put(getFileNameNoEx(name), BitmapFactory.decodeFile(filename));
+                    iconFiles.put(getFileNameNoEx(name), Uri.fromFile(new File(filename)));
                 }
             }
         }
@@ -351,19 +349,19 @@ public class FileUtils {
 
     public static ArrayList<FilterItem> getFilterFiles(Context context, String index) {
         ArrayList<FilterItem> filterFiles = new ArrayList<FilterItem>();
-        Bitmap iconNature = BitmapFactory.decodeResource(context.getResources(), R.drawable.mode_original);
+        Uri iconNature = getResourcesUri(context, R.drawable.mode_original);
         if (Constants.FILTER_PORTRAIT.equals(index)) {
-            iconNature = BitmapFactory.decodeResource(context.getResources(), R.drawable.filter_portrait_nature);
+            iconNature = getResourcesUri(context, R.drawable.filter_portrait_nature);
         } else if (Constants.FILTER_SCENERY.equals(index)) {
-            iconNature = BitmapFactory.decodeResource(context.getResources(), R.drawable.filter_scenery_nature);
+            iconNature = getResourcesUri(context, R.drawable.filter_scenery_nature);
         } else if (Constants.FILTER_STILL_LIFE.equals(index)) {
-            iconNature = BitmapFactory.decodeResource(context.getResources(), R.drawable.filter_still_life_nature);
+            iconNature = getResourcesUri(context, R.drawable.filter_still_life_nature);
         } else if (Constants.FILTER_FOOD.equals(index)) {
-            iconNature = BitmapFactory.decodeResource(context.getResources(), R.drawable.filter_food_nature);
+            iconNature = getResourcesUri(context, R.drawable.filter_food_nature);
         }
         filterFiles.add(new FilterItem(Constants.ORIGINAL, iconNature, null));
         List<String> filterModels = copyFilterModelFiles(context, index);
-        Map<String, Bitmap> filterIcons = copyFilterIconFiles(context, index);
+        Map<String, Uri> filterIcons = copyFilterIconFiles(context, index);
         List<String> filterNames = getFilterNames(context, index);
         if (filterModels.size() == 0) {
             return filterFiles;
@@ -422,9 +420,9 @@ public class FileUtils {
         return modelFiles;
     }
 
-    public static Map<String, Bitmap> copyFilterIconFiles(Context context, String index) {
+    public static Map<String, Uri> copyFilterIconFiles(Context context, String index) {
         String[] files = null;
-        TreeMap<String, Bitmap> iconFiles = new TreeMap<String, Bitmap>();
+        TreeMap<String, Uri> iconFiles = new TreeMap<String, Uri>();
         try {
             files = context.getAssets().list(index);
         } catch (IOException e) {
@@ -458,7 +456,7 @@ public class FileUtils {
                 // 判断是否为png结尾
                 if (filename.trim().toLowerCase().endsWith(".png") && filename.indexOf("filter") != -1) {
                     String name = subFile[i].getName().substring(13);
-                    iconFiles.put(getFileNameNoEx(name), BitmapFactory.decodeFile(filename));
+                    iconFiles.put(getFileNameNoEx(name), Uri.fromFile(new File(filename)));
                 }
             }
         }
@@ -508,21 +506,21 @@ public class FileUtils {
 
     public static ArrayList<MakeupItem> getMakeupFiles(Context context, String index) {
         ArrayList<MakeupItem> makeupFiles = new ArrayList<MakeupItem>();
-        Bitmap iconNature = BitmapFactory.decodeResource(context.getResources(), R.drawable.makeup_null);
+        Uri iconNature = getResourcesUri(context, R.drawable.makeup_null);
         if (Constants.MAKEUP_LIP.equals(index)) {
-            iconNature = BitmapFactory.decodeResource(context.getResources(), R.drawable.makeup_null);
+            iconNature = getResourcesUri(context, R.drawable.makeup_null);
         } else if (Constants.MAKEUP_HIGHLIGHT.equals(index)) {
-            iconNature = BitmapFactory.decodeResource(context.getResources(), R.drawable.makeup_null);
+            iconNature = getResourcesUri(context, R.drawable.makeup_null);
         } else if (Constants.MAKEUP_BLUSH.equals(index)) {
-            iconNature = BitmapFactory.decodeResource(context.getResources(), R.drawable.makeup_null);
+            iconNature = getResourcesUri(context, R.drawable.makeup_null);
         } else if (Constants.MAKEUP_BROW.equals(index)) {
-            iconNature = BitmapFactory.decodeResource(context.getResources(), R.drawable.makeup_null);
+            iconNature = getResourcesUri(context, R.drawable.makeup_null);
         } else if (Constants.GROUP_EYE.equals(index)) {
-            iconNature = BitmapFactory.decodeResource(context.getResources(), R.drawable.makeup_null);
+            iconNature = getResourcesUri(context, R.drawable.makeup_null);
         }
         makeupFiles.add(new MakeupItem(Constants.ORIGINAL, iconNature, null));
         List<String> makeupZips = getStickerZipFilesFromSd(context, index);
-        Map<String, Bitmap> makeupIcons = getStickerIconFilesFromSd(context, index);
+        Map<String, Uri> makeupIcons = getStickerIconFilesFromSd(context, index);
         List<String> makeupNames = getStickerNames(context, index);
         if (makeupZips.size() == 0) {
             return makeupFiles;

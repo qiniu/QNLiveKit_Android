@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qlive.uiwidghtbeauty.model.StickerItem
 import com.qlive.uiwidghtbeauty.R
 import com.qlive.uiwidghtbeauty.utils.Constants
+import com.qlive.uiwidghtbeauty.utils.FileUtils
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -28,12 +29,12 @@ class StickerView : FrameLayout {
                 0,
                 StickerOptionsItem(
                     Constants.STICKER_NEW_ENGINE,
-                    BitmapFactory.decodeResource(
-                        context.resources,
+                    FileUtils.getResourcesUri(
+                        context,
                         R.drawable.sticker_local_unselected
                     ),
-                    BitmapFactory.decodeResource(
-                        context.resources,
+                    FileUtils.getResourcesUri(
+                        context,
                         R.drawable.sticker_local_selected
                     )
                 )
@@ -43,11 +44,11 @@ class StickerView : FrameLayout {
                 1,
                 StickerOptionsItem(
                     Constants.GROUP_2D,
-                    BitmapFactory.decodeResource(
-                        context.resources,
+                    FileUtils.getResourcesUri(
+                        context,
                         R.drawable.sticker_2d_unselected
                     ),
-                    BitmapFactory.decodeResource(context.resources, R.drawable.sticker_2d_selected)
+                    FileUtils.getResourcesUri(context, R.drawable.sticker_2d_selected)
                 )
             )
             // 3d
@@ -55,11 +56,11 @@ class StickerView : FrameLayout {
                 2,
                 StickerOptionsItem(
                     Constants.GROUP_3D,
-                    BitmapFactory.decodeResource(
-                        context.resources,
+                    FileUtils.getResourcesUri(
+                        context,
                         R.drawable.sticker_3d_unselected
                     ),
-                    BitmapFactory.decodeResource(context.resources, R.drawable.sticker_3d_selected)
+                    FileUtils.getResourcesUri(context, R.drawable.sticker_3d_selected)
                 )
             )
             // 手势贴纸
@@ -67,12 +68,12 @@ class StickerView : FrameLayout {
                 3,
                 StickerOptionsItem(
                     Constants.GROUP_HAND,
-                    BitmapFactory.decodeResource(
-                        context.resources,
+                    FileUtils.getResourcesUri(
+                        context,
                         R.drawable.sticker_hand_action_unselected
                     ),
-                    BitmapFactory.decodeResource(
-                        context.resources,
+                    FileUtils.getResourcesUri(
+                        context,
                         R.drawable.sticker_hand_action_selected
                     )
                 )
@@ -82,12 +83,12 @@ class StickerView : FrameLayout {
                 4,
                 StickerOptionsItem(
                     Constants.GROUP_BG,
-                    BitmapFactory.decodeResource(
-                        context.resources,
+                    FileUtils.getResourcesUri(
+                        context,
                         R.drawable.sticker_bg_segment_unselected
                     ),
-                    BitmapFactory.decodeResource(
-                        context.resources,
+                    FileUtils.getResourcesUri(
+                        context,
                         R.drawable.sticker_bg_segment_selected
                     )
                 )

@@ -126,9 +126,9 @@ public class ResourcesUtil {
 
     public static ArrayList<BeautyItem> getBeautyBaseItemList(Context context) {
         ArrayList<BeautyItem> beautyBaseItemList = new ArrayList<>();
-        beautyBaseItemList.add(new BeautyItem("美白", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_whiten_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_whiten_selected)));
-        beautyBaseItemList.add(new BeautyItem("红润", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_redden_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_redden_selected)));
-        beautyBaseItemList.add(new BeautyItem("磨皮", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_smooth_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_smooth_selected)));
+        beautyBaseItemList.add(new BeautyItem("美白",FileUtils.getResourcesUri(context, R.drawable.beauty_whiten_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_whiten_selected)));
+        beautyBaseItemList.add(new BeautyItem("红润", FileUtils.getResourcesUri(context, R.drawable.beauty_redden_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_redden_selected)));
+        beautyBaseItemList.add(new BeautyItem("磨皮",FileUtils.getResourcesUri(context, R.drawable.beauty_smooth_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_smooth_selected)));
         beautyBaseItemList.get(0).setProgress((int) (sBeautifyParams[0] * 100));
         beautyBaseItemList.get(1).setProgress((int) (sBeautifyParams[1] * 100));
         beautyBaseItemList.get(2).setProgress((int) (sBeautifyParams[2] * 100));
@@ -137,8 +137,8 @@ public class ResourcesUtil {
 
     public static ArrayList<BeautyItem> getAdjustBeautyItemList(Context context) {
         ArrayList<BeautyItem> adjustBeautyItemList = new ArrayList<>();
-        adjustBeautyItemList.add(new BeautyItem("对比度", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_contrast_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_contrast_selected)));
-        adjustBeautyItemList.add(new BeautyItem("饱和度", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_saturation_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_saturation_selected)));
+        adjustBeautyItemList.add(new BeautyItem("对比度",FileUtils.getResourcesUri(context, R.drawable.beauty_contrast_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_contrast_selected)));
+        adjustBeautyItemList.add(new BeautyItem("饱和度",FileUtils.getResourcesUri(context, R.drawable.beauty_saturation_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_saturation_selected)));
         adjustBeautyItemList.get(0).setProgress((int) (sBeautifyParams[25] * 100));
         adjustBeautyItemList.get(1).setProgress((int) (sBeautifyParams[26] * 100));
         return adjustBeautyItemList;
@@ -183,23 +183,23 @@ public class ResourcesUtil {
 
     public static ArrayList<BeautyItem> getMicroBeautyItemList(Context context) {
         ArrayList<BeautyItem> microBeautyItem = new ArrayList<>();
-        microBeautyItem.add(new BeautyItem("瘦脸型", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_thin_face_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_thin_face_selected)));
-        microBeautyItem.add(new BeautyItem("下巴", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_chin_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_chin_selected)));
-        microBeautyItem.add(new BeautyItem("额头", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_forehead_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_forehead_selected)));
-        microBeautyItem.add(new BeautyItem("苹果肌", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_apple_musle_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_apple_musle_selected)));
-        microBeautyItem.add(new BeautyItem("瘦鼻翼", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_thin_nose_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_thin_nose_selected)));
-        microBeautyItem.add(new BeautyItem("长鼻", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_long_nose_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_long_nose_selected)));
-        microBeautyItem.add(new BeautyItem("侧脸隆鼻", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_profile_rhinoplasty_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_profile_rhinoplasty_selected)));
-        microBeautyItem.add(new BeautyItem("嘴型", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_mouth_type_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_mouth_type_selected)));
-        microBeautyItem.add(new BeautyItem("缩人中", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_philtrum_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_philtrum_selected)));
-        microBeautyItem.add(new BeautyItem("眼距", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_eye_distance_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_eye_distance_selected)));
-        microBeautyItem.add(new BeautyItem("眼睛角度", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_eye_angle_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_eye_angle_selected)));
-        microBeautyItem.add(new BeautyItem("开眼角", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_open_canthus_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_open_canthus_selected)));
-        microBeautyItem.add(new BeautyItem("亮眼", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_bright_eye_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_bright_eye_selected)));
-        microBeautyItem.add(new BeautyItem("祛黑眼圈", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_remove_dark_circles_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_remove_dark_circles_selected)));
-        microBeautyItem.add(new BeautyItem("祛法令纹", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_remove_nasolabial_folds_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_remove_nasolabial_folds_selected)));
-        microBeautyItem.add(new BeautyItem("白牙", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_white_teeth_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_white_teeth_selected)));
-        microBeautyItem.add(new BeautyItem("瘦颧骨", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_thin_cheekbone_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_thin_cheekbone_selected)));
+        microBeautyItem.add(new BeautyItem("瘦脸型",FileUtils.getResourcesUri(context, R.drawable.beauty_thin_face_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_thin_face_selected)));
+        microBeautyItem.add(new BeautyItem("下巴",FileUtils.getResourcesUri(context, R.drawable.beauty_chin_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_chin_selected)));
+        microBeautyItem.add(new BeautyItem("额头",FileUtils.getResourcesUri(context, R.drawable.beauty_forehead_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_forehead_selected)));
+        microBeautyItem.add(new BeautyItem("苹果肌",FileUtils.getResourcesUri(context, R.drawable.beauty_apple_musle_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_apple_musle_selected)));
+        microBeautyItem.add(new BeautyItem("瘦鼻翼",FileUtils.getResourcesUri(context, R.drawable.beauty_thin_nose_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_thin_nose_selected)));
+        microBeautyItem.add(new BeautyItem("长鼻",FileUtils.getResourcesUri(context, R.drawable.beauty_long_nose_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_long_nose_selected)));
+        microBeautyItem.add(new BeautyItem("侧脸隆鼻",FileUtils.getResourcesUri(context, R.drawable.beauty_profile_rhinoplasty_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_profile_rhinoplasty_selected)));
+        microBeautyItem.add(new BeautyItem("嘴型",FileUtils.getResourcesUri(context, R.drawable.beauty_mouth_type_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_mouth_type_selected)));
+        microBeautyItem.add(new BeautyItem("缩人中",FileUtils.getResourcesUri(context, R.drawable.beauty_philtrum_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_philtrum_selected)));
+        microBeautyItem.add(new BeautyItem("眼距",FileUtils.getResourcesUri(context, R.drawable.beauty_eye_distance_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_eye_distance_selected)));
+        microBeautyItem.add(new BeautyItem("眼睛角度",FileUtils.getResourcesUri(context, R.drawable.beauty_eye_angle_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_eye_angle_selected)));
+        microBeautyItem.add(new BeautyItem("开眼角",FileUtils.getResourcesUri(context, R.drawable.beauty_open_canthus_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_open_canthus_selected)));
+        microBeautyItem.add(new BeautyItem("亮眼",FileUtils.getResourcesUri(context, R.drawable.beauty_bright_eye_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_bright_eye_selected)));
+        microBeautyItem.add(new BeautyItem("祛黑眼圈",FileUtils.getResourcesUri(context, R.drawable.beauty_remove_dark_circles_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_remove_dark_circles_selected)));
+        microBeautyItem.add(new BeautyItem("祛法令纹",FileUtils.getResourcesUri(context, R.drawable.beauty_remove_nasolabial_folds_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_remove_nasolabial_folds_selected)));
+        microBeautyItem.add(new BeautyItem("白牙",FileUtils.getResourcesUri(context, R.drawable.beauty_white_teeth_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_white_teeth_selected)));
+        microBeautyItem.add(new BeautyItem("瘦颧骨",FileUtils.getResourcesUri(context, R.drawable.beauty_thin_cheekbone_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_thin_cheekbone_selected)));
         for (int i = 0; i < 16; i++) {
             microBeautyItem.get(i).setProgress((int) (sBeautifyParams[i + 8] * 100));
         }
@@ -208,11 +208,11 @@ public class ResourcesUtil {
 
     public static ArrayList<BeautyItem> getProfessionalBeautyItemList(Context context) {
         ArrayList<BeautyItem> professionalBeautyItem = new ArrayList<>();
-        professionalBeautyItem.add(new BeautyItem("瘦脸", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_shrink_face_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_shrink_face_selected)));
-        professionalBeautyItem.add(new BeautyItem("大眼", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_enlargeeye_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_enlargeeye_selected)));
-        professionalBeautyItem.add(new BeautyItem("小脸", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_small_face_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_small_face_selected)));
-        professionalBeautyItem.add(new BeautyItem("窄脸", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_narrow_face_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_narrow_face_selected)));
-        professionalBeautyItem.add(new BeautyItem("圆眼", BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_round_eye_unselected), BitmapFactory.decodeResource(context.getResources(), R.drawable.beauty_round_eye_selected)));
+        professionalBeautyItem.add(new BeautyItem("瘦脸",FileUtils.getResourcesUri(context, R.drawable.beauty_shrink_face_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_shrink_face_selected)));
+        professionalBeautyItem.add(new BeautyItem("大眼",FileUtils.getResourcesUri(context, R.drawable.beauty_enlargeeye_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_enlargeeye_selected)));
+        professionalBeautyItem.add(new BeautyItem("小脸",FileUtils.getResourcesUri(context, R.drawable.beauty_small_face_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_small_face_selected)));
+        professionalBeautyItem.add(new BeautyItem("窄脸",FileUtils.getResourcesUri(context, R.drawable.beauty_narrow_face_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_narrow_face_selected)));
+        professionalBeautyItem.add(new BeautyItem("圆眼",FileUtils.getResourcesUri(context, R.drawable.beauty_round_eye_unselected),FileUtils.getResourcesUri(context, R.drawable.beauty_round_eye_selected)));
         professionalBeautyItem.get(0).setProgress((int) (sBeautifyParams[3] * 100));
         professionalBeautyItem.get(1).setProgress((int) (sBeautifyParams[4] * 100));
         professionalBeautyItem.get(2).setProgress((int) (sBeautifyParams[5] * 100));
