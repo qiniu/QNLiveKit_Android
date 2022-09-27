@@ -18,11 +18,11 @@ import com.qlive.pkservice.QPKServiceListener
 import com.qlive.pkservice.QPKSession
 import com.qlive.playerclient.QPlayerClient
 import com.qlive.uikitcore.LinkerUIHelper
-import com.qlive.uikitcore.QKitFrameLayout
-import kotlinx.android.synthetic.main.kit_anchor_pk_preview.view.*
+import com.qlive.uikitcore.QKitViewBindingFrameLayout
+import com.qlive.uikitpk.databinding.KitAnchorPkPreviewBinding
 
 //观众端pk预览
-class PKPlayerPreview : QKitFrameLayout {
+class PKPlayerPreview : QKitViewBindingFrameLayout<KitAnchorPkPreviewBinding> {
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -86,7 +86,7 @@ class PKPlayerPreview : QKitFrameLayout {
         originParent = parent
         originIndex = parent.indexOfChild(player)
         parent.removeView(player)
-        llPKContainer.addView(
+        binding.llPKContainer.addView(
             player,
             ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -99,7 +99,7 @@ class PKPlayerPreview : QKitFrameLayout {
         isPKingPreview = false
         val rendView = kitContext?.getPlayerRenderViewCall?.invoke()
         val player = rendView?.getView() ?: return
-        llPKContainer.removeView(player)
+        binding.llPKContainer.removeView(player)
         originParent?.addView(
             player,
             originIndex,
@@ -109,10 +109,6 @@ class PKPlayerPreview : QKitFrameLayout {
             )
         )
         player.requestLayout()
-    }
-
-    override fun getLayoutId(): Int {
-        return R.layout.kit_anchor_pk_preview
     }
 
     override fun initView() {
@@ -129,7 +125,7 @@ class PKPlayerPreview : QKitFrameLayout {
 
 
 //主播端预览
-class PKAnchorPreview : QKitFrameLayout {
+class PKAnchorPreview : QKitViewBindingFrameLayout<KitAnchorPkPreviewBinding> {
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -170,7 +166,7 @@ class PKAnchorPreview : QKitFrameLayout {
             //我自己预览缩小
             changeMeRenderViewToPk()
             //添加对方预览
-            flPeerContainer.addView(
+            binding.flPeerContainer.addView(
                 QPushTextureView(context).apply {
                     client?.getService(QPKService::class.java)
                         ?.setPeerAnchorPreView(this)
@@ -186,16 +182,13 @@ class PKAnchorPreview : QKitFrameLayout {
             //我自己预览放大
             changeMeRenderViewToStopPk()
             //移除对方主播预览
-            flPeerContainer.removeAllViews()
+            binding.flPeerContainer.removeAllViews()
         }
 
         override fun onStartTimeOut(pkSession: QPKSession) {}
 
     }
 
-    override fun getLayoutId(): Int {
-        return R.layout.kit_anchor_pk_preview
-    }
 
     override fun initView() {
         client!!.getService(QPKService::class.java).addServiceListener(mQPKServiceListener)
@@ -223,8 +216,8 @@ class PKAnchorPreview : QKitFrameLayout {
     private fun changeMeRenderViewToPk() {
         localRenderView = kitContext?.getPusherRenderViewCall?.invoke()?.getView() ?: return
 
-        pkScaleX = (flMeContainer.width / localRenderView!!.width.toFloat())
-        pkScaleY = flMeContainer.height / (localRenderView!!.height.toFloat())
+        pkScaleX = (binding.flMeContainer.width / localRenderView!!.width.toFloat())
+        pkScaleY = binding.flMeContainer.height / (localRenderView!!.height.toFloat())
 //        localRenderView!!.pivotX = 0f
 //        localRenderView!!.pivotY = localRenderView!!.height / 2f
         val scaleX = ObjectAnimator.ofFloat(
@@ -246,7 +239,7 @@ class PKAnchorPreview : QKitFrameLayout {
             localRenderView!!,
             "translationY",
             0f,
-            -(localRenderView!!.height / 2f - (flMeContainer.height / 2f + llPKContainer.y))
+            -(localRenderView!!.height / 2f - (binding.flMeContainer.height / 2f + binding.llPKContainer.y))
         )
         translationY.duration = 500
         translationY.repeatCount = 0
@@ -254,7 +247,7 @@ class PKAnchorPreview : QKitFrameLayout {
             localRenderView!!,
             "translationX",
             0f,
-            -(localRenderView!!.width / 2f - (flMeContainer.width / 2f))
+            -(localRenderView!!.width / 2f - (binding.flMeContainer.width / 2f))
         )
         translationX.duration = 500
         translationX.repeatCount = 0
@@ -267,8 +260,8 @@ class PKAnchorPreview : QKitFrameLayout {
                     originPreViewParent = localRenderView!!.parent as ViewGroup
                     originIndex = originPreViewParent?.indexOfChild(localRenderView) ?: 0
                     originPreViewParent?.removeView(localRenderView)
-                    flMeContainer.addView(localRenderView)
-                    flPeerContainer.addView(
+                    binding.flMeContainer.addView(localRenderView)
+                    binding.flPeerContainer.addView(
                         QPushTextureView(context).apply {
                             client?.getService(QPKService::class.java)
                                 ?.setPeerAnchorPreView(this)
@@ -298,14 +291,13 @@ class PKAnchorPreview : QKitFrameLayout {
      */
     private fun changeMeRenderViewToStopPk() {
         localRenderView = kitContext?.getPusherRenderViewCall?.invoke()?.getView() ?: return
-        flMeContainer.removeView(localRenderView)
+        binding.flMeContainer.removeView(localRenderView)
         originPreViewParent?.addView(
             localRenderView, originIndex, ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
         )
-        flPeerContainer.removeAllViews()
+        binding.flPeerContainer.removeAllViews()
     }
-
 }

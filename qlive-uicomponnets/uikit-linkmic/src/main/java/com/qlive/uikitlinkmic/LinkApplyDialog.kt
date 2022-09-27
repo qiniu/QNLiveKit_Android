@@ -4,25 +4,21 @@ import android.Manifest
 import android.view.Gravity
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.qlive.uikitcore.dialog.FinalDialogFragment
+import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
 import com.qlive.uikitcore.ext.permission.PermissionAnywhere
-import kotlinx.android.synthetic.main.kit_dialog_apply.*
+import com.qlive.uikitlinkmic.databinding.KitDialogLinkApplyBinding
 
 /**
  * 观众连麦申请弹窗
  */
-class LinkApplyDialog : FinalDialogFragment() {
+class LinkApplyDialog : ViewBindingDialogFragment<KitDialogLinkApplyBinding>() {
 
     init {
         applyGravityStyle(Gravity.BOTTOM)
     }
 
-    override fun getViewLayoutId(): Int {
-        return R.layout.kit_dialog_apply
-    }
-
     override fun init() {
-        llAudio.setOnClickListener {
+        binding.llAudio.setOnClickListener {
             request(
                 arrayOf(
                     Manifest.permission.RECORD_AUDIO
@@ -32,7 +28,7 @@ class LinkApplyDialog : FinalDialogFragment() {
                 mDefaultListener?.onDialogPositiveClick(this, false)
             }
         }
-        llVideo.setOnClickListener {
+        binding.llVideo.setOnClickListener {
             request(
                 arrayOf(
                     Manifest.permission.CAMERA,
@@ -54,7 +50,11 @@ class LinkApplyDialog : FinalDialogFragment() {
                 call.invoke(true)
             } else {
                 call.invoke(false)
-                Toast.makeText(requireContext(), getString(R.string.live_permission_check_tip), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.live_permission_check_tip),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

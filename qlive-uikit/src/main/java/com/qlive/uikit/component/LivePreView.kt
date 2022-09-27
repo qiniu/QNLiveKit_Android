@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
+import android.widget.EditText
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.qlive.core.*
@@ -14,10 +15,8 @@ import com.qlive.core.been.QCreateRoomParam
 import com.qlive.sdk.QLive
 import com.qlive.uikit.RoomPushActivity.Companion.KEY_ROOM_ID
 import com.qlive.uikitcore.QLiveUIKitContext
-import com.qlive.uikitcore.QUIKitContext
 import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
-import kotlinx.android.synthetic.main.kit_live_preview.view.*
 
 /**
  * 开播预览槽位
@@ -28,8 +27,8 @@ open class LivePreView : QKitFrameLayout {
         /**
          * 设置房间参数回调
          */
-        var makeCreateRoomParamCall: (kitContext: QLiveUIKitContext, client:QLiveClient, titleStr: String, noticeStr: String) -> QCreateRoomParam =
-            {_,_, titleStr: String, noticeStr: String ->
+        var makeCreateRoomParamCall: (kitContext: QLiveUIKitContext, client: QLiveClient, titleStr: String, noticeStr: String) -> QCreateRoomParam =
+            { _, _, titleStr: String, noticeStr: String ->
                 QCreateRoomParam().apply {
                     title = titleStr
                     notice = noticeStr
@@ -68,16 +67,17 @@ open class LivePreView : QKitFrameLayout {
     }
 
     override fun initView() {
-        tvStart.setDoubleCheckClickListener {
-            val titleStr = etTitle.text.toString()
+        findViewById<View>(R.id.tvStart).setDoubleCheckClickListener {
+            val titleStr = findViewById<EditText>(R.id.etTitle).text.toString()
             if (titleStr.isEmpty()) {
                 context?.getString(R.string.preview_hit_room_title)?.asToast(context)
                 return@setDoubleCheckClickListener
             }
-            val noticeStr = etNotice.text.toString() ?: ""
+            val noticeStr = findViewById<EditText>(R.id.etNotice).text.toString() ?: ""
             //开始创建并且加入房间
             kitContext?.createAndJoinRoomActionCall?.invoke(
-                makeCreateRoomParamCall(kitContext!!,client!!,titleStr, noticeStr), object : QLiveCallBack<Void> {
+                makeCreateRoomParamCall(kitContext!!, client!!, titleStr, noticeStr),
+                object : QLiveCallBack<Void> {
                     override fun onError(code: Int, msg: String?) {}
                     override fun onSuccess(data: Void?) {}
                 })

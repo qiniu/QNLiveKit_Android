@@ -28,7 +28,7 @@ android {
     }
 }
 
-def userAARSDK = false
+def userAARSDK = true
 
 dependencies {
 
@@ -50,6 +50,8 @@ dependencies {
         implementation depend.cardview()
         //UIkit依赖两个知名的开源库
         implementation depend.glide()
+        //如果没有开启 viewbinding 选项 务必依赖这个库
+        implementation "androidx.databinding:viewbinding:7.1.2"
     } else {
         //用源码模块的依赖方式 可以修改源码
         implementation project(':qlive-uikit')

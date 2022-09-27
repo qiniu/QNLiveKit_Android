@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.HashSet
 import java.util.LinkedHashSet
 
-class QRecyclerViewHolder(view: View) : ViewHolder(view) {
+open class QRecyclerViewHolder(view: View) : ViewHolder(view) {
     /**
      * Views indexed with their IDs
      */

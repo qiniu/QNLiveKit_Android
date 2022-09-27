@@ -7,15 +7,14 @@ import android.content.Context
 import android.content.res.Resources
 import android.util.AttributeSet
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.qlive.danmakuservice.QDanmaku
 import com.qlive.uikitcore.ext.ViewUtil
-import kotlinx.android.synthetic.main.kit_item_danmu.view.*
 
 
 /**
@@ -61,81 +60,6 @@ interface IDanmuItemView {
 }
 
 /**
- *弹幕条 带头像
- */
-class DanmuItemViewWithAvatar : FrameLayout, IDanmuItemView {
-
-    val animatorTime = 6000L
-    override var endCall: (() -> Unit)? = null
-
-    // 可以开始下一个弹幕了
-    override var nextAvalibeCall: (() -> Unit)? = null
-
-    constructor(context: Context) : this(context, null)
-    constructor(context: Context, mAttributeSet: AttributeSet?) : super(context, mAttributeSet) {
-        val view = LayoutInflater.from(context).inflate(R.layout.kit_item_danmu, this, false)
-        addView(view)
-    }
-
-    private val tansAni by lazy {
-        val transX = ObjectAnimator.ofFloat(
-            this,
-            "translationX",
-            parentWidth.toFloat(),
-            -this.measuredWidth.toFloat()
-        )
-        transX.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationRepeat(animation: Animator?) {
-            }
-
-            override fun onAnimationEnd(animation: Animator?) {
-                endCall?.invoke()
-            }
-
-            override fun onAnimationCancel(animation: Animator?) {
-            }
-
-            override fun onAnimationStart(animation: Animator?) {
-            }
-        })
-        transX.addUpdateListener {}
-        transX.duration = animatorTime
-        transX
-    }
-
-    private var danmuke: QDanmaku? = null
-    private var parentWidth: Int = 0
-
-    fun setDamukeAniml(danmuke: QDanmaku, parentWidth: Int) {
-        this.danmuke = danmuke
-        this.parentWidth = parentWidth
-        translationX = parentWidth.toFloat()
-        Glide.with(context)
-            .load(danmuke.sendUser.avatar)
-            .into(ivSenderAvatar)
-        tvSenderName.text = danmuke.sendUser.nick
-        tvContent.text = (danmuke.content)
-    }
-
-    override fun clear() {
-        nextAvalibeCall = null
-        endCall = null
-        tansAni.cancel()
-    }
-
-    override fun start() {
-        post { tansAni.start() }
-        postDelayed({
-            nextAvalibeCall?.invoke()
-        }, (animatorTime * 0.5).toLong())
-    }
-
-    override fun getView(): View {
-        return this
-    }
-}
-
-/**
  *弹幕条 只有文字
  */
 class DanmuItemViewOnlyText : FrameLayout, IDanmuItemView {
@@ -153,9 +77,8 @@ class DanmuItemViewOnlyText : FrameLayout, IDanmuItemView {
         addView(view)
     }
 
-    private var tansAni :ObjectAnimator?=null
-    private fun createAnimal()
-    {
+    private var tansAni: ObjectAnimator? = null
+    private fun createAnimal() {
         val transX = ObjectAnimator.ofFloat(
             this,
             "translationX",
@@ -168,7 +91,7 @@ class DanmuItemViewOnlyText : FrameLayout, IDanmuItemView {
             }
 
             override fun onAnimationEnd(animation: Animator?) {
-                  endCall?.invoke()
+                endCall?.invoke()
             }
 
             override fun onAnimationCancel(animation: Animator?) {
@@ -179,7 +102,7 @@ class DanmuItemViewOnlyText : FrameLayout, IDanmuItemView {
         })
         transX.addUpdateListener { v: ValueAnimator ->
         }
-        tansAni= transX
+        tansAni = transX
     }
 
     private var danmuke: QDanmaku? = null
@@ -188,8 +111,8 @@ class DanmuItemViewOnlyText : FrameLayout, IDanmuItemView {
     fun setDamukeAniml(danmuke: QDanmaku, parentWidth: Int) {
         this.danmuke = danmuke
         this.parentWidth = parentWidth
-         translationX = parentWidth.toFloat()
-        tvContent.text = (danmuke.content)
+        translationX = parentWidth.toFloat()
+        findViewById<TextView>(R.id.tvContent).text = (danmuke.content)
     }
 
     override fun clear() {

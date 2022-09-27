@@ -3,6 +3,7 @@ package com.qlive.qnlivekit
 import android.app.Application
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.QLiveClient
 import com.qlive.core.QLiveConfig
@@ -20,17 +21,17 @@ import okhttp3.Request
 class App : Application() {
     companion object {
         val demo_url = "https://niucube-api.qiniu.com"
-        //val demo_url="http://10.200.20.28:5080"
+       // val demo_url="http://10.200.20.28:5080"
         var user: BZUser? = null
     }
 
     override fun onCreate() {
         super.onCreate()
         AppCache.setContext(this)
-        Log.d("App","onCreate")
+        Log.d("App", "onCreate")
         QLive.init(this, QLiveConfig()) { callback ->
             //业务方获取token
-            Log.d("QTokenGetter","QTokenGetter ${user?.data?.loginToken}")
+            Log.d("QTokenGetter", "QTokenGetter ${user?.data?.loginToken}")
             getLoginToken(callback)
         }
 
@@ -67,5 +68,13 @@ class App : Application() {
                 callBack.onError(-1, "")
             }
         }.start()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        if (level == TRIM_MEMORY_MODERATE) {
+            Toast.makeText(this, " qlive demo onTrimMemory", Toast.LENGTH_SHORT).show()
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
     }
 }

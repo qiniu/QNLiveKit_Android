@@ -18,12 +18,12 @@ import com.qlive.linkmicservice.*
 import com.qlive.rtclive.QPushTextureView
 import com.qlive.uikitcore.*
 import com.qlive.uikitcore.ext.asToast
-import kotlinx.android.synthetic.main.kit_view_linkers.view.*
+import com.qlive.uikitlinkmic.databinding.KitViewLinkersBinding
 
 /**
  * 连麦麦位列表
  */
-open class MicLinkersView : QKitFrameLayout {
+open class MicLinkersView : QKitViewBindingFrameLayout<KitViewLinkersBinding> {
 
     companion object {
         /**
@@ -77,9 +77,9 @@ open class MicLinkersView : QKitFrameLayout {
 
     private fun init() {
         //绑定屏幕尺寸开始换算
-        LinkerUIHelper.attachUIWidth(flLinkContent.width, flLinkContent.height)
+        LinkerUIHelper.attachUIWidth(binding.root.width, binding.root.height)
         //麦位预览窗口列表
-        val rcSurfaceLp = mLinkersView.layoutParams as FrameLayout.LayoutParams
+        val rcSurfaceLp = binding.mLinkersView.layoutParams as FrameLayout.LayoutParams
         rcSurfaceLp.topMargin = LinkerUIHelper.uiTopMargin
     }
 
@@ -87,19 +87,19 @@ open class MicLinkersView : QKitFrameLayout {
     private val mQLinkMicServiceListener = object : QLinkMicServiceListener {
         override fun onLinkerJoin(micLinker: QMicLinker) {
             Log.d("LinkerSlot", " onUserJoinLink 有人上麦 ${micLinker.user.nick}")
-            mLinkersView.onLinkerJoin(micLinker)
+            binding.mLinkersView.onLinkerJoin(micLinker)
         }
 
         override fun onLinkerLeft(micLinker: QMicLinker) {
-            mLinkersView.onLinkerLeft(micLinker)
+            binding.mLinkersView.onLinkerLeft(micLinker)
         }
 
         override fun onLinkerMicrophoneStatusChange(micLinker: QMicLinker) {
-            mLinkersView.onLinkerMicrophoneStatusChange(micLinker)
+            binding.mLinkersView.onLinkerMicrophoneStatusChange(micLinker)
         }
 
         override fun onLinkerCameraStatusChange(micLinker: QMicLinker) {
-            mLinkersView.onLinkerCameraStatusChange(micLinker)
+            binding.mLinkersView.onLinkerCameraStatusChange(micLinker)
         }
 
         override fun onLinkerKicked(micLinker: QMicLinker, msg: String) {
@@ -123,7 +123,7 @@ open class MicLinkersView : QKitFrameLayout {
         @SuppressLint("NotifyDataSetChanged")
         override fun onRoleChange(isLinker: Boolean) {
             Log.d("LinkerSlot", " lonLocalRoleChange 本地角色变化 ${isLinker}")
-            mLinkersView.setRole(isLinker)
+            binding.mLinkersView.setRole(isLinker)
             if (isLinker) {
                 addAnchorPreview()
             } else {
@@ -159,14 +159,10 @@ open class MicLinkersView : QKitFrameLayout {
             }
         }
 
-    override fun getLayoutId(): Int {
-        return R.layout.kit_view_linkers
-    }
-
     override fun initView() {
-        mLinkersView.linkService = client?.getService(QLinkMicService::class.java)
+        binding.mLinkersView.linkService = client?.getService(QLinkMicService::class.java)
         if (client!!.clientType == QClientType.PUSHER) {
-            mLinkersView.setRole(true)
+            binding.mLinkersView.setRole(true)
             //我是主播
             client!!.getService(QLinkMicService::class.java).anchorHostMicHandler.setMixStreamAdapter(
                 mLinkMicMixStreamAdapter
@@ -180,10 +176,10 @@ open class MicLinkersView : QKitFrameLayout {
         //添加连麦麦位监听
         client!!.getService(QLinkMicService::class.java)
             .addMicLinkerListener(mQLinkMicServiceListener)
-        flLinkContent.post {
+        binding.root.post {
             init()
         }
-        mLinkersView.onItemLinkerClickListener = { v, i ->
+        binding.mLinkersView.onItemLinkerClickListener = { v, i ->
             onItemLinkerClickListener.invoke(kitContext!!, client!!, v, i)
         }
     }
@@ -191,11 +187,11 @@ open class MicLinkersView : QKitFrameLayout {
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
         super.onJoined(roomInfo, isResumeUIFromFloating)
         if (isResumeUIFromFloating && client?.clientType == QClientType.PLAYER) {
-            flLinkContent.post {
+            binding.root.post {
                 linkService.allLinker.forEach {
                     if (it.user?.userId != roomInfo.anchor?.userId) {
                         //从销毁的activity 小窗恢复麦位置UI 没有小窗模式可以不加
-                        mLinkersView.onLinkerJoin(it)
+                        binding.mLinkersView.onLinkerJoin(it)
                     }
                 }
             }
@@ -223,8 +219,8 @@ open class MicLinkersView : QKitFrameLayout {
 
     private fun addAnchorPreview() {
         Log.d("LinkerSlot", "  添加窗口房主")
-        flAnchorSurfaceCotiner.visibility = View.VISIBLE
-        flAnchorSurfaceCotiner.addView(
+        binding.flAnchorSurfaceCotiner.visibility = View.VISIBLE
+        binding.flAnchorSurfaceCotiner.addView(
             QPushTextureView(context).apply {
                 linkService.setUserPreview(roomInfo?.anchor?.userId ?: "", this)
             },
@@ -237,12 +233,12 @@ open class MicLinkersView : QKitFrameLayout {
 
     private fun removeAnchorPreview() {
         Log.d("LinkerSlot", "  移除窗口房主")
-        flAnchorSurfaceCotiner.removeAllViews()
-        flAnchorSurfaceCotiner.visibility = View.INVISIBLE
+        binding.flAnchorSurfaceCotiner.removeAllViews()
+        binding.flAnchorSurfaceCotiner.visibility = View.INVISIBLE
     }
 
     override fun onLeft() {
         super.onLeft()
-        mLinkersView.clear()
+        binding.mLinkersView.clear()
     }
 }

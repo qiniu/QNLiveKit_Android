@@ -21,6 +21,7 @@ import com.qlive.liblog.QLiveLogUtil
 import com.qlive.playerclient.QPlayerClient
 import com.qlive.pubchatservice.QPublicChat
 import com.qlive.pubchatservice.QPublicChatService
+import com.qlive.qplayer.QPlayerTextureRenderView
 import com.qlive.roomservice.QRoomService
 import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.activity.BaseFrameActivity
@@ -34,7 +35,6 @@ import com.qlive.uikit.component.FuncCPTPlayerFloatingHandler
 import com.qlive.uikit.component.OnKeyDownMonitor
 import com.qlive.uikitcore.KITLiveInflaterFactory
 import com.qlive.uikitcore.getCode
-import kotlinx.android.synthetic.main.kit_activity_room_player.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -132,6 +132,10 @@ class RoomPlayerActivity : BaseFrameActivity() {
         { p, c ->
             Toast.makeText(this, "player activity can not create", Toast.LENGTH_SHORT).show()
         }
+
+    private val playerRenderView: QPlayerTextureRenderView by lazy {
+        findViewById(R.id.playerRenderView)
+    }
 
     //UI组件上下文
     private val mQUIKitContext by lazy {

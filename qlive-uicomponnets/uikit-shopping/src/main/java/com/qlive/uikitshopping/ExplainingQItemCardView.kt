@@ -10,9 +10,9 @@ import com.qlive.core.been.QExtension
 import com.qlive.shoppingservice.QItem
 import com.qlive.shoppingservice.QShoppingService
 import com.qlive.shoppingservice.QShoppingServiceListener
-import com.qlive.uikitcore.QKitCardView
+import com.qlive.uikitcore.QKitViewBindingCardView
 import com.qlive.uikitcore.QLiveUIKitContext
-import kotlinx.android.synthetic.main.kit_view_explaining_qitem.view.*
+import com.qlive.uikitshopping.databinding.KitViewExplainingQitemBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
  *
  * @constructor Create empty Explaining q item view
  */
-class ExplainingQItemCardView : QKitCardView {
+class ExplainingQItemCardView : QKitViewBindingCardView<KitViewExplainingQitemBinding> {
 
     companion object {
         /**
@@ -50,10 +50,6 @@ class ExplainingQItemCardView : QKitCardView {
         visibility = View.GONE
     }
 
-    override fun getLayoutId(): Int {
-        return R.layout.kit_view_explaining_qitem
-    }
-
     private var job: Job? = null
 
     private fun startShowJob() {
@@ -73,10 +69,10 @@ class ExplainingQItemCardView : QKitCardView {
             if (item != null) {
                 Glide.with(kitContext!!.androidContext)
                     .load(item.thumbnail)
-                    .into(ivCover)
-                tvNowPrice.text = item.currentPrice
-                tvTitle.text = item.title
-                tvOrder.text = item.order.toString()
+                    .into(binding.ivCover)
+                binding.tvNowPrice.text = item.currentPrice
+                binding.tvTitle.text = item.title
+                binding.tvOrder.text = item.order.toString()
                 visibility = View.VISIBLE
                 job?.cancel()
                 startShowJob()
@@ -101,7 +97,7 @@ class ExplainingQItemCardView : QKitCardView {
                 )
             }
         }
-        ivClose.setOnClickListener {
+        binding. ivClose.setOnClickListener {
             job?.cancel()
             visibility = View.GONE
         }

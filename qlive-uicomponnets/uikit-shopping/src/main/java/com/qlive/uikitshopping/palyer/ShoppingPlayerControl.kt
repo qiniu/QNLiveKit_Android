@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
@@ -25,7 +26,7 @@ import com.qlive.uikitcore.dialog.FinalDialogFragment
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
 import com.qlive.uikitshopping.R
 import com.qlive.uikitshopping.WatchExplainingPage.Companion.params_key_item
-import kotlinx.android.synthetic.main.kit_view_player_control.view.*
+import com.qlive.uikitshopping.databinding.KitViewPlayerControlBinding
 import java.util.*
 
 /**
@@ -40,6 +41,8 @@ class ShoppingPlayerControl : QRoomComponent, FrameLayout {
     override var kitContext: QLiveUIKitContext? = null
     private val mPlaySpeedSelectDialog by lazy { PlaySpeedSelectDialog() }
 
+    private lateinit var binding: KitViewPlayerControlBinding
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -47,12 +50,12 @@ class ShoppingPlayerControl : QRoomComponent, FrameLayout {
         attrs,
         defStyleAttr
     ) {
-        LayoutInflater.from(context).inflate(R.layout.kit_view_player_control, this, true)
+        binding = KitViewPlayerControlBinding.inflate(LayoutInflater.from(context), this, true)
         val bufferView =
             LayoutInflater.from(context).inflate(R.layout.kit_player_buffer_view, this, false)
-        plVideoView.setBufferingIndicator(bufferView)
-        plVideoView.displayAspectRatio = PreviewMode.ASPECT_RATIO_PAVED_PARENT.intValue
-        plVideoView.setAVOptions(AVOptions().apply {
+        binding.plVideoView.setBufferingIndicator(bufferView)
+        binding.plVideoView.displayAspectRatio = PreviewMode.ASPECT_RATIO_PAVED_PARENT.intValue
+        binding.plVideoView.setAVOptions(AVOptions().apply {
             setInteger(AVOptions.KEY_FAST_OPEN, 1);
             setInteger(AVOptions.KEY_OPEN_RETRY_TIMES, 5);
             setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000);
@@ -61,41 +64,43 @@ class ShoppingPlayerControl : QRoomComponent, FrameLayout {
             setInteger(AVOptions.KEY_LOG_LEVEL, 5)
         })
 
-        error.setDoubleCheckClickListener {
-            plVideoView.start()
+        binding.error.setDoubleCheckClickListener {
+            binding.plVideoView.start()
             checkCurrentStatus()
         }
-        center_start.setDoubleCheckClickListener {
-            plVideoView.start()
+        binding.root.findViewById<View>(R.id.center_start).setDoubleCheckClickListener {
+            binding.plVideoView.start()
             checkCurrentStatus()
         }
-        restart_or_pause.setDoubleCheckClickListener {
-            if (plVideoView.isPlaying) {
-                plVideoView.pause()
+        binding.root.findViewById<View>(R.id.restart_or_pause).setDoubleCheckClickListener {
+            if (binding.plVideoView.isPlaying) {
+                binding.plVideoView.pause()
             } else {
-                plVideoView.start()
+                binding.plVideoView.start()
             }
             checkCurrentStatus()
         }
-        plVideoView.setOnPreparedListener {
-            plVideoView.isLooping = true
+        binding.plVideoView.setOnPreparedListener {
+            binding.plVideoView.isLooping = true
         }
-        plVideoView.setOnErrorListener { i, any ->
+        binding.plVideoView.setOnErrorListener { i, any ->
             QLiveLogUtil.d(
                 "mIMediaPlayer", "onErrorListener  ${i} ${any}  "
             )
-            error.visibility = View.VISIBLE
-            center_start.visibility = View.GONE
+            binding.error.visibility = View.VISIBLE
+            binding.root.findViewById<View>(R.id.center_start).visibility = View.GONE
             true
         }
-        plVideoView.setOnVideoSizeChangedListener { w, h ->
+        binding.plVideoView.setOnVideoSizeChangedListener { w, h ->
             if (w / h.toFloat() < 12 / 16f) {
-                plVideoView.displayAspectRatio = (PreviewMode.ASPECT_RATIO_PAVED_PARENT.intValue)
+                binding.plVideoView.displayAspectRatio =
+                    (PreviewMode.ASPECT_RATIO_PAVED_PARENT.intValue)
             } else {
-                plVideoView.displayAspectRatio = (PreviewMode.ASPECT_RATIO_FIT_PARENT.intValue)
+                binding.plVideoView.displayAspectRatio =
+                    (PreviewMode.ASPECT_RATIO_FIT_PARENT.intValue)
             }
         }
-        plVideoView.setOnInfoListener { what, extra, _ ->
+        binding.plVideoView.setOnInfoListener { what, extra, _ ->
             if (what != PLOnInfoListener.MEDIA_INFO_VIDEO_FRAME_RENDERING &&
                 what != PLOnInfoListener.MEDIA_INFO_AUDIO_FRAME_RENDERING
             ) {
@@ -105,7 +110,7 @@ class ShoppingPlayerControl : QRoomComponent, FrameLayout {
                 )
             }
         }
-        seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
             }
 
@@ -113,25 +118,25 @@ class ShoppingPlayerControl : QRoomComponent, FrameLayout {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                if (plVideoView.playerState == PlayerState.PAUSED) {
-                    plVideoView.start()
+                if (binding.plVideoView.playerState == PlayerState.PAUSED) {
+                    binding.plVideoView.start()
                 }
-                val d: Long = plVideoView.duration
+                val d: Long = binding.plVideoView.duration
                 val sp: Long = seekBar.progress.toLong()
-                val position = (plVideoView.duration * seekBar.progress / 100f)
-                plVideoView.seekTo(position.toLong())
+                val position = (binding.plVideoView.duration * seekBar.progress / 100f)
+                binding.plVideoView.seekTo(position.toLong())
             }
         })
         mPlaySpeedSelectDialog.mDefaultListener =
             object : FinalDialogFragment.BaseDialogListener() {
                 override fun onDialogPositiveClick(dialog: DialogFragment, any: Any) {
                     (any as PlaySpeedSelectDialog.PlaySpeed?)?.let {
-                        plVideoView.setPlaySpeed(it.speedValue)
-                        tvMultiple.text = it.speedName
+                        binding.plVideoView.setPlaySpeed(it.speedValue)
+                        binding.tvMultiple.text = it.speedName
                     }
                 }
             }
-        tvMultiple.setOnClickListener {
+        binding.tvMultiple.setOnClickListener {
             mPlaySpeedSelectDialog.show(kitContext!!.fragmentManager, "")
         }
     }
@@ -161,34 +166,35 @@ class ShoppingPlayerControl : QRoomComponent, FrameLayout {
     }
 
     private val updateProgressJob = Scheduler(1000) {
-        if (plVideoView?.playerState == PlayerState.PLAYING) {
-            val position: Long = plVideoView!!.currentPosition
-            val duration: Long = plVideoView!!.duration
-            val bufferPercentage: Int = plVideoView!!.bufferPercentage
-            seek.secondaryProgress = bufferPercentage
+        if (binding.plVideoView.playerState == PlayerState.PLAYING) {
+            val position: Long = binding.plVideoView!!.currentPosition
+            val duration: Long = binding.plVideoView!!.duration
+            val bufferPercentage: Int = binding.plVideoView!!.bufferPercentage
+            binding.seek.secondaryProgress = bufferPercentage
             val progress = (100f * position / duration).toInt()
-            seek.progress = progress
-            tvPosition.text = formatTime(position)
-            tvDuration.text = formatTime(duration)
+            binding.seek.progress = progress
+            binding.tvPosition.text = formatTime(position)
+            binding.tvDuration.text = formatTime(duration)
         }
     }
 
     private fun checkCurrentStatus() {
-        val status = plVideoView.playerState
-        when (status) {
+        when (binding.plVideoView.playerState) {
             PlayerState.PLAYING -> {
-                error.visibility = View.GONE
-                center_start.visibility = View.GONE
-                restart_or_pause.setImageResource(R.mipmap.ic_player_pause)
+                binding.error.visibility = View.GONE
+                binding.root.findViewById<View>(R.id.center_start).visibility = View.GONE
+                binding.root.findViewById<ImageView>(R.id.restart_or_pause)
+                    .setImageResource(R.mipmap.ic_player_pause)
             }
 
             PlayerState.PAUSED -> {
-                error.visibility = View.GONE
-                center_start.visibility = View.VISIBLE
-                restart_or_pause.setImageResource(R.mipmap.ic_player_start)
+                binding.error.visibility = View.GONE
+                binding.root.findViewById<View>(R.id.center_start).visibility = View.VISIBLE
+                binding.root.findViewById<ImageView>(R.id.restart_or_pause)
+                    .setImageResource(R.mipmap.ic_player_start)
             }
         }
-        if (plVideoView?.isPlaying == true) {
+        if (binding.plVideoView.isPlaying) {
             if (!updateProgressJob.isStarting) {
                 updateProgressJob.start()
             }
@@ -201,14 +207,14 @@ class ShoppingPlayerControl : QRoomComponent, FrameLayout {
         super.onStateChanged(source, event)
         if (event == Lifecycle.Event.ON_DESTROY) {
             updateProgressJob.cancel()
-            plVideoView.stopPlayback()
+            binding.plVideoView.stopPlayback()
         }
         if (event == Lifecycle.Event.ON_PAUSE) {
-            plVideoView.pause()
+            binding.plVideoView.pause()
         }
         if (event == Lifecycle.Event.ON_RESUME) {
-            if (plVideoView.playerState == PlayerState.PAUSED) {
-                plVideoView.start()
+            if (binding.plVideoView.playerState == PlayerState.PAUSED) {
+                binding.plVideoView.start()
                 checkCurrentStatus()
             }
         }
@@ -218,8 +224,8 @@ class ShoppingPlayerControl : QRoomComponent, FrameLayout {
         super.onEntering(roomInfo, user)
         val item =
             (kitContext?.getIntent()?.getSerializableExtra(params_key_item) as QItem?) ?: return
-        plVideoView.setVideoURI(Uri.parse(item.record?.recordURL?:""))
-        plVideoView.start()
+        binding.plVideoView.setVideoURI(Uri.parse(item.record?.recordURL ?: ""))
+        binding.plVideoView.start()
     }
 
 }

@@ -20,17 +20,19 @@ import com.qlive.shoppingservice.QItemStatus
 import com.qlive.shoppingservice.QShoppingService
 import com.qlive.shoppingservice.QShoppingServiceListener
 import com.qlive.uikitcore.QLiveUIKitContext
+import com.qlive.uikitcore.adapter.QRecyclerAdapter
+import com.qlive.uikitcore.adapter.QRecyclerViewBindHolder
 import com.qlive.uikitcore.adapter.QRecyclerViewHolder
 import com.qlive.uikitcore.dialog.CommonTipDialog
-import com.qlive.uikitcore.dialog.FinalDialogFragment
 import com.qlive.uikitcore.dialog.LoadingDialog
+import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
 import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
-import com.qlive.uikitcore.smartrecycler.QSmartAdapter
+import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
+import com.qlive.uikitshopping.databinding.KitDialogAnchorShoppingBinding
+import com.qlive.uikitshopping.databinding.KitItemAnchorGoodsBinding
 import com.qlive.uikitshopping.ui.flowlayout.FlowLayout
 import com.qlive.uikitshopping.ui.flowlayout.TagAdapter
-import kotlinx.android.synthetic.main.kit_dialog_abchor_shopping.*
-import kotlinx.android.synthetic.main.kit_item_anchor_goods.view.*
 import java.util.*
 
 /**
@@ -43,7 +45,7 @@ import java.util.*
 class AnchorShoppingDialog(
     private val kitContext: QLiveUIKitContext,
     private val client: QLiveClient
-) : FinalDialogFragment() {
+) : ViewBindingDialogFragment<KitDialogAnchorShoppingBinding>() {
 
     /**
      * Companion静态配置
@@ -52,14 +54,9 @@ class AnchorShoppingDialog(
      */
     companion object {
         /**
-         * 自定义布局
-         */
-        var layoutId = R.layout.kit_dialog_abchor_shopping
-
-        /**
          * 自定义列表适配
          */
-        var adapterCreate: (context: QLiveUIKitContext, client: QLiveClient) -> QSmartAdapter<QItem>? =
+        var adapterCreate: (context: QLiveUIKitContext, client: QLiveClient) -> QSmartViewBindAdapter<QItem,*>? =
             { _, _ ->
                 null
             }
@@ -118,26 +115,22 @@ class AnchorShoppingDialog(
         }
     }
 
-    override fun getViewLayoutId(): Int {
-        return layoutId
-    }
-
     private fun loadItem() {
         shoppingService.getItemList(object : QLiveCallBack<List<QItem>> {
             override fun onError(code: Int, msg: String) {
-                recyclerViewGoods?.onFetchDataError()
+                binding.recyclerViewGoods.onFetchDataError()
             }
 
             override fun onSuccess(data: List<QItem>) {
                 data.forEachIndexed { index, qItem ->
                     if (qItem.itemID == shoppingService.explaining?.itemID) {
                         lastExplainingIndex = index
-                        recyclerViewGoods?.post {
+                        binding.recyclerViewGoods.post {
                             mShoppingRecordTimer.checkStart(qItem)
                         }
                     }
                 }
-                recyclerViewGoods?.onFetchDataFinish(data, false)
+                binding.recyclerViewGoods.onFetchDataFinish(data, false)
 
             }
         })
@@ -151,21 +144,21 @@ class AnchorShoppingDialog(
 
     override fun init() {
         shoppingService.addServiceListener(mShoppingServiceListener)
-        recyclerViewGoods.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerViewGoods.setUp(adapter,  false, true) {
+        binding.recyclerViewGoods.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewGoods.setUp(adapter, false, true) {
             loadItem()
         }
         //adapter.onAttachedToRecyclerView(recyclerViewGoods.recyclerView)
-        tvManager.setOnClickListener {
+        binding.tvManager.setOnClickListener {
             val d = ShoppingManagerDialog(kitContext, client)
             d.mDefaultListener = object : BaseDialogListener() {
                 override fun onDismiss(dialog: DialogFragment) {
-                    recyclerViewGoods.startRefresh()
+                    binding.recyclerViewGoods.startRefresh()
                 }
             }
             d.show(childFragmentManager, "")
         }
-        recyclerViewGoods.startRefresh()
+        binding.recyclerViewGoods.startRefresh()
     }
 
     private fun formatTime(duration: Long): String {
@@ -186,22 +179,34 @@ class AnchorShoppingDialog(
         }
     }
 
-    private inner class AnchorShoppingAdapter : QSmartAdapter<QItem>(
-        R.layout.kit_item_anchor_goods,
-        ArrayList<QItem>()
-    ) {
+    private inner class AnchorShoppingAdapter :
+        QSmartViewBindAdapter<QItem, KitItemAnchorGoodsBinding>() {
 
-        override fun convert(helper: QRecyclerViewHolder, item: QItem) {
+        private fun showTip(tip: String, call: () -> Unit) {
+            CommonTipDialog.TipBuild()
+                .setTittle(tip)
+                .setListener(object : BaseDialogListener() {
+                    override fun onDialogPositiveClick(dialog: DialogFragment, any: Any) {
+                        super.onDialogPositiveClick(dialog, any)
+                        call.invoke()
+                    }
+                }).build("AnchorShoppingDialog_manager").show(childFragmentManager, "")
+        }
+
+        override fun convertViewBindHolder(
+            helper: QRecyclerViewBindHolder<KitItemAnchorGoodsBinding>,
+            item: QItem
+        ) {
             Glide.with(mContext)
                 .load(item.thumbnail)
-                .into(helper.itemView.ivCover)
-            helper.itemView.mAutoVoiceWaveView.attach(kitContext.lifecycleOwner)
+                .into(helper.binding.ivCover)
+            helper.binding.mAutoVoiceWaveView.attach(kitContext.lifecycleOwner)
             if (shoppingService.explaining?.itemID == item.itemID) {
                 lastExplainingIndex = data.indexOf(item)
-                helper.itemView.llItemShowing.visibility = View.VISIBLE
-                helper.itemView.mAutoVoiceWaveView.setAutoPlay(true)
-                helper.itemView.tvExplaining.text = getString(R.string.shopping_stop_explaining)
-                helper.itemView.tvExplaining.setOnClickListener {
+                helper.binding.llItemShowing.visibility = View.VISIBLE
+                helper.binding.mAutoVoiceWaveView.setAutoPlay(true)
+                helper.binding.tvExplaining.text = getString(R.string.shopping_stop_explaining)
+                helper.binding.tvExplaining.setOnClickListener {
                     LoadingDialog.showLoading(kitContext.fragmentManager)
                     shoppingService.cancelExplaining(object : QLiveCallBack<Void> {
                         override fun onError(code: Int, msg: String?) {
@@ -211,16 +216,15 @@ class AnchorShoppingDialog(
 
                         override fun onSuccess(data: Void?) {
                             LoadingDialog.cancelLoadingDialog()
-                            recyclerViewGoods.startRefresh()
+                            binding.recyclerViewGoods.startRefresh()
                         }
                     })
                 }
-
             } else {
-                helper.itemView.llItemShowing.visibility = View.GONE
-                helper.itemView.mAutoVoiceWaveView.setAutoPlay(false)
-                helper.itemView.tvExplaining.text = getString(R.string.shopping_explaining)
-                helper.itemView.tvExplaining.setOnClickListener {
+                helper.binding.llItemShowing.visibility = View.GONE
+                helper.binding.mAutoVoiceWaveView.setAutoPlay(false)
+                helper.binding.tvExplaining.text = getString(R.string.shopping_explaining)
+                helper.binding.tvExplaining.setOnClickListener {
                     LoadingDialog.showLoading(kitContext.fragmentManager)
                     shoppingService.setExplaining(item, object : QLiveCallBack<Void> {
                         override fun onError(code: Int, msg: String?) {
@@ -230,15 +234,15 @@ class AnchorShoppingDialog(
 
                         override fun onSuccess(data: Void?) {
                             LoadingDialog.cancelLoadingDialog()
-                            recyclerViewGoods.recyclerView.smoothScrollToPosition(0)
-                            recyclerViewGoods.startRefresh()
+                            binding.recyclerViewGoods.recyclerView.smoothScrollToPosition(0)
+                            binding.recyclerViewGoods.startRefresh()
                         }
                     })
                 }
             }
-            helper.itemView.tvOrder.text = item.order.toString()
-            helper.itemView.tvGoodsName.text = item.title
-            helper.itemView.flGoodsTag.adapter =
+            helper.binding.tvOrder.text = item.order.toString()
+            helper.binding.tvGoodsName.text = item.title
+            helper.binding.flGoodsTag.adapter =
                 object : TagAdapter<TagItem>(
                     TagItem.strToTagItem(
                         item.tags
@@ -252,18 +256,18 @@ class AnchorShoppingDialog(
                         return v
                     }
                 }
-            helper.itemView.tvNowPrice.text = item.currentPrice
-            helper.itemView.tvOriginPrice.text = item.originPrice
-            helper.itemView.tvOriginPrice.paint.flags = Paint.STRIKE_THRU_TEXT_FLAG;
-            helper.itemView.tvPull.setOnClickListener { }
+            helper.binding.tvNowPrice.text = item.currentPrice
+            helper.binding.tvOriginPrice.text = item.originPrice
+            helper.binding.tvOriginPrice.paint.flags = Paint.STRIKE_THRU_TEXT_FLAG;
+            helper.binding.tvPull.setOnClickListener { }
 
             if (item.status == QItemStatus.PULLED.value) {
-                helper.itemView.tvExplaining.isSelected = false
-                helper.itemView.tvExplaining.isClickable = false
+                helper.binding.tvExplaining.isSelected = false
+                helper.binding.tvExplaining.isClickable = false
                 //已经下架
-                helper.itemView.tvPulledCover.visibility = View.VISIBLE
-                helper.itemView.tvPull.text = getString(R.string.shopping_go_sale)
-                helper.itemView.tvPull.setOnClickListener {
+                helper.binding.tvPulledCover.visibility = View.VISIBLE
+                helper.binding.tvPull.text = getString(R.string.shopping_go_sale)
+                helper.binding.tvPull.setOnClickListener {
                     showTip(getString(R.string.shopping_is_confirm_sale)) {
                         LoadingDialog.showLoading(kitContext.fragmentManager)
                         shoppingService.updateItemStatus(item.itemID, QItemStatus.ON_SALE,
@@ -285,12 +289,12 @@ class AnchorShoppingDialog(
 
             if (item.status == QItemStatus.ON_SALE.value || item.status == QItemStatus.ONLY_DISPLAY.value) {
                 //已经上架
-                helper.itemView.tvExplaining.isClickable = true
-                helper.itemView.tvExplaining.isSelected = true
-                helper.itemView.tvPulledCover.visibility = View.GONE
-                helper.itemView.tvPull.text = getString(R.string.shopping_go_pulled)
+                helper.binding.tvExplaining.isClickable = true
+                helper.binding.tvExplaining.isSelected = true
+                helper.binding.tvPulledCover.visibility = View.GONE
+                helper.binding.tvPull.text = getString(R.string.shopping_go_pulled)
 
-                helper.itemView.tvPull.setOnClickListener {
+                helper.binding.tvPull.setOnClickListener {
                     if (shoppingService.explaining?.itemID == item.itemID) {
                         getString(R.string.shopping_tip_explaining).asToast(context)
                         return@setOnClickListener
@@ -316,27 +320,27 @@ class AnchorShoppingDialog(
 
             when (item.record?.status) {
                 RECORD_STATUS_FINISHED -> {
-                    helper.itemView.tvStartRecord.visibility = View.GONE
-                    helper.itemView.llRecording.visibility = View.GONE
-                    helper.itemView.llRecorded.visibility = View.VISIBLE
-                    helper.itemView.ivRecordDuration.text =
+                    helper.binding.tvStartRecord.visibility = View.GONE
+                    helper.binding.llRecording.visibility = View.GONE
+                    helper.binding.llRecorded.visibility = View.VISIBLE
+                    helper.binding.ivRecordDuration.text =
                         formatTime((item.record?.end ?: 0L) - (item.record?.start ?: 0L))
                 }
                 RECORD_STATUS_RECORDING -> {
-                    helper.itemView.tvStartRecord.visibility = View.GONE
-                    helper.itemView.llRecording.visibility = View.VISIBLE
-                    helper.itemView.llRecorded.visibility = View.GONE
-                    helper.itemView.ivRecordPosition.text =
-                        formatTime((System.currentTimeMillis()/1000) - (item.record?.start ?: 0L))
+                    helper.binding.tvStartRecord.visibility = View.GONE
+                    helper.binding.llRecording.visibility = View.VISIBLE
+                    helper.binding.llRecorded.visibility = View.GONE
+                    helper.binding.ivRecordPosition.text =
+                        formatTime((System.currentTimeMillis() / 1000) - (item.record?.start ?: 0L))
                 }
                 else -> {
-                    helper.itemView.tvStartRecord.visibility = View.GONE
-                    helper.itemView.llRecording.visibility = View.GONE
-                    helper.itemView.llRecorded.visibility = View.GONE
+                    helper.binding.tvStartRecord.visibility = View.GONE
+                    helper.binding.llRecording.visibility = View.GONE
+                    helper.binding.llRecorded.visibility = View.GONE
                 }
             }
-            helper.itemView.llRecorded.setDoubleCheckClickListener {
-                showTip(mContext.getString(R.string.shopping_is_confirm_remove_record)){
+            helper.binding.llRecorded.setDoubleCheckClickListener {
+                showTip(mContext.getString(R.string.shopping_is_confirm_remove_record)) {
                     client.getService(QShoppingService::class.java)
                         .deleteRecord(listOf(item.record?.id), object : QLiveCallBack<Void> {
                             override fun onError(code: Int, msg: String?) {
@@ -344,7 +348,7 @@ class AnchorShoppingDialog(
                             }
 
                             override fun onSuccess(data: Void?) {
-                                recyclerViewGoods.startRefresh()
+                                binding.recyclerViewGoods.startRefresh()
                             }
                         })
                 }
@@ -352,34 +356,23 @@ class AnchorShoppingDialog(
             if (shoppingService.explaining?.itemID == item.itemID
                 && item.record == null
             ) {
-                helper.itemView.tvStartRecord.visibility = View.VISIBLE
-                helper.itemView.tvStartRecord.setOnClickListener {
+                helper.binding.tvStartRecord.visibility = View.VISIBLE
+                helper.binding.tvStartRecord.setOnClickListener {
                     client.getService(QShoppingService::class.java)
                         .startRecord(object : QLiveCallBack<Void> {
                             override fun onError(code: Int, msg: String?) {
-                               msg?.asToast(context)
+                                msg?.asToast(context)
                             }
 
                             override fun onSuccess(data: Void?) {
-                                recyclerViewGoods.startRefresh()
+                                binding.recyclerViewGoods.startRefresh()
                             }
                         })
                 }
             } else {
-                helper.itemView.tvStartRecord.visibility = View.GONE
-                helper.itemView.tvStartRecord.setOnClickListener(null)
+                helper.binding.tvStartRecord.visibility = View.GONE
+                helper.binding.tvStartRecord.setOnClickListener(null)
             }
-        }
-
-        private fun showTip(tip: String, call: () -> Unit) {
-            CommonTipDialog.TipBuild()
-                .setTittle(tip)
-                .setListener(object : BaseDialogListener() {
-                    override fun onDialogPositiveClick(dialog: DialogFragment, any: Any) {
-                        super.onDialogPositiveClick(dialog, any)
-                        call.invoke()
-                    }
-                }).build("AnchorShoppingDialog_manager").show(childFragmentManager, "")
         }
     }
 }

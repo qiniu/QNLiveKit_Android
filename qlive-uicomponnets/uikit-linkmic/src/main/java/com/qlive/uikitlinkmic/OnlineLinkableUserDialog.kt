@@ -8,28 +8,27 @@ import com.qlive.core.QLiveCallBack
 import com.qlive.core.been.QLiveUser
 import com.qlive.roomservice.QRoomService
 import com.qlive.sdk.QLive
-import com.qlive.uikitcore.adapter.QRecyclerViewHolder
-import com.qlive.uikitcore.dialog.FinalDialogFragment
+import com.qlive.uikitcore.adapter.QRecyclerViewBindAdapter
+import com.qlive.uikitcore.adapter.QRecyclerViewBindHolder
+import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
 import com.qlive.uikitcore.ext.ViewUtil
 import com.qlive.uikitcore.ext.bg
-import com.qlive.uikitcore.smartrecycler.QSmartAdapter
+import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
 import com.qlive.uikitcore.view.SimpleDividerDecoration
-import kotlinx.android.synthetic.main.kit_item_linkable.view.*
-import kotlinx.android.synthetic.main.kit_online_linkable_dialog.*
+import com.qlive.uikitlinkmic.databinding.KitItemLinkableBinding
+import com.qlive.uikitlinkmic.databinding.KitOnlineLinkableDialogBinding
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class OnlineLinkableUserDialog(private val roomService: QRoomService) : FinalDialogFragment() {
+class OnlineLinkableUserDialog(private val roomService: QRoomService) :
+    ViewBindingDialogFragment<KitOnlineLinkableDialogBinding>() {
 
     init {
         applyGravityStyle(Gravity.BOTTOM)
     }
 
     private val mAdapter = OnlineUserAdapter()
-    override fun getViewLayoutId(): Int {
-        return R.layout.kit_online_linkable_dialog
-    }
 
     fun setInviteCall(inviteCall: (room: QLiveUser) -> Unit) {
         mAdapter.inviteCall = inviteCall
@@ -54,11 +53,11 @@ class OnlineLinkableUserDialog(private val roomService: QRoomService) : FinalDia
                 val data = suspendLoad(page).filter {
                     it.userId != QLive.getLoginUser().userId
                 }
-                mSmartRecyclerView.onFetchDataFinish(data, false)
+                binding.mSmartRecyclerView.onFetchDataFinish(data, false)
             }
             //运行出错
             catchError {
-                mSmartRecyclerView.onFetchDataError()
+                binding.mSmartRecyclerView.onFetchDataError()
             }
             //最后收尾
             onFinally {
@@ -67,30 +66,32 @@ class OnlineLinkableUserDialog(private val roomService: QRoomService) : FinalDia
     }
 
     override fun init() {
-        mSmartRecyclerView.recyclerView.addItemDecoration(
+        binding.mSmartRecyclerView.recyclerView.addItemDecoration(
             SimpleDividerDecoration(
                 requireContext(),
                 Color.parseColor("#EAEAEA"), ViewUtil.dip2px(1f)
             )
         )
-        mSmartRecyclerView.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        mSmartRecyclerView.setUp(mAdapter, true, true) {
+        binding.mSmartRecyclerView.recyclerView.layoutManager =
+            LinearLayoutManager(requireContext())
+        binding.mSmartRecyclerView.setUp(mAdapter, true, true) {
             load(it)
         }
-        mSmartRecyclerView.startRefresh()
+        binding.mSmartRecyclerView.startRefresh()
     }
 
-    class OnlineUserAdapter : QSmartAdapter<QLiveUser>(
-        R.layout.kit_item_linkable
-    ) {
+    class OnlineUserAdapter : QSmartViewBindAdapter<QLiveUser, KitItemLinkableBinding>() {
         var inviteCall: (user: QLiveUser) -> Unit = {
         }
 
-        override fun convert(helper: QRecyclerViewHolder, item: QLiveUser) {
+        override fun convertViewBindHolder(
+            helper: QRecyclerViewBindHolder<KitItemLinkableBinding>,
+            item: QLiveUser
+        ) {
             Glide.with(mContext).load(item.avatar)
-                .into(helper.itemView.ivAvatar)
-            helper.itemView.tvUserName.text = item.nick
-            helper.itemView.ivInvite.setOnClickListener {
+                .into(helper.binding.ivAvatar)
+            helper.binding.tvUserName.text = item.nick
+            helper.binding.ivInvite.setOnClickListener {
                 inviteCall.invoke(item)
             }
         }

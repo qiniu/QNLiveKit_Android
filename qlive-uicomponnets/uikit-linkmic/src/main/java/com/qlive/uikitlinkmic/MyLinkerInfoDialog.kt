@@ -13,15 +13,16 @@ import com.qlive.uikitcore.dialog.FinalDialogFragment
 import com.qlive.uikitcore.dialog.LoadingDialog
 import com.qlive.core.been.QLiveUser
 import com.qlive.uikitcore.Scheduler
+import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
-import kotlinx.android.synthetic.main.kit_dialog_my_linker_info.*
+import com.qlive.uikitlinkmic.databinding.KitDialogMyLinkerInfoBinding
 import java.text.DecimalFormat
 
 /**
  * 我的连麦信息弹窗
  */
 class MyLinkerInfoDialog(val service: QLinkMicService, val me: QLiveUser) :
-    FinalDialogFragment() {
+    ViewBindingDialogFragment<KitDialogMyLinkerInfoBinding>() {
 
     public object StartLinkStore {
         var isInviting = false
@@ -37,7 +38,7 @@ class MyLinkerInfoDialog(val service: QLinkMicService, val me: QLiveUser) :
 
     @SuppressLint("SetTextI18n")
     private val mScheduler = Scheduler(1000) {
-        tvTime?.text = "连麦中，通话${formatTime(timeDiff)}"
+        binding.tvTime.text = "连麦中，通话${formatTime(timeDiff)}"
         timeDiff++
     }
 
@@ -53,24 +54,20 @@ class MyLinkerInfoDialog(val service: QLinkMicService, val me: QLiveUser) :
         }
     }
 
-    override fun getViewLayoutId(): Int {
-        return R.layout.kit_dialog_my_linker_info
-    }
-
     override fun init() {
         val isVideo = StartLinkStore.isVideoLink
         timeDiff = ((System.currentTimeMillis() - StartLinkStore.startTime) / 1000).toInt()
         mScheduler.start()
         if (isVideo) {
-            tvTile.text = getString(R.string.link_dialog_mylink_info_video)
-            ivCameraStatus.visibility = View.VISIBLE
+            binding.tvTile.text = getString(R.string.link_dialog_mylink_info_video)
+            binding.ivCameraStatus.visibility = View.VISIBLE
         } else {
-            tvTile.text = getString(R.string.link_dialog_mylink_info_audio)
-            ivCameraStatus.visibility = View.INVISIBLE
+            binding.tvTile.text = getString(R.string.link_dialog_mylink_info_audio)
+            binding.ivCameraStatus.visibility = View.INVISIBLE
         }
         refreshInfo()
-        ivCameraStatus.setDoubleCheckClickListener {
-            service.audienceMicHandler.muteCamera(ivCameraStatus.isSelected,
+        binding.ivCameraStatus.setDoubleCheckClickListener {
+            service.audienceMicHandler.muteCamera(binding.ivCameraStatus.isSelected,
                 object : QLiveCallBack<Boolean> {
                     override fun onError(code: Int, msg: String?) {
                         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
@@ -81,8 +78,8 @@ class MyLinkerInfoDialog(val service: QLinkMicService, val me: QLiveUser) :
                     }
                 })
         }
-        ivMicStatus.setDoubleCheckClickListener {
-            service.audienceMicHandler.muteMicrophone(ivMicStatus.isSelected,
+        binding.ivMicStatus.setDoubleCheckClickListener {
+            service.audienceMicHandler.muteMicrophone(binding.ivMicStatus.isSelected,
                 object : QLiveCallBack<Boolean> {
                     override fun onError(code: Int, msg: String?) {
                         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
@@ -96,8 +93,8 @@ class MyLinkerInfoDialog(val service: QLinkMicService, val me: QLiveUser) :
 
         Glide.with(requireContext())
             .load(me.avatar)
-            .into(ivAvatar)
-        tvHangup.setDoubleCheckClickListener {
+            .into(binding.ivAvatar)
+        binding.tvHangup.setDoubleCheckClickListener {
             LoadingDialog.showLoading(childFragmentManager)
             service.audienceMicHandler.stopLink(object :
                 QLiveCallBack<Void> {
@@ -123,8 +120,8 @@ class MyLinkerInfoDialog(val service: QLinkMicService, val me: QLiveUser) :
             }
         }
         myMic ?: return
-        ivCameraStatus.isSelected = myMic!!.isOpenCamera
-        ivMicStatus.isSelected = myMic!!.isOpenMicrophone
+        binding.ivCameraStatus.isSelected = myMic!!.isOpenCamera
+        binding.ivMicStatus.isSelected = myMic!!.isOpenMicrophone
     }
 
     override fun onDismiss(dialog: DialogInterface) {

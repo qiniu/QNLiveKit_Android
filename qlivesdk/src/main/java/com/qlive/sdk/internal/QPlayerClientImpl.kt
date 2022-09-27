@@ -122,6 +122,7 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QLiveServiceO
         mQPlayerEventListenerWarp.clear()
         mMediaPlayer.release()
         mLiveContext.destroy()
+        mPlayerRenderView = null
     }
 
     override fun play(renderView: QPlayerRenderView) {

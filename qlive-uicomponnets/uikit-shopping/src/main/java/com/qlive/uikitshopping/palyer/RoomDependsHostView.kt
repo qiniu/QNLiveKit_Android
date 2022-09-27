@@ -12,9 +12,7 @@ import com.qlive.core.been.QLiveUser
 import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.QRoomComponent
 import com.qlive.uikitcore.ext.toHtml
-import com.qlive.uikitshopping.R
-import kotlinx.android.synthetic.main.kit_shopingpayer_room_host.view.*
-
+import com.qlive.uikitshopping.databinding.KitShopingpayerRoomHostBinding
 
 class RoomDependsHostView : QRoomComponent, FrameLayout {
 
@@ -34,31 +32,33 @@ class RoomDependsHostView : QRoomComponent, FrameLayout {
             "<font color='#ffffff'>" + it.anchor.nick + "</font>"
         }
     }
+
+    private lateinit var binding: KitShopingpayerRoomHostBinding
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
-    ){
-        LayoutInflater.from(context).inflate(R.layout.kit_shopingpayer_room_host,this,true)
-        tvTitle.isSelected = true
+    ) {
+        binding = KitShopingpayerRoomHostBinding.inflate(LayoutInflater.from(context), this, true)
+        binding.tvTitle.isSelected = true
     }
 
     override var roomInfo: QLiveRoomInfo? = null
     override var user: QLiveUser? = null
     override var client: QLiveClient? = null
-    override var kitContext: QLiveUIKitContext?=null
+    override var kitContext: QLiveUIKitContext? = null
     override fun onEntering(roomInfo: QLiveRoomInfo, user: QLiveUser) {
         super.onEntering(roomInfo, user)
-        ivHost.setOnClickListener {
+        binding.ivHost.setOnClickListener {
             onAnchorAvatarClickListener(kitContext, client, it, roomInfo.anchor)
         }
-        tvTitle.text = showHostTitleCall.invoke(roomInfo).toHtml()
-        tvSubTitle.text = showSubTitleCall.invoke(roomInfo).toHtml()
+        binding.tvTitle.text = showHostTitleCall.invoke(roomInfo).toHtml()
+        binding.tvSubTitle.text = showSubTitleCall.invoke(roomInfo).toHtml()
         Glide.with(context!!)
             .load(roomInfo.anchor.avatar)
-            .into(ivHost)
+            .into(binding.ivHost)
     }
-
 }

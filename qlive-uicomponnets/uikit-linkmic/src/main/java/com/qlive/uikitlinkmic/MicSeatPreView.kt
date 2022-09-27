@@ -15,8 +15,7 @@ import com.qlive.linkmicservice.QMicLinker
 import com.qlive.linkmicservice.QLinkMicServiceListener
 import com.qlive.uikitcore.LinkerUIHelper
 import com.qlive.uikitcore.ext.ViewUtil
-import kotlinx.android.synthetic.main.kit_item_linker.view.*
-import kotlinx.android.synthetic.main.kit_item_linker_surface.view.flSurfaceContainer
+import com.qlive.uikitlinkmic.databinding.KitItemLinkerBinding
 
 //麦位预览 多人连麦
 class MicSeatPreView : LinearLayout, QLinkMicServiceListener {
@@ -135,6 +134,8 @@ class MicItemPreView : FrameLayout, QLinkMicServiceListener {
         }
     }
 
+    private lateinit var binding: KitItemLinkerBinding
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -142,36 +143,34 @@ class MicItemPreView : FrameLayout, QLinkMicServiceListener {
         attrs,
         defStyleAttr
     ) {
-        val itemView = LayoutInflater.from(context).inflate(R.layout.kit_item_linker, this, false)
-        val flVideoMicLp = itemView.flVideoMic.layoutParams
+        binding = KitItemLinkerBinding.inflate(LayoutInflater.from(context), this, true)
+        val flVideoMicLp = binding.flVideoMic.layoutParams
         flVideoMicLp.width = LinkerUIHelper.uiMicWidth
         flVideoMicLp.height = LinkerUIHelper.uiMicHeight + LinkerUIHelper.micBottomUIMargin
-        itemView.flVideoMic.layoutParams = flVideoMicLp
+        binding.flVideoMic.layoutParams = flVideoMicLp
 
-        val tempMixLp = itemView.tempMix.layoutParams as FrameLayout.LayoutParams
+        val tempMixLp = binding.tempMix.layoutParams as FrameLayout.LayoutParams
         tempMixLp.width = LinkerUIHelper.uiMicWidth
         tempMixLp.height = LinkerUIHelper.uiMicHeight + LinkerUIHelper.micBottomUIMargin
         tempMixLp.marginEnd = LinkerUIHelper.micRightUIMargin
-        itemView.tempMix.layoutParams = tempMixLp
+        binding.tempMix.layoutParams = tempMixLp
 
-        addView(itemView)
     }
 
 
     override fun onLinkerJoin(micLinker: QMicLinker) {
         mMicLinker = micLinker
         if (micLinker.isOpenCamera) {
-            flVideoMic.visibility = VISIBLE
-            flAudioMic.visibility = View.GONE
+            binding.flVideoMic.visibility = VISIBLE
+            binding.flAudioMic.visibility = View.GONE
         } else {
-            flVideoMic.visibility = GONE
-            flAudioMic.visibility = View.VISIBLE
+            binding.flVideoMic.visibility = GONE
+            binding.flAudioMic.visibility = View.VISIBLE
         }
         Glide.with(context).load(micLinker.user.avatar)
-            .into(ivAvatarInner)
-        ivMicStatusInner.isSelected = micLinker.isOpenMicrophone
-        ivOutMicStatus.isSelected = micLinker.isOpenMicrophone
-
+            .into(binding.ivAvatarInner)
+        binding.ivMicStatusInner.isSelected = micLinker.isOpenMicrophone
+        binding.ivOutMicStatus.isSelected = micLinker.isOpenMicrophone
     }
 
     override fun onLinkerLeft(micLinker: QMicLinker) {
@@ -179,17 +178,17 @@ class MicItemPreView : FrameLayout, QLinkMicServiceListener {
     }
 
     override fun onLinkerMicrophoneStatusChange(micLinker: QMicLinker) {
-        ivMicStatusInner.isSelected = micLinker.isOpenMicrophone
-        ivOutMicStatus.isSelected = micLinker.isOpenMicrophone
+        binding.ivMicStatusInner.isSelected = micLinker.isOpenMicrophone
+        binding.ivOutMicStatus.isSelected = micLinker.isOpenMicrophone
     }
 
     override fun onLinkerCameraStatusChange(micLinker: QMicLinker) {
         if (micLinker.isOpenCamera) {
-            flVideoMic.visibility = VISIBLE
-            flAudioMic.visibility = View.GONE
+            binding.flVideoMic.visibility = VISIBLE
+            binding.flAudioMic.visibility = View.GONE
         } else {
-            flVideoMic.visibility = GONE
-            flAudioMic.visibility = View.VISIBLE
+            binding.flVideoMic.visibility = GONE
+            binding.flAudioMic.visibility = View.VISIBLE
         }
     }
 
@@ -200,7 +199,7 @@ class MicItemPreView : FrameLayout, QLinkMicServiceListener {
     }
 
     private fun addSurface() {
-        val container = flSurfaceContainer as FrameLayout
+        val container = binding.flSurfaceContainer as FrameLayout
         val size = ViewUtil.dip2px(96f)
         container.addView(
             RoundTextureView(context).apply {
@@ -216,7 +215,7 @@ class MicItemPreView : FrameLayout, QLinkMicServiceListener {
     }
 
     private fun removeSurface() {
-        val container = flSurfaceContainer as FrameLayout
+        val container = binding.flSurfaceContainer as FrameLayout
         container.removeAllViews()
     }
 }

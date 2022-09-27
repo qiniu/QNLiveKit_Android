@@ -7,7 +7,6 @@ import com.qlive.danmakuservice.QDanmaku
 import java.util.*
 import kotlin.collections.ArrayList
 
-
 /**
  * 轨道控制
  */
