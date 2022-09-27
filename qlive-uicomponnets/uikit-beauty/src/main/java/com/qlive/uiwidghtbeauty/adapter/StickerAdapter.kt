@@ -10,6 +10,7 @@ import android.widget.ImageView
 import com.qlive.uiwidghtbeauty.model.StickerItem
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
 import com.qlive.uiwidghtbeauty.R
 import com.qlive.uiwidghtbeauty.adapter.StickerAdapter.StickerViewHolder
 import com.qlive.uiwidghtbeauty.model.EffectState
@@ -69,29 +70,9 @@ class StickerAdapter(var mStickerList: ArrayList<StickerItem>, var mContext: Con
 
     override fun onBindViewHolder(holder: StickerViewHolder, position: Int) {
         val imgUrl = mStickerList[position].icon
-        if (imgUrl.scheme!!.startsWith("http")) {
-            GlobalScope.launch(Dispatchers.Main) {
-                val bmJob = async(Dispatchers.IO) {
-                    var bitmap: Bitmap? = null
-                    try {
-                        bitmap = Utils.getImageSync(imgUrl.toString(), holder.view.context)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                    if (bitmap == null) {
-                        bitmap =
-                            BitmapFactory.decodeResource(
-                                holder.view.context.resources,
-                                R.drawable.none
-                            )
-                    }
-                    bitmap!!
-                }
-                holder.imageView.setImageBitmap(bmJob.await())
-            }
-        } else {
-            holder.imageView.setImageURI(imgUrl)
-        }
+        Glide.with(mContext)
+            .load(imgUrl)
+            .into(holder.imageView)
         bindState(getItem(position), holder, position)
         holder.view.isSelected = mSelectedPosition == position
         if (mOnClickStickerListener != null) {
@@ -99,7 +80,6 @@ class StickerAdapter(var mStickerList: ArrayList<StickerItem>, var mContext: Con
             holder.view.setOnClickListener(mOnClickStickerListener)
         }
     }
-
     fun setClickStickerListener(listener: View.OnClickListener?) {
         mOnClickStickerListener = listener
     }

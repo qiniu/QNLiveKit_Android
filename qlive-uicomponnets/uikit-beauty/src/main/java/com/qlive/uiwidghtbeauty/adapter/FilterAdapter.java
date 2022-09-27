@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.qlive.uiwidghtbeauty.R;
 import com.qlive.uiwidghtbeauty.model.FilterItem;
-import com.qlive.uiwidghtbeauty.ui.RoundImageView;
 
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class FilterAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final FilterViewHolder viewHolder = (FilterViewHolder) holder;
-        viewHolder.imageView.setImageBitmap(mFilterList.get(position).icon);
+        viewHolder.imageView.setImageURI(mFilterList.get(position).icon);
         viewHolder.textView.setText(mFilterList.get(position).name);
         viewHolder.textView.setTextColor(Color.parseColor("#000000"));
         viewHolder.alphaView.getBackground().setAlpha(0);
@@ -75,7 +74,7 @@ public class FilterAdapter extends RecyclerView.Adapter {
     static class FilterViewHolder extends RecyclerView.ViewHolder {
 
         View view;
-        RoundImageView imageView;
+        ImageView imageView;
         TextView textView;
         ImageView alphaView;
         LinearLayout imageViewBg;
@@ -83,7 +82,7 @@ public class FilterAdapter extends RecyclerView.Adapter {
         public FilterViewHolder(View itemView) {
             super(itemView);
             view = itemView;
-            imageView = (RoundImageView) itemView.findViewById(R.id.iv_filter_image);
+            imageView = (ImageView) itemView.findViewById(R.id.iv_filter_image);
             textView = (TextView) itemView.findViewById(R.id.filter_text);
             alphaView = (ImageView) itemView.findViewById(R.id.iv_alpha_view);
             imageViewBg = (LinearLayout) itemView.findViewById(R.id.ll_filter_image);

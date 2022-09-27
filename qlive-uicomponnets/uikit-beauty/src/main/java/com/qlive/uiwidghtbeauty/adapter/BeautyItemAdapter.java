@@ -41,12 +41,12 @@ public class BeautyItemAdapter extends RecyclerView.Adapter {
         viewHolder.mSubscription.setText(mBeautyItem.get(position).getProgress() + "");
         viewHolder.mName.setTextColor(Color.parseColor("#ffffff"));
         viewHolder.mSubscription.setTextColor(Color.parseColor("#ffffff"));
-        viewHolder.mImage.setImageBitmap(mBeautyItem.get(position).getUnselectedtIcon());
+        viewHolder.mImage.setImageURI(mBeautyItem.get(position).getUnselectedtIcon());
         holder.itemView.setSelected(mSelectedPosition == position);
         if (mSelectedPosition == position) {
             viewHolder.mSubscription.setTextColor(Color.parseColor("#bc47ff"));
             viewHolder.mName.setTextColor(Color.parseColor("#bc47ff"));
-            viewHolder.mImage.setImageBitmap(mBeautyItem.get(position).getSelectedIcon());
+            viewHolder.mImage.setImageURI(mBeautyItem.get(position).getSelectedIcon());
         }
         if (mOnClickBeautyItemListener != null) {
             holder.itemView.setTag(position);

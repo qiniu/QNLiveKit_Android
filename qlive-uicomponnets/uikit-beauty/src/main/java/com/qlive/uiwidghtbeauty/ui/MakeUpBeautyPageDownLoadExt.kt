@@ -3,6 +3,8 @@ package com.qlive.uiwidghtbeauty.ui
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
+import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -13,6 +15,7 @@ import com.qlive.uiwidghtbeauty.R
 import com.qlive.uiwidghtbeauty.model.EffectState
 import com.qlive.uiwidghtbeauty.model.MakeupItem
 import com.qlive.uiwidghtbeauty.utils.Constants.ST_MAKEUP_STYLE
+import com.qlive.uiwidghtbeauty.utils.FileUtils
 import com.qlive.uiwidghtbeauty.utils.ResourcesUtil
 import com.qlive.uiwidghtbeauty.utils.ToastUtils
 import com.qlive.uiwidghtbeauty.utils.Utils
@@ -36,16 +39,21 @@ private fun MakeUpBeautyPage.fetchMakeupGroupMaterialInfo(
     materials: List<MaterialEntity>
 ) {
     materials.forEach { entity ->
-        var bitmap: Bitmap? = null
-        try {
-            bitmap = Utils.getImageSync(entity.thumbnail, context)
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
+//        var bitmap: Bitmap? = null
+//        try {
+//            bitmap = Utils.getImageSync(entity.thumbnail, context)
+//        } catch (e: java.lang.Exception) {
+//            e.printStackTrace()
+//        }
+//        if (bitmap == null) {
+//            bitmap = BitmapFactory.decodeResource(resources, R.drawable.none)
+//        }
+        val url = if(TextUtils.isEmpty(entity.thumbnail)){
+            FileUtils.getResourcesUri(context, R.drawable.none)
+        }else{
+            Uri.parse(entity.thumbnail)
         }
-        if (bitmap == null) {
-            bitmap = BitmapFactory.decodeResource(resources, R.drawable.none)
-        }
-        mMakeupLists[groupType]!!.add(MakeupItem(entity.name, bitmap, entity.zipSdPath))
+        mMakeupLists[groupType]!!.add(MakeupItem(entity.name, url, entity.zipSdPath))
     }
     initMakeupListener(groupType, materials)
     post(Runnable { mMakeupAdapters[groupType]!!.notifyDataSetChanged() })

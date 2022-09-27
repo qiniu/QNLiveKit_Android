@@ -11,9 +11,9 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.bumptech.glide.Glide;
 import com.qlive.uiwidghtbeauty.R;
 import com.qlive.uiwidghtbeauty.model.MakeupItem;
-import com.qlive.uiwidghtbeauty.ui.RoundImageView;
 
 import java.util.List;
 
@@ -76,16 +76,18 @@ public class MakeupAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final MakeupViewHolder viewHolder = (MakeupViewHolder) holder;
         bindState(getItem(position), viewHolder);
-        viewHolder.imageView.setNeedBorder(false);
-        viewHolder.imageView.setImageBitmap(mMakeupList.get(position).icon);
+      //  viewHolder.imageView.setNeedBorder(false);
+        Glide.with(mContext)
+                .load(mMakeupList.get(position).icon)
+                .into( viewHolder.imageView);
         viewHolder.textView.setText(mMakeupList.get(position).name);
         viewHolder.textView.setTextColor(Color.parseColor("#ffffff"));
 
         holder.itemView.setSelected(mSelectedPosition == position);
 
-        if(mSelectedPosition == position){
-            viewHolder.imageView.setNeedBorder(true);
-        }
+//        if(mSelectedPosition == position){
+//            viewHolder.imageView.setNeedBorder(true);
+//        }
 
         if(mOnClickMakeupListener != null) {
             holder.itemView.setTag(position);
@@ -111,7 +113,7 @@ public class MakeupAdapter extends RecyclerView.Adapter {
 
     static class MakeupViewHolder extends RecyclerView.ViewHolder {
         View view;
-        RoundImageView imageView;
+        ImageView imageView;
         ImageView normalState;
         ImageView downloadingState;
         ViewGroup loadingStateParent;

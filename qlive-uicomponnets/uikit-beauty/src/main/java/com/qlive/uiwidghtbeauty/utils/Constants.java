@@ -4,9 +4,6 @@ import com.sensetime.stmobile.params.STEffectBeautyType;
 
 public class Constants {
 
-    public final static String APP_ID = "d08472433715451c8544f5168181d559";
-    public final static String APP_KEY = "2e0b08686c234d598b47fe037796b8d6";
-
     public final static String GROUP_2D = "46";
     public final static String GROUP_3D = "48";
     public final static String GROUP_HAND = "47";
