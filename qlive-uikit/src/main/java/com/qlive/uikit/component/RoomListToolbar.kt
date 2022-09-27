@@ -3,11 +3,11 @@ package com.qlive.uikit.component
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import com.qlive.uikit.R
 import com.qlive.uikitcore.QUIKitContext
 import com.qlive.uikitcore.QComponent
-import kotlinx.android.synthetic.main.kit_room_list_toobar.view.*
 
 /**
  * 房间列表toolbar
@@ -23,9 +23,8 @@ class RoomListToolbar : FrameLayout, QComponent {
         defStyleAttr
     ) {
         LayoutInflater.from(context).inflate(R.layout.kit_room_list_toobar, this, true)
-        tvBack.setOnClickListener {
+        findViewById<View>(R.id.tvBack).setOnClickListener {
             kitContext?.currentActivity?.finish()
         }
     }
-
 }

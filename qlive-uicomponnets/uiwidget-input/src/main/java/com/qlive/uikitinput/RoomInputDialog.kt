@@ -2,11 +2,9 @@ package com.qlive.uikitinput
 
 import android.graphics.Color
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
-import com.qlive.core.QLiveCallBack
-import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.dialog.FinalDialogFragment
-import kotlinx.android.synthetic.main.kit_dialog_room_input.*
 
 /**
  * 底部输入框
@@ -30,6 +28,7 @@ class RoomInputDialog( val style: Int = 1) : FinalDialogFragment() {
         return R.layout.kit_dialog_room_input
     }
 
+    private val flInput:ViewGroup by lazy { view!!.findViewById(R.id.flInput) }
     override fun init() {
         val viewInput = when (style) {
             1 -> {

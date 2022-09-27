@@ -13,6 +13,7 @@ import com.qlive.core.*
 import com.qlive.core.been.QCreateRoomParam
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.roomservice.QRoomService
+import com.qlive.rtclive.QPushTextureView
 import com.qlive.sdk.QLive
 import com.qlive.uikit.component.FuncCPTBeautyDialogShower
 import com.qlive.uikit.component.OnKeyDownMonitor
@@ -25,7 +26,6 @@ import com.qlive.uikitcore.ext.bg
 import com.qlive.uikitcore.ext.permission.PermissionAnywhere
 import kotlin.coroutines.resume
 import com.qlive.uikitcore.getCode
-import kotlinx.android.synthetic.main.kit_activity_room_pusher.*
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
@@ -35,14 +35,13 @@ import kotlin.coroutines.suspendCoroutine
  */
 class RoomPushActivity : BaseFrameActivity() {
     private var roomId = ""
-
     companion object {
         var replaceLayoutId = -1
         private var startCallBack: QLiveCallBack<QLiveRoomInfo>? = null
 
         fun start(
             context: Context,
-            extSetter:StartRoomActivityExtSetter?,
+            extSetter: StartRoomActivityExtSetter?,
             callBack: QLiveCallBack<QLiveRoomInfo>?
         ) {
             startCallBack = callBack
@@ -54,7 +53,7 @@ class RoomPushActivity : BaseFrameActivity() {
         fun start(
             context: Context,
             roomId: String,
-            extSetter:StartRoomActivityExtSetter?,
+            extSetter: StartRoomActivityExtSetter?,
             callBack: QLiveCallBack<QLiveRoomInfo>?
         ) {
             startCallBack = callBack
@@ -67,6 +66,9 @@ class RoomPushActivity : BaseFrameActivity() {
         internal const val KEY_ROOM_ID = "roomId"
     }
 
+    private val preTextureView: QPushTextureView by lazy {
+        findViewById<QPushTextureView>(R.id.preTextureView)
+    }
     /**
      * 主播客户端
      */

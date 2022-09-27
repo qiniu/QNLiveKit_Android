@@ -4,7 +4,6 @@
     android:layout_width="wrap_content"
     android:layout_height="38dp"
     android:layout_marginStart="8dp"
-
     android:background="@drawable/kit_shape_40000000_52"
     android:orientation="horizontal">
 

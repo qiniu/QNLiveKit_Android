@@ -3,18 +3,18 @@ package com.qlive.uikitshopping.palyer
 import android.view.Gravity
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.qlive.uikitcore.adapter.QRecyclerViewHolder
-import com.qlive.uikitcore.dialog.FinalDialogFragment
-import com.qlive.uikitcore.smartrecycler.QSmartAdapter
-import com.qlive.uikitshopping.R
-import kotlinx.android.synthetic.main.kit_item_play_speed.view.*
-import kotlinx.android.synthetic.main.kit_shopping_player_multiple.*
+import com.qlive.uikitcore.adapter.QRecyclerViewBindHolder
+import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
+import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
+import com.qlive.uikitshopping.databinding.KitItemPlaySpeedBinding
+import com.qlive.uikitshopping.databinding.KitShoppingPlayerMultipleBinding
 
-class PlaySpeedSelectDialog : FinalDialogFragment() {
+class PlaySpeedSelectDialog : ViewBindingDialogFragment<KitShoppingPlayerMultipleBinding>() {
 
     init {
         applyGravityStyle(Gravity.BOTTOM)
     }
+
     val mPlaySpeeds = listOf<PlaySpeed>(
         PlaySpeed("0.5x", 0.5f),
         PlaySpeed("0.75x", 0.75f),
@@ -24,22 +24,21 @@ class PlaySpeedSelectDialog : FinalDialogFragment() {
         PlaySpeed("2.0x", 2f),
     )
 
-    override fun getViewLayoutId(): Int {
-        return R.layout.kit_shopping_player_multiple
-    }
-
     override fun init() {
-        ivClose.setOnClickListener {
+        binding.ivClose.setOnClickListener {
             dismiss()
         }
-        tvClose.setOnClickListener {
+        binding.tvClose.setOnClickListener {
             dismiss()
         }
-        rcyMultiple.layoutManager =
+        binding.rcyMultiple.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        rcyMultiple.adapter = PlaySpeedAdapter()
-        (rcyMultiple.adapter as PlaySpeedAdapter).setNewData(ArrayList<PlaySpeed>(mPlaySpeeds))
-
+        binding.rcyMultiple.adapter = PlaySpeedAdapter()
+        (binding.rcyMultiple.adapter as PlaySpeedAdapter).setNewData(
+            ArrayList<PlaySpeed>(
+                mPlaySpeeds
+            )
+        )
     }
 
     class PlaySpeed(
@@ -48,24 +47,24 @@ class PlaySpeedSelectDialog : FinalDialogFragment() {
         var isSelected: Boolean = false
     )
 
-    inner class PlaySpeedAdapter : QSmartAdapter<PlaySpeed>(
-        R.layout.kit_item_play_speed,
-        ArrayList<PlaySpeed>()
-    ) {
+    inner class PlaySpeedAdapter : QSmartViewBindAdapter<PlaySpeed, KitItemPlaySpeedBinding>() {
 
-        override fun convert(holder: QRecyclerViewHolder, item: PlaySpeed) {
+        override fun convertViewBindHolder(
+            helper: QRecyclerViewBindHolder<KitItemPlaySpeedBinding>,
+            item: PlaySpeed
+        ) {
             if (data.indexOf(item) == data.size - 1) {
-                holder.itemView.lineView.visibility = View.GONE
+                helper.binding.lineView.visibility = View.GONE
             } else {
-                holder.itemView.lineView.visibility = View.VISIBLE
+                helper.binding.lineView.visibility = View.VISIBLE
             }
-            holder.itemView.tvSpeedName.text = item.speedName
-            holder.itemView.rbSelected.isChecked = item.isSelected
-            holder.itemView.rbSelected.isClickable = !item.isSelected
-            holder.itemView.setOnClickListener {
-                holder.itemView.rbSelected.performClick()
+            helper.binding.tvSpeedName.text = item.speedName
+            helper.binding.rbSelected.isChecked = item.isSelected
+            helper.binding.rbSelected.isClickable = !item.isSelected
+            helper.itemView.setOnClickListener {
+                helper.binding.rbSelected.performClick()
             }
-            holder.itemView.rbSelected.setOnCheckedChangeListener { compoundButton, b ->
+            helper.binding.rbSelected.setOnCheckedChangeListener { compoundButton, b ->
                 data.forEach { it.isSelected = false }
                 item.isSelected = b
                 mDefaultListener?.onDialogPositiveClick(this@PlaySpeedSelectDialog, item)

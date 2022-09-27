@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -12,10 +13,14 @@ import androidx.cardview.widget.CardView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.qlive.core.QLiveClient
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
+import com.qlive.uikitcore.ext.ViewBindingExt
 import com.qlive.uikitcore.view.CircleImageView
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.ParameterizedType
 
 
 abstract class QKitFrameLayout : FrameLayout, QLiveComponent {
@@ -46,11 +51,39 @@ abstract class QKitFrameLayout : FrameLayout, QLiveComponent {
     abstract fun initView()
 }
 
+abstract class QKitViewBindingFrameLayout<T : ViewBinding> : FrameLayout, QLiveComponent {
+    override var client: QLiveClient? = null
+    override var roomInfo: QLiveRoomInfo? = null
+    override var user: QLiveUser? = null
+    override var kitContext: QLiveUIKitContext? = null
+    lateinit var binding: T
+
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        val sup = javaClass.genericSuperclass
+        binding = ViewBindingExt.create(sup as ParameterizedType, this, context, true)
+    }
+
+    override fun attachLiveClient(client: QLiveClient) {
+        super.attachLiveClient(client)
+        initView()
+    }
+
+    abstract fun initView()
+}
+
+
 open class QKitImageView : androidx.appcompat.widget.AppCompatImageView, QLiveComponent {
     override var client: QLiveClient? = null
     override var roomInfo: QLiveRoomInfo? = null
     override var user: QLiveUser? = null
     override var kitContext: QLiveUIKitContext? = null
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -65,6 +98,7 @@ class QKitCircleImageView : CircleImageView, QLiveComponent {
     override var roomInfo: QLiveRoomInfo? = null
     override var user: QLiveUser? = null
     override var kitContext: QLiveUIKitContext? = null
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -73,11 +107,13 @@ class QKitCircleImageView : CircleImageView, QLiveComponent {
         defStyleAttr
     )
 }
-open class QKitRecyclerView: RecyclerView,QLiveComponent{
+
+open class QKitRecyclerView : RecyclerView, QLiveComponent {
     override var client: QLiveClient? = null
     override var roomInfo: QLiveRoomInfo? = null
     override var user: QLiveUser? = null
     override var kitContext: QLiveUIKitContext? = null
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -92,6 +128,7 @@ open class QKitTextView : androidx.appcompat.widget.AppCompatTextView, QLiveComp
     override var roomInfo: QLiveRoomInfo? = null
     override var user: QLiveUser? = null
     override var kitContext: QLiveUIKitContext? = null
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -100,18 +137,20 @@ open class QKitTextView : androidx.appcompat.widget.AppCompatTextView, QLiveComp
         defStyleAttr
     )
 }
-open class QKitCardView : CardView , QLiveComponent {
+
+open class QKitCardView : CardView, QLiveComponent {
     override var client: QLiveClient? = null
     override var roomInfo: QLiveRoomInfo? = null
     override var user: QLiveUser? = null
     override var kitContext: QLiveUIKitContext? = null
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
-    ){
+    ) {
         val layoutId = getLayoutId()
         if (layoutId > 0) {
             LayoutInflater.from(context).inflate(layoutId, this, true)
@@ -123,10 +162,40 @@ open class QKitCardView : CardView , QLiveComponent {
         initView()
     }
 
-    open fun getLayoutId(): Int{
+    open fun getLayoutId(): Int {
         return -1
     }
-    open fun initView(){
+
+    open fun initView() {
+
+    }
+}
+
+
+open class QKitViewBindingCardView<T : ViewBinding> : CardView, QLiveComponent {
+    override var client: QLiveClient? = null
+    override var roomInfo: QLiveRoomInfo? = null
+    override var user: QLiveUser? = null
+    override var kitContext: QLiveUIKitContext? = null
+    lateinit var binding: T
+
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        val sup = javaClass.genericSuperclass
+        binding = ViewBindingExt.create(sup as ParameterizedType, this, context, true)
+    }
+
+    override fun attachLiveClient(client: QLiveClient) {
+        super.attachLiveClient(client)
+        initView()
+    }
+
+    open fun initView() {
 
     }
 }

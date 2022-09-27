@@ -10,14 +10,14 @@ import com.qlive.core.been.QInvitation
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.pkservice.QPKSession
 import com.qlive.linkmicservice.QLinkMicService
-import com.qlive.uikitcore.QKitFrameLayout
+import com.qlive.uikitcore.QKitViewBindingFrameLayout
 import com.qlive.uikitcore.dialog.FinalDialogFragment
 import com.qlive.uikitcore.dialog.LoadingDialog
 import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
-import kotlinx.android.synthetic.main.kit_start_pk_view.view.*
+import com.qlive.uikitpk.databinding.KitStartPkViewBinding
 
-class StartPKView : QKitFrameLayout {
+class StartPKView : QKitViewBindingFrameLayout<KitStartPkViewBinding> {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -34,14 +34,14 @@ class StartPKView : QKitFrameLayout {
         QPKServiceListener {
 
         override fun onStart(pkSession: QPKSession) {
-            llStartPK.visibility = View.GONE
-            tvStopPK.visibility = View.VISIBLE
+            binding.llStartPK.visibility = View.GONE
+            binding.tvStopPK.visibility = View.VISIBLE
             mPkSession = pkSession
         }
 
         override fun onStop(pkSession: QPKSession, code: Int, msg: String) {
-            llStartPK.visibility = View.VISIBLE
-            tvStopPK.visibility = View.GONE
+            binding.llStartPK.visibility = View.VISIBLE
+            binding.tvStopPK.visibility = View.GONE
             mPkSession = null
         }
 
@@ -84,10 +84,6 @@ class StartPKView : QKitFrameLayout {
         }
     }
 
-    override fun getLayoutId(): Int {
-        return R.layout.kit_start_pk_view
-    }
-
     override fun onDestroyed() {
         client?.getService(QPKService::class.java)?.removeServiceListener(mQPKServiceListener)
         client?.getService(QPKService::class.java)?.invitationHandler?.removeInvitationHandlerListener(
@@ -95,13 +91,14 @@ class StartPKView : QKitFrameLayout {
         )
         super.onDestroyed()
     }
+
     override fun initView() {
         client!!.getService(QPKService::class.java).addServiceListener(mQPKServiceListener)
         client!!.getService(QPKService::class.java).invitationHandler.addInvitationHandlerListener(
             mPKInvitationListener
         )
 
-        flPkBtn.setDoubleCheckClickListener {
+        binding.flPkBtn.setDoubleCheckClickListener {
             if (mPkSession != null) {
                 client?.getService(QPKService::class.java)?.stop(object :
                     QLiveCallBack<Void> {

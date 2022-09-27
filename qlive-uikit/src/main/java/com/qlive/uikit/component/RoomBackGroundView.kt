@@ -15,5 +15,4 @@ class RoomBackGroundView : QKitImageView {
         attrs,
         defStyleAttr
     )
-
 }

@@ -2,22 +2,25 @@ package com.qlive.uikitpk
 
 import com.bumptech.glide.Glide
 import com.qlive.core.been.QLiveRoomInfo
-import com.qlive.uikitcore.adapter.QRecyclerViewHolder
-import com.qlive.uikitcore.smartrecycler.QSmartAdapter
-import kotlinx.android.synthetic.main.kit_item_pkable.view.*
+import com.qlive.uikitcore.adapter.QRecyclerViewBindHolder
+import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
+import com.qlive.uikitpk.databinding.KitItemPkableBinding
 
 class PKAnchorListAdapter :
-    QSmartAdapter<QLiveRoomInfo>(R.layout.kit_item_pkable) {
+    QSmartViewBindAdapter<QLiveRoomInfo,KitItemPkableBinding>() {
 
     var inviteCall: (room: QLiveRoomInfo) -> Unit = {
     }
 
-    override fun convert(holder: QRecyclerViewHolder, item: QLiveRoomInfo) {
+    override fun convertViewBindHolder(
+        helper: QRecyclerViewBindHolder<KitItemPkableBinding>,
+        item: QLiveRoomInfo
+    ) {
         Glide.with(mContext).load(item.anchor.avatar)
-            .into(holder.itemView.ivAvatar)
-        holder.itemView.tvRoomName.text = item.title
-        holder.itemView.tvAnchorName.text = item.anchor.nick
-        holder.itemView.ivInvite.setOnClickListener {
+            .into(helper.binding.ivAvatar)
+        helper.binding.tvRoomName.text = item.title
+        helper.binding.tvAnchorName.text = item.anchor.nick
+        helper.binding.ivInvite.setOnClickListener {
             inviteCall.invoke(item)
         }
     }

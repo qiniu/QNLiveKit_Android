@@ -7,10 +7,11 @@ import com.qlive.core.QLiveCallBack
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.sdk.QLive
 import com.qlive.uikitcore.dialog.FinalDialogFragment
+import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
 import com.qlive.uikitcore.ext.ViewUtil
 import com.qlive.uikitcore.ext.bg
 import com.qlive.uikitcore.view.SimpleDividerDecoration
-import kotlinx.android.synthetic.main.kit_dialog_pklist.*
+import com.qlive.uikitpk.databinding.KitDialogPklistBinding
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -18,7 +19,7 @@ import kotlin.coroutines.suspendCoroutine
 /**
  * pk列表弹窗
  */
-class PKAbleListDialog() : FinalDialogFragment() {
+class PKAbleListDialog() : ViewBindingDialogFragment<KitDialogPklistBinding>() {
 
     init {
         applyGravityStyle(Gravity.BOTTOM)
@@ -28,10 +29,6 @@ class PKAbleListDialog() : FinalDialogFragment() {
 
     fun setInviteCall(inviteCall: (room: QLiveRoomInfo) -> Unit) {
         mAdapter.inviteCall = inviteCall
-    }
-
-    override fun getViewLayoutId(): Int {
-        return R.layout.kit_dialog_pklist
     }
 
     private suspend fun suspendLoad(page: Int) = suspendCoroutine<List<QLiveRoomInfo>> { ct ->
@@ -52,26 +49,27 @@ class PKAbleListDialog() : FinalDialogFragment() {
                 val data = suspendLoad(page).filter {
                     it.anchorStatus == 1 && it.anchor.userId != QLive.getLoginUser().userId
                 }
-                mSmartRecyclerView.onFetchDataFinish(data, false)
+                binding.mSmartRecyclerView.onFetchDataFinish(data, false)
             }
             catchError {
-                mSmartRecyclerView.onFetchDataError()
+                binding.mSmartRecyclerView.onFetchDataError()
             }
         }
     }
 
     override fun init() {
-        mSmartRecyclerView.recyclerView.addItemDecoration(
+        binding.mSmartRecyclerView.recyclerView.addItemDecoration(
             SimpleDividerDecoration(
                 requireContext(),
                 Color.parseColor("#EAEAEA"), ViewUtil.dip2px(1f)
             )
         )
-        mSmartRecyclerView.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        mSmartRecyclerView.setUp(mAdapter,  true, true) {
+        binding.mSmartRecyclerView.recyclerView.layoutManager =
+            LinearLayoutManager(requireContext())
+        binding.mSmartRecyclerView.setUp(mAdapter, true, true) {
             load(it)
         }
-        mSmartRecyclerView.startRefresh()
+        binding.mSmartRecyclerView.startRefresh()
     }
 }
 

@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.qlive.chatservice.QChatRoomService
 import com.qlive.chatservice.QChatRoomServiceListener
@@ -20,12 +21,13 @@ import com.qlive.uikitcore.QLiveClientClone
 import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.QRoomComponent
 import com.qlive.uikitcore.Scheduler
-import com.qlive.uikitcore.adapter.QRecyclerViewHolder
+import com.qlive.uikitcore.adapter.QRecyclerAdapter
+import com.qlive.uikitcore.adapter.QRecyclerViewBindHolder
 import com.qlive.uikitcore.ext.bg
 import com.qlive.uikitcore.smartrecycler.QSmartAdapter
+import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
 import com.qlive.uikitshopping.R
-import kotlinx.android.synthetic.main.kit_item_online_user_wath_expaining.view.*
-import kotlinx.android.synthetic.main.kit_shoppingplayer_view_online.view.*
+import com.qlive.uikitshopping.databinding.KitItemOnlineUserWathExpainingBinding
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -43,7 +45,7 @@ class RoomDependsOnlineUserView : FrameLayout, QRoomComponent {
             { _, _, _, _ -> }
 
         //列表样式适配器
-        var adapterProvider: (context: QLiveUIKitContext, client: QLiveClient) -> QSmartAdapter<QLiveUser> =
+        var adapterProvider: (context: QLiveUIKitContext, client: QLiveClient) -> QRecyclerAdapter<QLiveUser> =
             { _, _ ->
                 OnlineUserViewAdapter()
             }
@@ -57,11 +59,11 @@ class RoomDependsOnlineUserView : FrameLayout, QRoomComponent {
         defStyleAttr
     ) {
         LayoutInflater.from(context).inflate(R.layout.kit_shoppingplayer_view_online, this, true)
-        recyOnline?.layoutManager =
+        findViewById<RecyclerView>(R.id.recyOnline)?.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
     }
 
-    private val adapter: QSmartAdapter<QLiveUser> by lazy {
+    private val adapter: QRecyclerAdapter<QLiveUser> by lazy {
         adapterProvider.invoke(kitContext!!, client!!)
     }
 
@@ -149,7 +151,7 @@ class RoomDependsOnlineUserView : FrameLayout, QRoomComponent {
                 adapter.data[position]
             )
         }
-        recyOnline.adapter = adapter
+        findViewById<RecyclerView>(R.id.recyOnline).adapter = adapter
         client.getService(QChatRoomService::class.java)
             .addServiceListener(mChatRoomServiceListener)
     }
@@ -163,13 +165,15 @@ class RoomDependsOnlineUserView : FrameLayout, QRoomComponent {
         }
     }
 
-    class OnlineUserViewAdapter : QSmartAdapter<QLiveUser>(
-        R.layout.kit_item_online_user_wath_expaining
-    ) {
-        override fun convert(helper: QRecyclerViewHolder, item: QLiveUser) {
+    class OnlineUserViewAdapter :
+        QSmartViewBindAdapter<QLiveUser, KitItemOnlineUserWathExpainingBinding>() {
+        override fun convertViewBindHolder(
+            helper: QRecyclerViewBindHolder<KitItemOnlineUserWathExpainingBinding>,
+            item: QLiveUser
+        ) {
             Glide.with(mContext)
                 .load(item.avatar)
-                .into(helper.itemView.ivAvatar)
+                .into(helper.binding.ivAvatar)
         }
     }
 }

@@ -12,6 +12,9 @@ import com.qlive.pubchatservice.QPublicChat
 import com.qlive.pubchatservice.QPublicChatService
 import com.qlive.pubchatservice.QPublicChatServiceLister
 import com.qlive.uikitcore.*
+import com.qlive.uikitcore.adapter.QRecyclerAdapter
+import com.qlive.uikitcore.adapter.QRecyclerViewBindAdapter
+import com.qlive.uikitcore.smartrecycler.IAdapter
 import com.qlive.uikitcore.smartrecycler.QSmartAdapter
 import java.util.*
 
@@ -28,7 +31,7 @@ class PublicChatView : QKitRecyclerView {
         /**
          * 列表适配器
          */
-        var adapterProvider: (context: QLiveUIKitContext, client: QLiveClient) -> QSmartAdapter<QPublicChat> =
+        var adapterProvider: (context: QLiveUIKitContext, client: QLiveClient) -> QRecyclerAdapter<QPublicChat> =
             { _, _ ->
                 PubChatAdapter()
             }

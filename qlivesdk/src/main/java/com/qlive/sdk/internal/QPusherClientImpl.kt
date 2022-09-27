@@ -168,6 +168,7 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider, QLiveServiceObse
         mLiveStatusListeners.clear()
         mRtcRoom.close()
         mLiveContext.destroy()
+        mLocalPreView = null
     }
 
     override fun setConnectionStatusLister(connectionStatusLister: QConnectionStatusLister?) {

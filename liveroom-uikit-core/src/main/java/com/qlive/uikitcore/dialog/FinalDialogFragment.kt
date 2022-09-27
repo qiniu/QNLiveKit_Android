@@ -55,7 +55,7 @@ abstract class FinalDialogFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup??,
         savedInstanceState: Bundle?
     ): View? {
-        var rootView: View?
+        val rootView: View?
         // Inflate the layout to use as dialog or embedded fragment
         if (getViewLayoutId() != INVALID_LAYOUT_ID) {
             rootView = inflater.inflate(getViewLayoutId(), container, false)

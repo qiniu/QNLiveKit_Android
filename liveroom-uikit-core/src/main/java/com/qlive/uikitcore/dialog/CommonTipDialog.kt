@@ -6,12 +6,9 @@ import android.view.Gravity
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import com.qlive.uikitcore.R
-import kotlinx.android.synthetic.main.kit_dialog_common_tip.*
-import java.lang.reflect.Field
+import com.qlive.uikitcore.databinding.KitDialogCommonTipBinding
 
-
-class CommonTipDialog : FinalDialogFragment() {
+class CommonTipDialog : ViewBindingDialogFragment<KitDialogCommonTipBinding>() {
 
     init {
         //是否可以取消 默认值 show之前可以修改
@@ -43,54 +40,49 @@ class CommonTipDialog : FinalDialogFragment() {
         }
     }
 
-
     override fun show(manager: FragmentManager, tag: String?) {
         val ft: FragmentTransaction = manager.beginTransaction()
         ft.add(this, javaClass.simpleName)
         ft.commitAllowingStateLoss()
     }
 
-    override fun getViewLayoutId(): Int {
-        return R.layout.kit_dialog_common_tip
-    }
-
     override fun init() {
         arguments?.apply {
             val title = getString("title")
             if (TextUtils.isEmpty(title)) {
-                tvTitle.visibility = View.GONE
+                binding.tvTitle.visibility = View.GONE
             } else {
-                tvTitle.visibility = View.VISIBLE
-                tvTitle.text = title
+                binding.tvTitle.visibility = View.VISIBLE
+                binding.tvTitle.text = title
             }
             val content = getString("content")
-            tvContent.text = (content)
+            binding.tvContent.text = (content)
             if (TextUtils.isEmpty(content)) {
-                tvContent.visibility = View.GONE
+                binding.tvContent.visibility = View.GONE
             } else {
-                tvContent.visibility = View.VISIBLE
+                binding.tvContent.visibility = View.VISIBLE
             }
             val isNeedCancelBtn = getBoolean("isNeedCancelBtn", true)
             if (!isNeedCancelBtn) {
-                vV.visibility = View.GONE
-                btnCancel.visibility = View.GONE
+                binding.vV.visibility = View.GONE
+                binding.btnCancel.visibility = View.GONE
             }
             val positiveText = getString("positiveText")
 
             if (positiveText?.isNotEmpty() == true) {
-                btnConfirm.text = positiveText
+                binding.btnConfirm.text = positiveText
             }
             val negativeText = getString("negativeText")
             if (negativeText?.isNotEmpty() == true) {
-                btnCancel.text = negativeText
+                binding.btnCancel.text = negativeText
             }
         }
-        btnCancel.setOnClickListener {
+        binding.btnCancel.setOnClickListener {
             mDefaultListener?.onDialogNegativeClick(this, Any())
             dismiss()
         }
 
-        btnConfirm.setOnClickListener {
+        binding.btnConfirm.setOnClickListener {
             dismiss()
             mDefaultListener?.onDialogPositiveClick(this, Any())
         }

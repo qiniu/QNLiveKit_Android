@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.qlive.chatservice.QChatRoomService
 import com.qlive.chatservice.QChatRoomServiceListener
 import com.qlive.core.QLiveCallBack
@@ -13,8 +14,7 @@ import com.qlive.core.been.QLiveUser
 import com.qlive.roomservice.QRoomService
 import com.qlive.uikitcore.*
 import com.qlive.uikitcore.ext.bg
-import com.qlive.uikitcore.smartrecycler.QSmartAdapter
-import kotlinx.android.synthetic.main.kit_view_online.view.*
+import com.qlive.uikitcore.smartrecycler.IAdapter
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -28,7 +28,7 @@ class OnlineUserView : QKitFrameLayout {
             { _, _, _, _ -> }
 
         //列表样式适配器
-        var adapterProvider: (context: QLiveUIKitContext, client: QLiveClient) -> QSmartAdapter<QLiveUser> =
+        var adapterProvider: (context: QLiveUIKitContext, client: QLiveClient) -> IAdapter<QLiveUser> =
             { _, _ ->
                 OnlineUserViewAdapter()
             }
@@ -42,7 +42,7 @@ class OnlineUserView : QKitFrameLayout {
         defStyleAttr
     )
 
-    private val adapter: QSmartAdapter<QLiveUser> by lazy {
+    private val adapter: IAdapter<QLiveUser> by lazy {
         adapterProvider.invoke(kitContext!!, client!!)
     }
 
@@ -72,9 +72,9 @@ class OnlineUserView : QKitFrameLayout {
     override fun initView() {
         client!!.getService(QChatRoomService::class.java)
             .addServiceListener(mChatRoomServiceListener)
-        recyOnline?.layoutManager =
+        findViewById<RecyclerView>(R.id.recyOnline).layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-
+        adapter.bindRecycler(findViewById<RecyclerView>(R.id.recyOnline))
     }
 
     private var roomId = ""
@@ -83,7 +83,7 @@ class OnlineUserView : QKitFrameLayout {
         refresh()
     }
 
-    private suspend fun getOnlineUser() = suspendCoroutine<List<QLiveUser>> { ct ->
+    private suspend fun getOnlineUser() = suspendCoroutine<MutableList<QLiveUser>> { ct ->
         client?.getService(QRoomService::class.java)?.getOnlineUser(1, 10,
             object : QLiveCallBack<List<QLiveUser>> {
                 override fun onError(code: Int, msg: String?) {
@@ -91,7 +91,7 @@ class OnlineUserView : QKitFrameLayout {
                 }
 
                 override fun onSuccess(data: List<QLiveUser>) {
-                    ct.resume(data)
+                    ct.resume(ArrayList(data))
                 }
             })
     }
@@ -99,10 +99,10 @@ class OnlineUserView : QKitFrameLayout {
     private var isRefreshing = false
     private var lastRefreshedTime = 0L
     private fun refresh() {
-        if (isRefreshing){
+        if (isRefreshing) {
             return
         }
-        if(System.currentTimeMillis()-lastRefreshedTime<5* 1000){
+        if (System.currentTimeMillis() - lastRefreshedTime < 5 * 1000) {
             return
         }
         if (roomId.isEmpty()) {
@@ -115,9 +115,10 @@ class OnlineUserView : QKitFrameLayout {
                 val users = getOnlineUser().filter {
                     it.userId != roomInfo?.anchor?.userId
                 }
-                adapter.setNewData(users)
+                adapter.setNewDataList(users as MutableList<QLiveUser>)
             }
             catchError {
+                it.printStackTrace()
             }
             onFinally {
                 isRefreshing = false
@@ -131,7 +132,7 @@ class OnlineUserView : QKitFrameLayout {
     }
 
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo,isResumeUIFromFloating)
+        super.onJoined(roomInfo, isResumeUIFromFloating)
         lazyFreshJob.start()
     }
 
@@ -145,7 +146,7 @@ class OnlineUserView : QKitFrameLayout {
     override fun onLeft() {
         super.onLeft()
         roomId = ""
-        adapter.setNewData(ArrayList<QLiveUser>())
+        adapter.setNewDataList(ArrayList<QLiveUser>())
         lazyFreshJob.cancel()
     }
 }

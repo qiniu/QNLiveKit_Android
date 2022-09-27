@@ -24,29 +24,25 @@ import com.qlive.shoppingservice.QItemStatus
 import com.qlive.shoppingservice.QShoppingService
 import com.qlive.shoppingservice.QSingleOrderParam
 import com.qlive.uikitcore.QLiveUIKitContext
+import com.qlive.uikitcore.adapter.QRecyclerViewBindHolder
 import com.qlive.uikitcore.adapter.QRecyclerViewHolder
 import com.qlive.uikitcore.backGround
 import com.qlive.uikitcore.dialog.CommonTipDialog
 import com.qlive.uikitcore.dialog.FinalDialogFragment
 import com.qlive.uikitcore.dialog.LoadingDialog
+import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
 import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitcore.ext.bg
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
 import com.qlive.uikitcore.smartrecycler.QSmartAdapter
+import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
 import com.qlive.uikitcore.smartrecycler.SmartRecyclerView
 import com.qlive.uikitcore.view.CommonViewPagerAdapter
+import com.qlive.uikitshopping.databinding.KitDialogShoppingManagerBinding
+import com.qlive.uikitshopping.databinding.KitItemManagerGoodsBinding
 import com.qlive.uikitshopping.ui.flowlayout.FlowLayout
 import com.qlive.uikitshopping.ui.flowlayout.TagAdapter
-import kotlinx.android.synthetic.main.kit_dialog_shopping_manager.*
-import kotlinx.android.synthetic.main.kit_item_manager_goods.view.*
-import kotlinx.android.synthetic.main.kit_item_manager_goods.view.flGoodsTag
-import kotlinx.android.synthetic.main.kit_item_manager_goods.view.ivCover
-import kotlinx.android.synthetic.main.kit_item_manager_goods.view.llItemShowing
-import kotlinx.android.synthetic.main.kit_item_manager_goods.view.mAutoVoiceWaveView
-import kotlinx.android.synthetic.main.kit_item_manager_goods.view.tvGoodsName
-import kotlinx.android.synthetic.main.kit_item_manager_goods.view.tvNowPrice
-import kotlinx.android.synthetic.main.kit_item_manager_goods.view.tvOrder
-import kotlinx.android.synthetic.main.kit_item_manager_goods.view.tvOriginPrice
+
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -59,7 +55,7 @@ import kotlin.coroutines.suspendCoroutine
 class ShoppingManagerDialog(
     private val kitContext: QLiveUIKitContext,
     private val client: QLiveClient
-) : FinalDialogFragment() {
+) : ViewBindingDialogFragment<KitDialogShoppingManagerBinding>() {
 
     private val views by lazy {
         listOf<ShoppingManagerPage>(
@@ -85,14 +81,12 @@ class ShoppingManagerDialog(
     @SuppressLint("SetTextI18n")
     private fun setCount(filterStatus: Int, count: Int) {
         when (filterStatus) {
-            -1 -> rbAll.text = getString(R.string.shopping_dialog_goods_manager_all,count)
-            QItemStatus.ON_SALE.value -> rbOnSale.text = getString(R.string.shopping_dialog_goods_manager_onsale,count)
-            QItemStatus.PULLED.value -> rbPulled.text = getString(R.string.shopping_dialog_goods_manager_pulled,count)
+            -1 -> binding.rbAll.text = getString(R.string.shopping_dialog_goods_manager_all, count)
+            QItemStatus.ON_SALE.value -> binding.rbOnSale.text =
+                getString(R.string.shopping_dialog_goods_manager_onsale, count)
+            QItemStatus.PULLED.value -> binding.rbPulled.text =
+                getString(R.string.shopping_dialog_goods_manager_pulled, count)
         }
-    }
-
-    override fun getViewLayoutId(): Int {
-        return R.layout.kit_dialog_shopping_manager
     }
 
     private suspend fun getList() = suspendCoroutine<List<QItem>> { coroutine ->
@@ -155,28 +149,28 @@ class ShoppingManagerDialog(
     }
 
     override fun init() {
-        vpGoods.adapter = CommonViewPagerAdapter(views)
-        radioGroup.setOnCheckedChangeListener { p0, id ->
+        binding.vpGoods.adapter = CommonViewPagerAdapter(views)
+        binding.radioGroup.setOnCheckedChangeListener { p0, id ->
             when (id) {
                 R.id.rbAll -> {
-                    if (vpGoods.currentItem != 0) {
-                        vpGoods.currentItem = 0
+                    if (binding.vpGoods.currentItem != 0) {
+                        binding.vpGoods.currentItem = 0
                     }
                 }
                 R.id.rbOnSale -> {
-                    if (vpGoods.currentItem != 1) {
-                        vpGoods.currentItem = 1
+                    if (binding.vpGoods.currentItem != 1) {
+                        binding.vpGoods.currentItem = 1
                     }
                 }
                 R.id.rbPulled -> {
-                    if (vpGoods.currentItem != 2) {
-                        vpGoods.currentItem = 2
+                    if (binding.vpGoods.currentItem != 2) {
+                        binding.vpGoods.currentItem = 2
                     }
                 }
             }
         }
 
-        vpGoods.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+        binding.vpGoods.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrolled(
                 position: Int,
                 positionOffset: Float,
@@ -187,53 +181,66 @@ class ShoppingManagerDialog(
             override fun onPageSelected(position: Int) {
                 when (position) {
                     0 -> {
-                        tvUp.isClickable = true
-                        tvDown.isClickable = true
-                        llMove.isClickable = true
-                        tvUp.isSelected = true
-                        tvDown.isSelected = true
-                        tvMove.isSelected = true
+                        binding.tvUp.isClickable = true
+                        binding.tvDown.isClickable = true
+                        binding.llMove.isClickable = true
+                        binding.tvUp.isSelected = true
+                        binding.tvDown.isSelected = true
+                        binding.tvMove.isSelected = true
 
-                        radioGroup.check(R.id.rbAll)
+                        binding.radioGroup.check(R.id.rbAll)
                     }
                     1 -> {
-                        tvUp.isClickable = false
-                        tvDown.isClickable = true
-                        llMove.isClickable = true
-                        tvUp.isSelected = false
-                        tvDown.isSelected = true
-                        tvMove.isSelected = true
-                        radioGroup.check(R.id.rbOnSale)
+                        binding.tvUp.isClickable = false
+                        binding.tvDown.isClickable = true
+                        binding.llMove.isClickable = true
+                        binding.tvUp.isSelected = false
+                        binding.tvDown.isSelected = true
+                        binding.tvMove.isSelected = true
+                        binding.radioGroup.check(R.id.rbOnSale)
                     }
                     2 -> {
-                        tvUp.isClickable = true
-                        tvDown.isClickable = false
-                        llMove.isClickable = true
-                        tvUp.isSelected = true
-                        tvDown.isSelected = false
-                        tvMove.isSelected = true
-                        radioGroup.check(R.id.rbPulled)
+                        binding.tvUp.isClickable = true
+                        binding.tvDown.isClickable = false
+                        binding.llMove.isClickable = true
+                        binding.tvUp.isSelected = true
+                        binding.tvDown.isSelected = false
+                        binding.tvMove.isSelected = true
+                        binding.radioGroup.check(R.id.rbPulled)
                     }
                 }
             }
+
             override fun onPageScrollStateChanged(state: Int) {}
         })
 
-        tvUp.isClickable = true
-        tvDown.isClickable = true
-        llMove.isClickable = true
-        tvUp.isSelected = true
-        tvDown.isSelected = true
-        tvMove.isSelected = true
+        binding.tvUp.isClickable = true
+        binding.tvDown.isClickable = true
+        binding.llMove.isClickable = true
+        binding.tvUp.isSelected = true
+        binding.tvDown.isSelected = true
+        binding.tvMove.isSelected = true
 
-        tvUp.setDoubleCheckClickListener {
-            optionList(getString(R.string.shopping_is_confirm_sale), tvUp, views[vpGoods.currentItem].selectedSet)
+        binding.tvUp.setDoubleCheckClickListener {
+            optionList(
+                getString(R.string.shopping_is_confirm_sale),
+                binding.tvUp,
+                views[binding.vpGoods.currentItem].selectedSet
+            )
         }
-        tvDown.setDoubleCheckClickListener {
-            optionList(getString(R.string.shopping_is_confirm_pulled), tvDown, views[vpGoods.currentItem].selectedSet)
+        binding.tvDown.setDoubleCheckClickListener {
+            optionList(
+                getString(R.string.shopping_is_confirm_pulled),
+                binding.tvDown,
+                views[binding.vpGoods.currentItem].selectedSet
+            )
         }
-        llMove.setDoubleCheckClickListener {
-            optionList(getString(R.string.shopping_is_confirm_remove), llMove, views[vpGoods.currentItem].selectedSet)
+        binding.llMove.setDoubleCheckClickListener {
+            optionList(
+                getString(R.string.shopping_is_confirm_remove),
+                binding.llMove,
+                views[binding.vpGoods.currentItem].selectedSet
+            )
         }
         views.forEach {
             it.post {
@@ -261,12 +268,12 @@ class ShoppingManagerDialog(
             bg {
                 LoadingDialog.showLoading(childFragmentManager)
                 doWork {
-                    if (optionId == llMove) {
+                    if (optionId == binding.llMove) {
                         deleteItems(selectedList.toList())
                         resetAll()
                         return@doWork
                     }
-                    if (optionId == tvDown) {
+                    if (optionId == binding.tvDown) {
                         changeUpdateStatus(HashMap<String, QItemStatus>().apply {
                             selectedList.forEach {
                                 put(it, QItemStatus.PULLED)
@@ -275,7 +282,7 @@ class ShoppingManagerDialog(
                         resetAll()
                         return@doWork
                     }
-                    if (optionId == tvUp) {
+                    if (optionId == binding.tvUp) {
                         changeUpdateStatus(HashMap<String, QItemStatus>().apply {
                             selectedList.forEach {
                                 put(it, QItemStatus.ON_SALE)
@@ -443,10 +450,8 @@ class ShoppingManagerDialog(
             }
         }
 
-        inner class ShoppingManagerPageAdapter : QSmartAdapter<QItem>(
-            R.layout.kit_item_manager_goods,
-            ArrayList<QItem>()
-        ) {
+        inner class ShoppingManagerPageAdapter :
+            QSmartViewBindAdapter<QItem, KitItemManagerGoodsBinding>() {
             fun move(fromPosition: Int, toPosition: Int) {
                 if (fromPosition < toPosition) {
                     for (i in fromPosition until toPosition) {
@@ -461,8 +466,11 @@ class ShoppingManagerDialog(
             }
 
             @SuppressLint("ClickableViewAccessibility")
-            override fun convert(helper: QRecyclerViewHolder, item: QItem) {
-                helper.itemView.ivSort.setOnTouchListener { view, motionEvent ->
+            override fun convertViewBindHolder(
+                helper: QRecyclerViewBindHolder<KitItemManagerGoodsBinding>,
+                item: QItem
+            ) {
+                helper.binding.ivSort.setOnTouchListener { view, motionEvent ->
                     if (motionEvent.action == MotionEvent.ACTION_DOWN) {
                         itemTouchHelper.startDrag(helper)
                     }
@@ -470,24 +478,24 @@ class ShoppingManagerDialog(
                 }
                 Glide.with(context)
                     .load(item.thumbnail)
-                    .into(helper.itemView.ivCover)
-                helper.itemView.mAutoVoiceWaveView.attach(kitContext.lifecycleOwner)
+                    .into(helper.binding.ivCover)
+                helper.binding.mAutoVoiceWaveView.attach(kitContext.lifecycleOwner)
                 if (shoppingService.explaining?.itemID == item.itemID) {
-                    helper.itemView.llItemShowing.visibility = View.VISIBLE
-                    helper.itemView.mAutoVoiceWaveView.setAutoPlay(true)
+                    helper.binding.llItemShowing.visibility = View.VISIBLE
+                    helper.binding.mAutoVoiceWaveView.setAutoPlay(true)
                     helper.itemView.isEnabled = false
-                    helper.itemView.opCheckbox.isClickable = false
-                    helper.itemView.opCheckbox.visibility = View.INVISIBLE
+                    helper.binding.opCheckbox.isClickable = false
+                    helper.binding.opCheckbox.visibility = View.INVISIBLE
                 } else {
                     helper.itemView.isEnabled = true
-                    helper.itemView.opCheckbox.isClickable = true
-                    helper.itemView.llItemShowing.visibility = View.GONE
-                    helper.itemView.mAutoVoiceWaveView.setAutoPlay(false)
-                    helper.itemView.opCheckbox.visibility = View.VISIBLE
+                    helper.binding.opCheckbox.isClickable = true
+                    helper.binding.llItemShowing.visibility = View.GONE
+                    helper.binding.mAutoVoiceWaveView.setAutoPlay(false)
+                    helper.binding.opCheckbox.visibility = View.VISIBLE
                 }
-                helper.itemView.tvOrder.text = item.order.toString()
-                helper.itemView.tvGoodsName.text = item.title
-                helper.itemView.flGoodsTag.adapter =
+                helper.binding.tvOrder.text = item.order.toString()
+                helper.binding.tvGoodsName.text = item.title
+                helper.binding.flGoodsTag.adapter =
                     object : TagAdapter<TagItem>(
                         TagItem.strToTagItem(
                             item.tags
@@ -501,25 +509,26 @@ class ShoppingManagerDialog(
                             return v
                         }
                     }
-                helper.itemView.tvNowPrice.text = item.currentPrice
-                helper.itemView.tvOriginPrice.text = item.originPrice
-                helper.itemView.tvOriginPrice .paint.flags = Paint.STRIKE_THRU_TEXT_FLAG;
+                helper.binding.tvNowPrice.text = item.currentPrice
+                helper.binding.tvOriginPrice.text = item.originPrice
+                helper.binding.tvOriginPrice.paint.flags = Paint.STRIKE_THRU_TEXT_FLAG;
                 if (item.status == QItemStatus.PULLED.value) {
-                    helper.itemView.tvPulledCover.visibility = View.VISIBLE
+                    helper.binding.tvPulledCover.visibility = View.VISIBLE
                 }
                 if (item.status == QItemStatus.ON_SALE.value || item.status == QItemStatus.ONLY_DISPLAY.value) {
                     //已经上架
-                    helper.itemView.tvPulledCover.visibility = View.GONE
+                    helper.binding.tvPulledCover.visibility = View.GONE
                 }
-                helper.itemView.opCheckbox.setOnCheckedChangeListener { compoundButton, b ->
+                helper.binding.opCheckbox.setOnCheckedChangeListener { compoundButton, b ->
                     if (b) {
                         selectedSet.add(item.itemID)
                     } else {
                         selectedSet.remove(item.itemID)
                     }
                 }
-                helper.itemView.opCheckbox.isChecked = selectedSet.contains(item.itemID)
+                helper.binding.opCheckbox.isChecked = selectedSet.contains(item.itemID)
             }
+
         }
     }
 }

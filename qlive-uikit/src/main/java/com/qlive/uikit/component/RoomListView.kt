@@ -9,7 +9,9 @@ import android.widget.FrameLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -21,16 +23,20 @@ import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.sdk.QLive
 import com.qlive.uikit.R
 import com.qlive.uikit.RoomPage
+import com.qlive.uikit.databinding.KitItemRoomBinding
+import com.qlive.uikit.databinding.KitViewRoomListBinding
 import com.qlive.uikitcore.QComponent
 import com.qlive.uikitcore.QUIKitContext
+import com.qlive.uikitcore.adapter.QRecyclerViewBindAdapter
+import com.qlive.uikitcore.adapter.QRecyclerViewBindHolder
 import com.qlive.uikitcore.adapter.QRecyclerViewHolder
 import com.qlive.uikitcore.ext.ViewUtil
 import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitcore.ext.bg
 import com.qlive.uikitcore.smartrecycler.IAdapter
 import com.qlive.uikitcore.smartrecycler.QSmartAdapter
-import kotlinx.android.synthetic.main.kit_item_room.view.*
-import kotlinx.android.synthetic.main.kit_view_room_list.view.*
+import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
+import com.qlive.uikitcore.smartrecycler.SmartRecyclerView
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -38,7 +44,7 @@ import kotlin.coroutines.suspendCoroutine
 /**
  * 房间列表view
  */
-class RoomListView : FrameLayout, QComponent {
+class RoomListView : SmartRecyclerView, QComponent {
     override var kitContext: QUIKitContext? = null
 
     constructor(context: Context) : this(context, null)
@@ -48,27 +54,13 @@ class RoomListView : FrameLayout, QComponent {
         attrs,
         defStyleAttr
     ) {
-        LayoutInflater.from(context).inflate(R.layout.kit_view_room_list, this, true)
-        mSmartRecyclerView.recyclerView.layoutManager = GridLayoutManager(context, 2)
-
-        val styled =
-            context.obtainStyledAttributes(attrs, R.styleable.RoomListView, defStyleAttr, 0)
-        val emptyIcon = styled.getResourceId(
-            R.styleable.RoomListView_empty_placeholder_icon,
-            com.qlive.uikitcore.R.drawable.kit_pic_empty
-        )
-        val emptyNoNetIcon = styled.getResourceId(
-            R.styleable.RoomListView_empty_placeholder_no_net_icon,
-            com.qlive.uikitcore.R.drawable.kit_pic_empty_network
-        )
-        val emptyTip = styled.getString(R.styleable.RoomListView_empty_placeholder_tips) ?: "空空如也"
-        mSmartRecyclerView.emptyView.setEmptyIcon(emptyIcon)
-        mSmartRecyclerView.emptyView.setEmptyNoNetIcon(emptyNoNetIcon)
-        mSmartRecyclerView.emptyView.setEmptyTips(emptyTip)
-        styled.recycle()
-        mSmartRecyclerView.recyclerView.addItemDecoration(itemDirection)
+        recyclerView.layoutManager = getLayoutManager()
+        recyclerView.addItemDecoration(itemDirection)
     }
 
+    open fun getLayoutManager(): RecyclerView.LayoutManager {
+        return GridLayoutManager(context,2)
+    }
     /**
      * 自定义列表适配器
      */
@@ -109,7 +101,7 @@ class RoomListView : FrameLayout, QComponent {
 
     override fun attachKitContext(context: QUIKitContext) {
         super.attachKitContext(context)
-        mSmartRecyclerView.setUp(
+        setUp(
             roomAdapter,
             true,
             true
@@ -121,7 +113,7 @@ class RoomListView : FrameLayout, QComponent {
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         super.onStateChanged(source, event)
         if (event == Lifecycle.Event.ON_RESUME) {
-            mSmartRecyclerView.startRefresh()
+            startRefresh()
         }
     }
 
@@ -141,17 +133,15 @@ class RoomListView : FrameLayout, QComponent {
         kitContext?.lifecycleOwner?.bg {
             doWork {
                 val list = suspendLoad(page)
-                mSmartRecyclerView.onFetchDataFinish(list, false)
+                onFetchDataFinish(list, false)
             }
             catchError {
-                mSmartRecyclerView.onFetchDataError()
+                onFetchDataError()
             }
         }
     }
 
-    class RoomListAdapter : QSmartAdapter<QLiveRoomInfo>(
-        R.layout.kit_item_room
-    ) {
+    class RoomListAdapter : QSmartViewBindAdapter<QLiveRoomInfo, KitItemRoomBinding>() {
 
         /**
          * Convert 如何布局每一个房间item
@@ -159,19 +149,22 @@ class RoomListView : FrameLayout, QComponent {
          * @param holder
          * @param item 每一个房间item
          */
-        override fun convert(holder: QRecyclerViewHolder, item: QLiveRoomInfo) {
+        override fun convertViewBindHolder(
+            helper: QRecyclerViewBindHolder<KitItemRoomBinding>,
+            item: QLiveRoomInfo
+        ) {
             if (item.anchorStatus.anchorStatusToLiveStatus() != QLiveStatus.ANCHOR_ONLINE) {
-                holder.itemView.tvAnchorStatus.visibility = VISIBLE
+                helper.binding.tvAnchorStatus.visibility = VISIBLE
             } else {
-                holder.itemView.tvAnchorStatus.visibility = INVISIBLE
+                helper.binding.tvAnchorStatus.visibility = INVISIBLE
             }
             Glide.with(mContext).load(item.coverURL)
                 .transform(MultiTransformation(CenterCrop(), RoundedCorners(ViewUtil.dip2px(8f))))
-                .into(holder.itemView.ivCover)
-            holder.itemView.tvRoomId.text = item.anchor.nick
-            holder.itemView.tvRoomName.text = item.title
-            holder.itemView.tvOnlineCount.text = item.onlineCount.toString()
-            holder.itemView.setOnClickListener {
+                .into(helper.binding.ivCover)
+            helper.binding.tvRoomId.text = item.anchor.nick
+            helper.binding.tvRoomName.text = item.title
+            helper.binding.tvOnlineCount.text = item.onlineCount.toString()
+            helper.itemView.setOnClickListener {
                 QLive.getLiveUIKit().getPage(RoomPage::class.java)
                     .startRoomActivity(mContext, item,
                         object :
