@@ -1,7 +1,5 @@
 package com.qlive.core;
 
-import com.qlive.core.QLiveCallBack;
-
 /**
  * token获取回调
  * 当token过期后自动调用getTokenInfo

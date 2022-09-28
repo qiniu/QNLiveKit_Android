@@ -4,11 +4,15 @@ buildscript {
         maven { url 'https://jitpack.io' }
         google()
         mavenCentral()
+        maven {
+            url './doc'
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.1.2'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
         classpath 'com.github.kezong:fat-aar:1.3.8'
+        classpath 'com.qncube.docbuider:docBuiderPlugin:1.0'
     }
 }
 

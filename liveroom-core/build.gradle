@@ -30,7 +30,6 @@ android {
 
 dependencies {
 
-    api project(':liveroom-libs:comp_avparam')
     api project(':liveroom-libs:lib_log')
     api depend.coroutines()
 

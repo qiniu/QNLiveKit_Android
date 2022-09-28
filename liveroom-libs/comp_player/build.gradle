@@ -34,7 +34,7 @@ android {
 dependencies {
     implementation project(':liveroom-libs:lib_log')
     api project(':app-sdk:depends_sdk_piliplayer') //七牛播放器
-    api project(':liveroom-libs:comp_avparam')
+
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

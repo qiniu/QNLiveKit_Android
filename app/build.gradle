@@ -14,6 +14,11 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [QDOC_MODULE_NAME: project.getName()]
+            }
+        }
     }
 
     buildTypes {
@@ -28,7 +33,7 @@ android {
     }
 }
 
-def userAARSDK = true
+def userAARSDK = false
 
 dependencies {
 
@@ -59,7 +64,9 @@ dependencies {
     implementation depend.appcompat()
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "jp.wasabeef:glide-transformations:3.0.1"
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
 }

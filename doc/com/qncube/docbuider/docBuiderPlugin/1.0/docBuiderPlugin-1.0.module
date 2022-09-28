@@ -1,0 +1,102 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.qncube.docbuider",
+    "module": "docBuiderPlugin",
+    "version": "1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 7,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "docBuiderPlugin-1.0.jar",
+          "url": "docBuiderPlugin-1.0.jar",
+          "size": 16200,
+          "sha512": "d8b7d4b9b7e32ae465fe4be555a1b366ef490a2666568b1dc8513b6d90b9b96e3ac5b93830193dabbbfb75ab0f262529cf997ba776393e0bd347c1b50d1cf8c9",
+          "sha256": "a991f5f6becf3bbde8a4e8b1a62180588b2fa4c06cb66df5a2371421be74f93b",
+          "sha1": "f90c96e182fe74fb837ddbcb16d0c17f8f336ada",
+          "md5": "7810ca88995c1dd64fba33d0272778af"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 7,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "com.android.tools.build",
+          "module": "gradle",
+          "version": {
+            "requires": "4.1.2"
+          },
+          "excludes": [
+            {
+              "group": "org.ow2.asm",
+              "module": "*"
+            }
+          ]
+        },
+        {
+          "group": "com.alibaba",
+          "module": "fastjson",
+          "version": {
+            "requires": "1.2.76"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "docBuiderPlugin-1.0.jar",
+          "url": "docBuiderPlugin-1.0.jar",
+          "size": 16200,
+          "sha512": "d8b7d4b9b7e32ae465fe4be555a1b366ef490a2666568b1dc8513b6d90b9b96e3ac5b93830193dabbbfb75ab0f262529cf997ba776393e0bd347c1b50d1cf8c9",
+          "sha256": "a991f5f6becf3bbde8a4e8b1a62180588b2fa4c06cb66df5a2371421be74f93b",
+          "sha1": "f90c96e182fe74fb837ddbcb16d0c17f8f336ada",
+          "md5": "7810ca88995c1dd64fba33d0272778af"
+        }
+      ]
+    }
+  ]
+}
