@@ -1,7 +1,4 @@
 package com.qlive.sdk;
-
-import com.qlive.docannotations.QDOC;
-
 import java.util.HashMap;
 import java.util.Map;
 

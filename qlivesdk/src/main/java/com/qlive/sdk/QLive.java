@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.qlive.core.QLiveConfig;
 import com.qlive.core.been.QLiveUser;
-import com.qlive.docannotations.QDOC;
 import com.qlive.sdk.internal.QLiveCoreDelegate;
 import com.qlive.core.QTokenGetter;
 import com.qlive.core.QLiveCallBack;

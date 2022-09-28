@@ -2,8 +2,6 @@ package com.qlive.sdk;
 
 import android.content.Context;
 
-import com.qlive.docannotations.QDOC;
-
 /**
  * UIkit客户端
  */
