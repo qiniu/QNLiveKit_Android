@@ -2,6 +2,9 @@
 rootProject.name = "QNLiveKit"
 include ':app'
 include ':doc:sdkbuilder'
+include ':doc:docPlugin'
+include ':doc:docbuilder'
+
 //qlive 输出sdk
 include ':app-sdk:qlive-sdk'
 include ':app-sdk:qlive-sdk-uikit'
@@ -17,8 +20,9 @@ include ':liveroom-service:danmakuservice'
 include ':liveroom-service:publicchatservice'
 include ':liveroom-service:roomservice'
 include ':liveroom-service:shoppingservice'
+include ':liveroom-service:giftservice'
+include ':liveroom-service:likeservice'
 
-include ':liveroom-libs:comp_avparam'
 include ':liveroom-libs:lib_json'
 include ':liveroom-libs:comp_rtm'
 include ':liveroom-libs:comp_player'
@@ -42,5 +46,4 @@ include ':qlive-uicomponnets:uikit-pk'
 include ':qlivesdk'
 include ':qlive-uikit'
 
-include ':liveroom-service:giftservice'
-include ':liveroom-service:likeservice'
+

@@ -148,7 +148,6 @@ dependencies {
         embed project(':liveroom-service:publicchatservice')
         embed project(':liveroom-service:roomservice')
         embed project(':liveroom-service:shoppingservice')
-        embed project(':liveroom-libs:comp_avparam')
         embed project(':liveroom-libs:comp_player')
         embed project(':liveroom-libs:comp_imadapter')
         embed project(':liveroom-libs:comp_rtclive')

@@ -177,7 +177,7 @@ roomListPage.customLayoutID = R.layout.customXlayout
 案列：
 ```kotlin
 //自定义一个公告UI组件--参考原来的公告实现
-class CustomNoticeView :FrameLayout, QLiveComponent {
+class CustomNoticeView :FrameLayout, com.qlive.uikit.QLiveComponent {
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -190,7 +190,7 @@ class CustomNoticeView :FrameLayout, QLiveComponent {
     }
 
     //绑定UI组件上下文 context中包涵UI实现安卓平台功能的字段如activity fragmentManager
-    override fun attachKitContext(context: QLiveUIKitContext) {}
+    override fun attachKitContext(context: com.qlive.uikit.QLiveUIKitContext) {}
     //绑定房间客户端 通过client可以获取业务实现
     override fun attachLiveClient(client: QLiveClient) {}
     //进入回调 在这个阶段可以提前根据liveId提前初始化一些UI
@@ -261,7 +261,7 @@ class CustomNoticeView :FrameLayout, QLiveComponent {
 #### 添加UI组件
 
 ```kotlin
-class CustomView :FrameLayout, QLiveComponent {
+class CustomView :FrameLayout, com.qlive.uikit.QLiveComponent {
     //  实现自己额外的多个UI布局
 }
 //在拷贝的布局文件里或者源码布局里你想要的位置添加即可
@@ -385,7 +385,7 @@ class FuncCPTPlayerFloatingHandler{
          * afterTipCall.invoke(true) == 已经提示完成可以去申请
          * afterTipCall.invoke(false) == 不去申请，取消操作
          */
-        var permissionRequestTipCall: (kitConText: QLiveUIKitContext, afterTipCall: (Boolean) -> Unit) -> Unit ={}
+        var permissionRequestTipCall: (kitConText: com.qlive.uikit.QLiveUIKitContext, afterTipCall: (Boolean) -> Unit) -> Unit ={}
      }
   /**
    * 开始悬浮播放

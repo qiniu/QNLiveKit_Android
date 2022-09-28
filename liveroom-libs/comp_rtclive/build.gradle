@@ -32,7 +32,7 @@ android {
 
 dependencies {
     implementation project(':liveroom-libs:lib_log')
-    api project(':liveroom-libs:comp_avparam')
+
     implementation depend.coroutines()
     api project(':app-sdk:depends_sdk_qrtc')
     testImplementation 'junit:junit:4.13.2'

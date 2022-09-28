@@ -14,21 +14,24 @@ public interface QPKService extends QLiveService {
 
     /**
      * 主播设置混流适配器
-     * @param adapter  混流适配
+     *
+     * @param adapter 混流适配
      */
     void setPKMixStreamAdapter(QPKMixStreamAdapter adapter);
 
     /**
      * 添加pk监听
-     * @param QPKServiceListener
+     *
+     * @param serviceListener
      */
-    void addServiceListener(QPKServiceListener QPKServiceListener);
+    void addServiceListener(QPKServiceListener serviceListener);
 
     /**
      * 移除pk监听
-     * @param QPKServiceListener
+     *
+     * @param serviceListener
      */
-    void removeServiceListener(QPKServiceListener QPKServiceListener);
+    void removeServiceListener(QPKServiceListener serviceListener);
 
     /**
      * 开始pk
@@ -43,21 +46,25 @@ public interface QPKService extends QLiveService {
 
     /**
      * 结束pk
+     *
      * @param callBack 操作回调
      */
     void stop(QLiveCallBack<Void> callBack);
 
     /**
      * 主播设置对方的连麦预览
-     * @param view  预览窗口
+     *
+     * @param view 预览窗口
      */
-    void setPeerAnchorPreView( QPushRenderView view);
+    void setPeerAnchorPreView(QPushRenderView view);
 
     /**
      * 获得pk邀请处理
+     *
      * @return pk邀请处理
      */
     QInvitationHandler getInvitationHandler();
+
     /**
      * 当前正在pk信息 没有PK则空
      */

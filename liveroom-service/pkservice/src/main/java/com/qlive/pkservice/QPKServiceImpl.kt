@@ -233,7 +233,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
 
                     }
                     catchError {
-                        QLiveLogUtil.d("pkpkpkpkpk" + it.message ?: "")
+                        QLiveLogUtil.d(it.message ?: "")
                         it.printStackTrace()
                     }
                 }
@@ -381,8 +381,8 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         }
     }
 
-      override fun attachRoomClient(client: QLiveClient, appContext: Context) {
-        super.attachRoomClient(client,appContext)
+    override fun attachRoomClient(client: QLiveClient, appContext: Context) {
+        super.attachRoomClient(client, appContext)
         RtmManager.addRtmC2cListener(mC2cListener)
         RtmManager.addRtmChannelListener(groupListener)
 
@@ -391,7 +391,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
             room.addExtraQNRTCEngineEventListener(defaultExtQNClientEventListener)
             pkPKInvitationHandlerImpl.attach()
         } else {
-            mAudiencePKSynchro.attachRoomClient(client,appContext)
+            mAudiencePKSynchro.attachRoomClient(client, appContext)
         }
     }
 
@@ -444,13 +444,13 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         mQPKMixStreamAdapter = adapter
     }
 
-    override fun addServiceListener(QPKServiceListener: QPKServiceListener) {
-        mServiceListeners.add(QPKServiceListener)
+    override fun addServiceListener(serviceListener: QPKServiceListener) {
+        mServiceListeners.add(serviceListener)
         mAudiencePKSynchro.needSynchro = true
     }
 
-    override fun removeServiceListener(QPKServiceListener: QPKServiceListener) {
-        mServiceListeners.remove(QPKServiceListener)
+    override fun removeServiceListener(serviceListener: QPKServiceListener) {
+        mServiceListeners.remove(serviceListener)
     }
 
     override fun start(

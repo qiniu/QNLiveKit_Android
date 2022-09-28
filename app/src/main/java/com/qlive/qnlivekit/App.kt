@@ -21,7 +21,7 @@ import okhttp3.Request
 class App : Application() {
     companion object {
         val demo_url = "https://niucube-api.qiniu.com"
-       // val demo_url="http://10.200.20.28:5080"
+      //  val demo_url="http://10.200.20.28:5080"
         var user: BZUser? = null
     }
 
