@@ -9,7 +9,8 @@ import com.qlive.core.been.QLiveUser
 import com.qlive.coreimpl.QLiveDataSource
 import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.getCode
-import com.qlive.coreimpl.http.HttpService.Companion.httpService
+import com.qlive.coreimpl.http.HttpService.Companion.httpClient
+import com.qlive.jsonutil.JsonUtils
 import com.qlive.liblog.QLiveLogUtil
 import com.qlive.playerclient.QPlayerClient
 import com.qlive.pushclient.QPusherClient
@@ -21,9 +22,17 @@ import im.floo.floolib.BMXErrorCode
 
 internal class QLiveCoreDelegate {
     var qRooms: QRooms = QRoomImpl.instance;
-    lateinit var loginUser: QLiveUser
+    private var loginUser: QLiveUser? = null
     private var uikitObj: Any? = null
     private val dataSource = QLiveDataSource()
+
+    fun getLiveUser(): QLiveUser? {
+        if (loginUser == null) {
+            val userStr = SpUtil.get("qlive").readString("loginUser") ?: return null
+            loginUser = JsonUtils.parseObject(userStr, QLiveUser::class.java)
+        }
+        return loginUser
+    }
 
     fun init(
         context: android.content.Context,
@@ -32,15 +41,15 @@ internal class QLiveCoreDelegate {
     ) {
         setContext(context)
         val sdkConfig = config ?: QLiveConfig()
-        httpService.baseUrl = sdkConfig.serverURL
-        httpService.tokenGetter = tokenGetter
+        httpClient.baseUrl = sdkConfig.serverURL
+        httpClient.tokenGetter = tokenGetter
         QLiveLogUtil.isLogAble = config?.isLogAble ?: true
     }
 
     fun setUser(userInfo: QLiveUser, callBack: QLiveCallBack<Void>) {
         backGround {
             doWork {
-                val user = loginUser
+                val user = loginUser!!
                 if (user.avatar != userInfo.avatar
                     || user.nick != userInfo.nick
                     || user.extensions != userInfo.extensions
@@ -50,10 +59,11 @@ internal class QLiveCoreDelegate {
                         userInfo.nick,
                         userInfo.extensions
                     )
-                    loginUser.avatar = userInfo.avatar
-                    loginUser.nick = userInfo.nick
-                    loginUser.extensions = userInfo.extensions
+                    loginUser!!.avatar = userInfo.avatar
+                    loginUser!!.nick = userInfo.nick
+                    loginUser!!.extensions = userInfo.extensions
                 }
+                SpUtil.get("qlive").saveData("loginUser", JsonUtils.toJson(loginUser!!))
                 callBack.onSuccess(null)
             }
             catchError {
@@ -80,6 +90,7 @@ internal class QLiveCoreDelegate {
                     callBack.onError(code.swigValue(), code.name)
                     return@doWork
                 }
+                SpUtil.get("qlive").saveData("loginUser", JsonUtils.toJson(loginUser!!))
                 callBack.onSuccess(null)
             }
             catchError {

@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class QLive {
 
-    private static QLiveCoreDelegate delegate = new QLiveCoreDelegate();
+    private static final QLiveCoreDelegate delegate = new QLiveCoreDelegate();
     /**
      * 初始化
      *
@@ -60,7 +60,7 @@ public class QLive {
      * @return QLiveUser
      */
     public static QLiveUser getLoginUser() {
-        return delegate.loginUser;
+        return delegate.getLiveUser();
     }
 
     /**

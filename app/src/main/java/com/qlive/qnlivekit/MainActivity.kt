@@ -17,16 +17,9 @@ import androidx.lifecycle.lifecycleScope
 import com.qlive.sdk.QLive
 import com.qlive.sdk.QUserInfo
 import com.qlive.core.QLiveCallBack
-import com.qlive.danmakuservice.QDanmaku
 import com.qlive.qnlivekit.App.Companion.demo_url
-import com.qlive.qnlivekit.App.Companion.user
-import com.qlive.qnlivekit.uitil.BZUser
-import com.qlive.qnlivekit.uitil.JsonUtils
-import com.qlive.qnlivekit.uitil.OKHttpManger
-import com.qlive.qnlivekit.uitil.SpUtil
-import com.qlive.rtm.RtmManager
+import com.qlive.qnlivekit.uitil.*
 import com.qlive.uikitcore.dialog.LoadingDialog
-import com.qlive.uikitdanmaku.DanmuItemViewOnlyText
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -68,14 +61,14 @@ class MainActivity : AppCompatActivity() {
                 try {
                     //demo登陆
                     login(phone, code)
-                    SpUtil.get("login").saveData("phone",phone)
+                    SpUtil.get("login").saveData("phone", phone)
                     //登陆
                     auth()
                     //绑定用户信息
                     suspendSetUser()
                     //启动跳转到直播列表
                     QLive.getLiveUIKit().launch(this@MainActivity)
-                   // CustomRoomListActivity.start(this@MainActivity)
+                    // CustomRoomListActivity.start(this@MainActivity)
 
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -85,8 +78,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
         initOtherView()
-        val lastPhone = SpUtil.get("login").readString("phone","")
-        if(!TextUtils.isEmpty(lastPhone)){
+        val lastPhone = SpUtil.get("login").readString("phone", "")
+        if (!TextUtils.isEmpty(lastPhone)) {
             et_login_phone.setText(lastPhone)
             et_login_verification_code.setText("8888")
         }
@@ -113,8 +106,8 @@ class MainActivity : AppCompatActivity() {
             //绑定用户信息 绑定后房间在线用户能返回绑定设置的字段
             QLive.setUser(QUserInfo().apply {
                 // avatar ="https://cdn2.jianshu.io/assets/default_avatar/14-0651acff782e7a18653d7530d6b27661.jpg"
-                avatar = user!!.data.avatar //设置当前用户头像
-                nick = user!!.data.nickname //设置当前用户昵称
+                avatar = UserManager.user!!.data.avatar //设置当前用户头像
+                nick = UserManager.user!!.data.nickname //设置当前用户昵称
                 extension = HashMap<String, String>().apply {
                     put("phone", "13141616037")
                     put("customFiled", "i am customFile")
@@ -153,7 +146,8 @@ class MainActivity : AppCompatActivity() {
 
                 val code = resp.code
                 val userJson = resp.body?.string()
-                user = JsonUtils.parseObject(userJson, BZUser::class.java)
+                val user = JsonUtils.parseObject(userJson, BZUser::class.java)
+                UserManager.onLogin(user!!)
                 ct.resume(Unit)
             } catch (e: Exception) {
                 e.printStackTrace()

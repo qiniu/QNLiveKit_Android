@@ -2,7 +2,6 @@ package com.qlive.qnlivekit.uitil;
 
 public class BZUser {
 
-
     public Integer code;
     public String message;
     public DataDTO data;

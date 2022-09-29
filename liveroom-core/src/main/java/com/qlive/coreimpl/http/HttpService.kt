@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 
 abstract class HttpService {
     companion object {
-        val httpService: HttpService = URLConnectionHttpService()
+        val httpClient: HttpService = URLConnectionHttpService()
     }
 
     var tokenGetter: QTokenGetter? = null
