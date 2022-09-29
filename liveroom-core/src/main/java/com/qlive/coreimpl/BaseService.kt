@@ -6,10 +6,6 @@ import com.qlive.core.QLiveClient
 import com.qlive.core.QLiveService
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
-import com.qlive.coreimpl.http.HttpService
-import com.qlive.coreimpl.http.NetBzException
-import com.qlive.coreimpl.http.PageData
-import com.qlive.jsonutil.ParameterizedTypeImpl
 
 open class BaseService : QLiveService, QClientLifeCycleListener {
 

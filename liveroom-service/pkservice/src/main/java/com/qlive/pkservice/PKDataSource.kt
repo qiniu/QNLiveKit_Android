@@ -1,6 +1,6 @@
 package com.qlive.pkservice
 
-import com.qlive.coreimpl.http.HttpService.Companion.httpClient
+import com.qlive.coreimpl.http.HttpClient.Companion.httpClient
 import org.json.JSONObject
 
 internal class PKDataSource {

@@ -2,7 +2,7 @@ package com.qlive.linkmicservice
 
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.core.been.QExtension
-import com.qlive.coreimpl.http.HttpService.Companion.httpClient
+import com.qlive.coreimpl.http.HttpClient.Companion.httpClient
 import com.qlive.coreimpl.model.TokenData
 import com.qlive.jsonutil.ParameterizedTypeImpl
 

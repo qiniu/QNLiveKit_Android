@@ -1,7 +1,7 @@
 package com.qlive.shoppingservice
 
 import com.qlive.core.been.QExtension
-import com.qlive.coreimpl.http.HttpService.Companion.httpClient
+import com.qlive.coreimpl.http.HttpClient.Companion.httpClient
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.jsonutil.ParameterizedTypeImpl
 import org.json.JSONArray

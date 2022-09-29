@@ -1,6 +1,5 @@
 package com.qlive.coreimpl.http
 
-import com.qlive.core.QLiveCallBack
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.jsonutil.ParameterizedTypeImpl
 import com.qlive.liblog.QLiveLogUtil
@@ -9,41 +8,15 @@ import java.io.*
 import java.lang.reflect.Type
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.concurrent.CountDownLatch
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
-internal class URLConnectionHttpService : HttpService() {
+internal class URLConnectionHttpClient : HttpClient() {
 
-    private fun <T> request(
+    override fun <T> req(
         method: String,
         path: String,
         jsonString: String,
-        clazz: Class<T>? = null,
-        type: Type? = null
-    ): T {
-        var ret = req(method, path, jsonString, clazz, type)
-        if (ret.code == 200 || ret.code == 0) {
-            return ret.data
-        }
-        if (ret.code == 499 || ret.code == 401) {
-            if (reGetTokenInfo()) {
-                ret = req(method, path, jsonString, clazz, type)
-            }
-        }
-        if (ret.code == 200 || ret.code == 0) {
-            return ret.data
-        }
-        throw NetBzException(ret.code, ret.message)
-    }
-
-    private fun <T> req(
-        method: String,
-        path: String,
-        jsonString: String,
-        clazz: Class<T>? = null,
-        type: Type? = null
+        clazz: Class<T>?,
+        type: Type?
     ): HttpResp<T> {
         val url = URL(baseUrl + path)
         val urlConnection: HttpURLConnection = url.openConnection() as HttpURLConnection
@@ -137,90 +110,4 @@ internal class URLConnectionHttpService : HttpService() {
         }
     }
 
-    private fun reGetTokenInfo(): Boolean {
-        val latch = CountDownLatch(1)
-        var reGet = false
-        tokenGetter!!.getTokenInfo(object : QLiveCallBack<String> {
-            override fun onError(code: Int, msg: String?) {
-                reGet = false
-                latch.countDown()
-            }
-
-            override fun onSuccess(data: String?) {
-                reGet = true
-                token = data ?: ""
-                latch.countDown()
-            }
-        })
-        latch.await()
-        return reGet
-    }
-
-    override suspend fun <T> put(path: String, jsonString: String, clazz: Class<T>?, type: Type?) =
-        suspendCoroutine<T> { contine ->
-            mExecutorService.execute {
-                try {
-                    val resp = request("PUT", path, jsonString, clazz, type)
-                    contine.resume(resp)
-                } catch (e: Exception) {
-                    contine.resumeWithException(e)
-                }
-            }
-        }
-
-    override suspend fun <T> post(
-        path: String, jsonString: String, clazz: Class<T>?,
-        type: Type?
-    ) = suspendCoroutine<T> { contine ->
-        mExecutorService.execute {
-            try {
-                val resp = request("POST", path, jsonString, clazz, type)
-                contine.resume(resp)
-            } catch (e: Exception) {
-                contine.resumeWithException(e)
-            }
-        }
-    }
-
-    override suspend fun <T> delete(
-        path: String, jsonString: String, clazz: Class<T>?,
-        type: Type?
-    ) = suspendCoroutine<T> { contine ->
-        mExecutorService.execute {
-            try {
-                val resp = request("DELETE", path, jsonString, clazz, type)
-                contine.resume(resp)
-            } catch (e: Exception) {
-                contine.resumeWithException(e)
-            }
-        }
-    }
-
-    override suspend fun <T> get(
-        path: String,
-        map: Map<String, String>?,
-        clazz: Class<T>?,
-        type: Type?
-    ) = suspendCoroutine<T> { contine ->
-        var params = ""
-        map?.let {
-            params += "?"
-            it.entries.forEachIndexed { index, item ->
-                params += if (index == 0) {
-                    ""
-                } else {
-                    "&"
-                } + item.key + "=" + item.value
-            }
-        }
-        val path2 = path + params
-        mExecutorService.execute {
-            try {
-                val resp = request("GET", path2, "{}", clazz, type)
-                contine.resume(resp)
-            } catch (e: Exception) {
-                contine.resumeWithException(e)
-            }
-        }
-    }
 }

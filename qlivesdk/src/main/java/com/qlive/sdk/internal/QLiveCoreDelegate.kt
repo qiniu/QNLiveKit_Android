@@ -9,7 +9,9 @@ import com.qlive.core.been.QLiveUser
 import com.qlive.coreimpl.QLiveDataSource
 import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.getCode
-import com.qlive.coreimpl.http.HttpService.Companion.httpClient
+import com.qlive.coreimpl.http.HttpClient.Companion.httpClient
+import com.qlive.coreimpl.http.NetBzException
+import com.qlive.coreimpl.model.AppConfig
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.liblog.QLiveLogUtil
 import com.qlive.playerclient.QPlayerClient
@@ -18,6 +20,13 @@ import com.qlive.qnim.QNIMManager
 import com.qlive.sdk.internal.AppCache.Companion.appContext
 import com.qlive.sdk.internal.AppCache.Companion.setContext
 import im.floo.floolib.BMXErrorCode
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import java.util.concurrent.CountDownLatch
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 
 internal class QLiveCoreDelegate {
@@ -25,12 +34,8 @@ internal class QLiveCoreDelegate {
     private var loginUser: QLiveUser? = null
     private var uikitObj: Any? = null
     private val dataSource = QLiveDataSource()
-
+    private var tokenGetter: QTokenGetter? = null
     fun getLiveUser(): QLiveUser? {
-        if (loginUser == null) {
-            val userStr = SpUtil.get("qlive").readString("loginUser") ?: return null
-            loginUser = JsonUtils.parseObject(userStr, QLiveUser::class.java)
-        }
         return loginUser
     }
 
@@ -42,8 +47,15 @@ internal class QLiveCoreDelegate {
         setContext(context)
         val sdkConfig = config ?: QLiveConfig()
         httpClient.baseUrl = sdkConfig.serverURL
-        httpClient.tokenGetter = tokenGetter
+        this.tokenGetter = tokenGetter
+        httpClient.onTokenExpiredCall = {
+            reGetToken()
+        }
         QLiveLogUtil.isLogAble = config?.isLogAble ?: true
+
+        val appConfigStr = SpUtil.get("qlive").readString("appConfig", "")
+        val appConfig = JsonUtils.parseObject(appConfigStr, AppConfig::class.java) ?: return
+        QNIMManager.init(appConfig.im_app_id, appContext)
     }
 
     fun setUser(userInfo: QLiveUser, callBack: QLiveCallBack<Void>) {
@@ -63,7 +75,6 @@ internal class QLiveCoreDelegate {
                     loginUser!!.nick = userInfo.nick
                     loginUser!!.extensions = userInfo.extensions
                 }
-                SpUtil.get("qlive").saveData("loginUser", JsonUtils.toJson(loginUser!!))
                 callBack.onSuccess(null)
             }
             catchError {
@@ -72,13 +83,50 @@ internal class QLiveCoreDelegate {
         }
     }
 
-    fun login(callBack: QLiveCallBack<Void>) {
+    private suspend fun getToken() = suspendCoroutine<String> { coroutine ->
+        tokenGetter!!.getTokenInfo(object : QLiveCallBack<String> {
+            override fun onError(code: Int, msg: String?) {
+                coroutine.resumeWithException(NetBzException(code, msg))
+            }
+
+            override fun onSuccess(data: String) {
+                httpClient.token = data
+                coroutine.resume(data)
+            }
+        })
+    }
+
+    private fun reGetToken(): Boolean {
+        val latch = CountDownLatch(1)
+        var isReLogin = false
+        loginInner(true, object : QLiveCallBack<Void> {
+            override fun onError(code: Int, msg: String?) {
+                isReLogin = false
+                latch.countDown()
+            }
+
+            override fun onSuccess(data: Void?) {
+                isReLogin = true
+                latch.countDown()
+            }
+        })
+        latch.await()
+        return isReLogin
+    }
+
+    private fun loginInner(reGetToken: Boolean, callBack: QLiveCallBack<Void>) {
         backGround {
             doWork {
-                dataSource.getToken()
+                getToken()
+                if (reGetToken) {
+                    if (loginUser != null) {
+                        callBack.onSuccess(null)
+                        return@doWork
+                    }
+                }
                 val user = dataSource.profile()
-                loginUser = user
                 val appConfig = dataSource.appConfig()
+                SpUtil.get("qlive").saveData("appConfig", JsonUtils.toJson(appConfig))
                 QNIMManager.init(appConfig.im_app_id, appContext)
                 val code = QNIMManager.mRtmAdapter.loginSuspend(
                     user.userId,
@@ -90,13 +138,17 @@ internal class QLiveCoreDelegate {
                     callBack.onError(code.swigValue(), code.name)
                     return@doWork
                 }
-                SpUtil.get("qlive").saveData("loginUser", JsonUtils.toJson(loginUser!!))
+                loginUser = user
                 callBack.onSuccess(null)
             }
             catchError {
                 callBack.onError(it.getCode(), it.message)
             }
         }
+    }
+
+    fun login(callBack: QLiveCallBack<Void>) {
+        loginInner(false, callBack)
     }
 
     fun <T> getUIKIT(): T {
