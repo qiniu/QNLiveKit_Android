@@ -120,19 +120,13 @@ class QNIMAdapter : RtmAdapter {
      * 初始化
      */
     fun init(config: BMXSDKConfig, context: Context) {
-        if (QNIMClient.isInit()) {
-            if (!isInit) {
-                mContext = context
-                isInit = true
-                QNIMClient.getUserManager().addUserListener(mBMXUserServiceListener)
-            }
-            return
-        } else {
-            QNIMClient.init(config)
-            mContext = context
-            isInit = true
-            QNIMClient.getUserManager().addUserListener(mBMXUserServiceListener)
+        if(QNIMClient.isInit()){
+            QNIMClient.getUserManager()?.removeUserListener(mBMXUserServiceListener)
         }
+        QNIMClient.init(config)
+        mContext = context
+        isInit = true
+        QNIMClient.getUserManager().addUserListener(mBMXUserServiceListener)
     }
 
     fun loginOut(callBack: BMXCallBack) {

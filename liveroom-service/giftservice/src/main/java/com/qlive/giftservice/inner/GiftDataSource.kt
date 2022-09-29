@@ -1,7 +1,7 @@
 package com.qlive.giftservice.inner
 
 import com.google.gson.JsonObject
-import com.qlive.coreimpl.http.HttpService
+import com.qlive.coreimpl.http.HttpClient
 import com.qlive.coreimpl.http.PageData
 import com.qlive.giftservice.QGift
 import com.qlive.giftservice.QGiftStatistics
@@ -15,7 +15,7 @@ class GiftDataSource {
             List::class.java,
             List::class.java
         )
-        return HttpService.httpClient.get("/server/gift/config/${type}", null, null, p)
+        return HttpClient.httpClient.get("/server/gift/config/${type}", null, null, p)
     }
 
     suspend fun giftByID(giftID: Int): QGift {
@@ -35,7 +35,7 @@ class GiftDataSource {
             PageData::class.java,
             PageData::class.java
         )
-        return HttpService.httpClient.get<PageData<QGiftStatistics>>(
+        return HttpClient.httpClient.get<PageData<QGiftStatistics>>(
             "/server/gift/live/${liveID}",
             HashMap<String, String>().apply {
                 put("page_num", page_num.toString())
@@ -47,7 +47,7 @@ class GiftDataSource {
     }
 
     suspend fun sendGift(live_id: String, gift_id: Int, amount: Int, redo: Boolean) {
-        HttpService.httpClient.put("/client/gift/live/${live_id}", JsonObject().apply {
+        HttpClient.httpClient.put("/client/gift/live/${live_id}", JsonObject().apply {
             addProperty("gift_id", gift_id)
             addProperty("amount", amount)
             addProperty("redo", redo)
@@ -60,7 +60,7 @@ class GiftDataSource {
             PageData::class.java,
             PageData::class.java
         )
-        return HttpService.httpClient.get<PageData<QGiftStatistics>>(
+        return HttpClient.httpClient.get<PageData<QGiftStatistics>>(
             "/client/gift/anchor",
             HashMap<String, String>().apply {
                 put("page_num", page_num.toString())
@@ -77,7 +77,7 @@ class GiftDataSource {
             PageData::class.java,
             PageData::class.java
         )
-        return HttpService.httpClient.get<PageData<QGiftStatistics>>(
+        return HttpClient.httpClient.get<PageData<QGiftStatistics>>(
             "/client/gift/user",
             HashMap<String, String>().apply {
                 put("page_num", page_num.toString())

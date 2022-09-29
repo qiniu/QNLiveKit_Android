@@ -8,9 +8,6 @@ import com.qlive.core.*
 import com.qlive.core.been.QInvitation
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
-import com.qlive.coreimpl.http.HttpService
-import com.qlive.coreimpl.http.NetBzException
-import com.qlive.jsonutil.ParameterizedTypeImpl
 import java.util.*
 import kotlin.collections.HashMap
 
