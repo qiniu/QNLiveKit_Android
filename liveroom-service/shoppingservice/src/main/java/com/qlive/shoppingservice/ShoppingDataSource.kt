@@ -1,7 +1,7 @@
 package com.qlive.shoppingservice
 
 import com.qlive.core.been.QExtension
-import com.qlive.coreimpl.http.HttpService.Companion.httpService
+import com.qlive.coreimpl.http.HttpClient.Companion.httpClient
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.jsonutil.ParameterizedTypeImpl
 import org.json.JSONArray
@@ -17,7 +17,7 @@ internal class ShoppingDataSource {
             jsonArray.put(it)
         }
         jsonObj.put("items", jsonArray)
-        httpService.post("/client/item/add", jsonObj.toString(), Any::class.java)
+        httpClient.post("/client/item/add", jsonObj.toString(), Any::class.java)
     }
 
     suspend fun deleteItems(liveId: String, itemIDList: List<String>) {
@@ -28,7 +28,7 @@ internal class ShoppingDataSource {
         }
         jsonObj.put("live_id", liveId)
         jsonObj.put("items", jsonArray)
-        httpService.post("/client/item/delete", jsonObj.toString(), Any::class.java)
+        httpClient.post("/client/item/delete", jsonObj.toString(), Any::class.java)
     }
 
     suspend fun updateStatus(liveId: String, items: HashMap<String, Int>) {
@@ -42,7 +42,7 @@ internal class ShoppingDataSource {
             jsonArray.put(jsonObjItem)
         }
         jsonObj.put("items", jsonArray)
-        httpService.post("/client/item/status", jsonObj.toString(), Any::class.java)
+        httpClient.post("/client/item/status", jsonObj.toString(), Any::class.java)
     }
 
     //获取直播间所有商品
@@ -52,11 +52,11 @@ internal class ShoppingDataSource {
             List::class.java,
             List::class.java
         )
-        return httpService.get("/client/item/$liveId", null, null, p)
+        return httpClient.get("/client/item/$liveId", null, null, p)
     }
 
     suspend fun updateItemExtension(liveId: String, ItemID: String, extension: QExtension) {
-        httpService.post(
+        httpClient.post(
             "/client/item/${liveId}/${ItemID}/extends",
             JsonUtils.toJson(extension),
             Any::class.java
@@ -64,20 +64,20 @@ internal class ShoppingDataSource {
     }
 
     suspend fun setExplaining(liveId: String, ItemID: String) {
-        httpService.post("/client/item/demonstrate/${liveId}/${ItemID}", "{}", Any::class.java)
+        httpClient.post("/client/item/demonstrate/${liveId}/${ItemID}", "{}", Any::class.java)
     }
 
     suspend fun cancelExplaining(liveId: String) {
-        httpService.delete("/client/item/demonstrate/${liveId}", "{}", Any::class.java)
+        httpClient.delete("/client/item/demonstrate/${liveId}", "{}", Any::class.java)
     }
 
     suspend fun getExplaining(liveId: String): QItem {
-        return httpService.get("/client/item/demonstrate/${liveId}", null, QItem::class.java)
+        return httpClient.get("/client/item/demonstrate/${liveId}", null, QItem::class.java)
     }
 
     //跟新单个商品顺序
     suspend fun changeSingleOrder(live_id: String, item_id: String, from: Int, to: Int) {
-        httpService.post("/client/item/order/single", JSONObject().apply {
+        httpClient.post("/client/item/order/single", JSONObject().apply {
             put("live_id", live_id)
             put("item_id", item_id)
             put("from", from)
@@ -86,7 +86,7 @@ internal class ShoppingDataSource {
     }
 
     suspend fun changeOrder(live_id: String, orders: HashMap<String, Int>) {
-        httpService.post("/client/item/order", JSONObject().apply {
+        httpClient.post("/client/item/order", JSONObject().apply {
             put("live_id", live_id)
             put("items", orders)
         }.toString(), Any::class.java)
@@ -94,7 +94,7 @@ internal class ShoppingDataSource {
 
     //开始录制讲解
     suspend fun startRecord(liveId: String, ItemID: String) {
-        httpService.post(
+        httpClient.post(
             "/client/item/demonstrate/start/${liveId}/${ItemID}",
             "{}",
             Any::class.java
@@ -102,7 +102,7 @@ internal class ShoppingDataSource {
     }
 
     suspend fun deleteRecord(liveId: String, recordIds: List<Int>) {
-        httpService.post("/client/item/demonstrate/record/delete", JSONObject().apply {
+        httpClient.post("/client/item/demonstrate/record/delete", JSONObject().apply {
             put("live_id", liveId)
             put("demonstrate_item", JSONArray().apply {
                 recordIds.forEach {

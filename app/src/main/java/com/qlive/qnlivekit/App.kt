@@ -1,6 +1,9 @@
 package com.qlive.qnlivekit
 
+import android.app.Activity
+import android.app.ActivityManager
 import android.app.Application
+import android.os.Process
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -22,16 +25,16 @@ class App : Application() {
     companion object {
         val demo_url = "https://niucube-api.qiniu.com"
       //  val demo_url="http://10.200.20.28:5080"
-        var user: BZUser? = null
     }
 
     override fun onCreate() {
         super.onCreate()
         AppCache.setContext(this)
+        UserManager.init()
         Log.d("App", "onCreate")
         QLive.init(this, QLiveConfig()) { callback ->
             //业务方获取token
-            Log.d("QTokenGetter", "QTokenGetter ${user?.data?.loginToken}")
+            Log.d("QTokenGetter", "QTokenGetter ${ UserManager.user?.data?.loginToken}")
             getLoginToken(callback)
         }
 
@@ -48,14 +51,20 @@ class App : Application() {
         }
     }
 
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        Log.d("App", "onTrimMemory $level")
+        //Process.killProcess(Process.myPid())
+    }
+
     //demo获取token
     private fun getLoginToken(callBack: QLiveCallBack<String>) {
         Thread {
             try {
                 val requestToken = Request.Builder()
-                    .url("${demo_url}/v1/live/auth_token?userID=${user?.data?.accountId}&deviceID=adjajdasod")
+                    .url("${demo_url}/v1/live/auth_token?userID=${ UserManager.user?.data?.accountId}&deviceID=adjajdasod")
                     .addHeader("Content-Type", "application/json")
-                    .addHeader("Authorization", "Bearer " + user?.data?.loginToken)
+                    .addHeader("Authorization", "Bearer " +  UserManager.user?.data?.loginToken)
                     .get()
                     .build();
                 val callToken = OKHttpManger.okHttp.newCall(requestToken);
@@ -70,11 +79,4 @@ class App : Application() {
         }.start()
     }
 
-    override fun onTrimMemory(level: Int) {
-        super.onTrimMemory(level)
-        if (level == TRIM_MEMORY_MODERATE) {
-            Toast.makeText(this, " qlive demo onTrimMemory", Toast.LENGTH_SHORT).show()
-            android.os.Process.killProcess(android.os.Process.myPid());
-        }
-    }
 }

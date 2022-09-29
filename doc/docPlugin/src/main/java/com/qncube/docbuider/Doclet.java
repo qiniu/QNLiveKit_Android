@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import com.sun.javadoc.*;
-
 
 public class Doclet {
     private static HashMap<String, String> links = new HashMap<>();

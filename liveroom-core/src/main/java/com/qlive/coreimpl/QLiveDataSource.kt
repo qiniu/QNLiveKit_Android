@@ -2,7 +2,7 @@ package com.qlive.coreimpl
 
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.been.*
-import com.qlive.coreimpl.http.HttpService
+import com.qlive.coreimpl.http.HttpClient
 import com.qlive.coreimpl.http.NetBzException
 import com.qlive.coreimpl.http.PageData
 import com.qlive.coreimpl.model.*
@@ -20,7 +20,7 @@ class QLiveDataSource {
      * 刷新房间信息
      */
     suspend fun refreshRoomInfo(liveId: String): QLiveRoomInfo {
-        return HttpService.httpService.get(
+        return HttpClient.httpClient.get(
             "/client/live/room/info/${liveId}",
             null,
             QLiveRoomInfo::class.java
@@ -28,11 +28,11 @@ class QLiveDataSource {
     }
 
     suspend fun profile(): InnerUser {
-        return HttpService.httpService.get("/client/user/profile", null, InnerUser::class.java)
+        return HttpClient.httpClient.get("/client/user/profile", null, InnerUser::class.java)
     }
 
     suspend fun appConfig(): AppConfig {
-        return HttpService.httpService.get("/client/app/config", null, AppConfig::class.java)
+        return HttpClient.httpClient.get("/client/app/config", null, AppConfig::class.java)
     }
 
     suspend fun listRoom(pageNumber: Int, pageSize: Int): PageData<QLiveRoomInfo> {
@@ -42,7 +42,7 @@ class QLiveDataSource {
             PageData::class.java
         )
         val date: PageData<QLiveRoomInfo> =
-            HttpService.httpService.get("/client/live/room/list", HashMap<String, String>().apply {
+            HttpClient.httpClient.get("/client/live/room/list", HashMap<String, String>().apply {
                 put("page_num", pageNumber.toString())
                 put("page_size", pageSize.toString())
             }, null, p)
@@ -50,7 +50,7 @@ class QLiveDataSource {
     }
 
     suspend fun createRoom(param: QCreateRoomParam): QLiveRoomInfo {
-        return HttpService.httpService.post(
+        return HttpClient.httpClient.post(
             "/client/live/room/instance",
             JsonUtils.toJson(param),
             QLiveRoomInfo::class.java
@@ -58,7 +58,7 @@ class QLiveDataSource {
     }
 
     suspend fun deleteRoom(liveId: String) {
-        HttpService.httpService.delete(
+        HttpClient.httpClient.delete(
             "/live/room/instance/${liveId}",
             "{}",
             Any::class.java
@@ -66,7 +66,7 @@ class QLiveDataSource {
     }
 
     suspend fun pubRoom(liveId: String): QLiveRoomInfo {
-        return HttpService.httpService.put(
+        return HttpClient.httpClient.put(
             "/client/live/room/${liveId}",
             "{}",
             QLiveRoomInfo::class.java
@@ -74,7 +74,7 @@ class QLiveDataSource {
     }
 
     suspend fun unPubRoom(liveId: String): QLiveRoomInfo {
-        return HttpService.httpService.delete(
+        return HttpClient.httpClient.delete(
             "/client/live/room/${liveId}",
             "{}",
             QLiveRoomInfo::class.java
@@ -82,7 +82,7 @@ class QLiveDataSource {
     }
 
     suspend fun joinRoom(liveId: String): QLiveRoomInfo {
-        return HttpService.httpService.post(
+        return HttpClient.httpClient.post(
             "/client/live/room/user/${liveId}",
             "{}",
             QLiveRoomInfo::class.java
@@ -90,7 +90,7 @@ class QLiveDataSource {
     }
 
     suspend fun leaveRoom(liveId: String) {
-        HttpService.httpService.delete("/client/live/room/user/${liveId}", "{}", Any::class.java)
+        HttpClient.httpClient.delete("/client/live/room/user/${liveId}", "{}", Any::class.java)
     }
 
     /**
@@ -102,7 +102,7 @@ class QLiveDataSource {
         json.put("live_id", liveId)
         json.put("extends", extension)
 
-        HttpService.httpService.put(
+        HttpClient.httpClient.put(
             "/client/live/room/extends",
             json.toString(),
             Any::class.java
@@ -110,7 +110,7 @@ class QLiveDataSource {
     }
 
     suspend fun heartbeat(liveId: String): HearBeatResp {
-        return HttpService.httpService.get(
+        return HttpClient.httpClient.get(
             "/client/live/room/heartbeat/${liveId}",
             null,
             HearBeatResp::class.java
@@ -121,7 +121,7 @@ class QLiveDataSource {
         val liveStatisticsReq = LiveStatisticsReq().apply {
             Data = statistics
         }
-        HttpService.httpService.post(
+        HttpClient.httpClient.post(
             "/client/stats/singleLive",
             JsonUtils.toJson(liveStatisticsReq),
             Any::class.java
@@ -129,7 +129,7 @@ class QLiveDataSource {
     }
 
     suspend fun liveStatisticsGet(liveID: String): QLiveStatistics {
-        return HttpService.httpService.get(
+        return HttpClient.httpClient.get(
             "/client/stats/singleLive/${liveID}",
             null,
             QLiveStatistics::class.java
@@ -150,7 +150,7 @@ class QLiveDataSource {
             PageData::class.java
         )
 
-        val data: PageData<QLiveUser> = HttpService.httpService.get(
+        val data: PageData<QLiveUser> = HttpClient.httpClient.get(
             "/client/live/room/user_list",
             HashMap<String, String>().apply {
                 put("live_id", liveId)
@@ -174,7 +174,7 @@ class QLiveDataSource {
             List::class.java,
             List::class.java
         )
-        val list = HttpService.httpService.get<List<QLiveUser>>(
+        val list = HttpClient.httpClient.get<List<QLiveUser>>(
             "/client/user/users",
             HashMap<String, String>().apply {
                 put("user_ids", uid)
@@ -201,7 +201,7 @@ class QLiveDataSource {
             List::class.java,
             List::class.java
         )
-        val list = HttpService.httpService.get<List<QLiveUser>>(
+        val list = HttpClient.httpClient.get<List<QLiveUser>>(
             "/client/user/imusers",
             HashMap<String, String>().apply {
                 put("im_user_ids", imUid)
@@ -216,18 +216,6 @@ class QLiveDataSource {
         }
     }
 
-    suspend fun getToken() = suspendCoroutine<String> { coroutine ->
-        HttpService.httpService.tokenGetter!!.getTokenInfo(object : QLiveCallBack<String> {
-            override fun onError(code: Int, msg: String?) {
-                coroutine.resumeWithException(NetBzException(code, msg))
-            }
-
-            override fun onSuccess(data: String) {
-                HttpService.httpService.token = data
-                coroutine.resume(data)
-            }
-        })
-    }
 
     suspend fun updateUser(
         avatar: String,
@@ -238,6 +226,6 @@ class QLiveDataSource {
         user.avatar = avatar
         user.nick = nickName
         user.extensions = extensions
-        HttpService.httpService.put("/client/user/user", JsonUtils.toJson(user), Any::class.java)
+        HttpClient.httpClient.put("/client/user/user", JsonUtils.toJson(user), Any::class.java)
     }
 }
