@@ -32,7 +32,7 @@ dependencies {
 
     api project(':liveroom-libs:lib_log')
     api depend.coroutines()
-
+    implementation depend.okhttp3() //http依赖
     implementation project(':liveroom-libs:comp_rtm')
     implementation project(':liveroom-libs:lib_json')
     compileOnly project(':liveroom-libs:comp_rtclive')

@@ -64,7 +64,11 @@ object QSenseTimeManager {
         Log.d("QSenseTimeManager", "authorizeWithAppId" + "鉴权onSuccess ")
         Material.init(appContext, APP_ID, APP_KEY)
         GlobalScope.launch(Dispatchers.IO) {
-            Material.updateTokenSync()
+            try {
+                Material.updateTokenSync()
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
         }
     }
 

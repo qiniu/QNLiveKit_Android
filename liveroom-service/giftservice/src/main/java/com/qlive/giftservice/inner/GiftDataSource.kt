@@ -3,19 +3,26 @@ package com.qlive.giftservice.inner
 import com.google.gson.JsonObject
 import com.qlive.coreimpl.http.HttpClient
 import com.qlive.coreimpl.http.PageData
+import com.qlive.coreimpl.http.header_cache_name
 import com.qlive.giftservice.QGift
 import com.qlive.giftservice.QGiftStatistics
 import com.qlive.jsonutil.ParameterizedTypeImpl
 
 class GiftDataSource {
 
-    suspend fun giftList(type: Int): List<QGift> {
+    suspend fun giftList(type: Int, useCache: Boolean = true): List<QGift> {
         val p = ParameterizedTypeImpl(
             arrayOf(QGift::class.java),
             List::class.java,
             List::class.java
         )
-        return HttpClient.httpClient.get("/server/gift/config/${type}", null, null, p)
+        return HttpClient.httpClient.get("/server/gift/config/${type}", null, if (useCache) {
+            HashMap<String, String>().apply {
+                put(header_cache_name, "60")
+            }
+        } else {
+            null
+        }, null, p)
     }
 
     suspend fun giftByID(giftID: Int): QGift {

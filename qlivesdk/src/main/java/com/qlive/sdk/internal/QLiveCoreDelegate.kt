@@ -11,6 +11,7 @@ import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.getCode
 import com.qlive.coreimpl.http.HttpClient.Companion.httpClient
 import com.qlive.coreimpl.http.NetBzException
+import com.qlive.coreimpl.http.OKConnectionHttpClient
 import com.qlive.coreimpl.model.AppConfig
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.liblog.QLiveLogUtil
@@ -44,6 +45,7 @@ internal class QLiveCoreDelegate {
         config: QLiveConfig?,
         tokenGetter: QTokenGetter
     ) {
+        httpClient = OKConnectionHttpClient(context)
         setContext(context)
         val sdkConfig = config ?: QLiveConfig()
         httpClient.baseUrl = sdkConfig.serverURL
@@ -96,6 +98,8 @@ internal class QLiveCoreDelegate {
         })
     }
 
+    //后台长时间运行 登陆信息和im信息都销毁了
+    //Application重建 恢复activity
     private fun reGetToken(): Boolean {
         val latch = CountDownLatch(1)
         var isReLogin = false

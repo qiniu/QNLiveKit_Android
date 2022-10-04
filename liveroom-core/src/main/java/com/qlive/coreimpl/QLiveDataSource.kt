@@ -5,6 +5,7 @@ import com.qlive.core.been.*
 import com.qlive.coreimpl.http.HttpClient
 import com.qlive.coreimpl.http.NetBzException
 import com.qlive.coreimpl.http.PageData
+import com.qlive.coreimpl.http.header_cache_name
 import com.qlive.coreimpl.model.*
 import com.qlive.coreimpl.model.LiveStatisticsReq
 import com.qlive.jsonutil.JsonUtils
@@ -168,7 +169,7 @@ class QLiveDataSource {
      *
      * @param uid
      */
-    suspend fun searchUserByUserId(uid: String): QLiveUser {
+    suspend fun searchUserByUserId(uid: String, useCache: Boolean = true): QLiveUser {
         val p = ParameterizedTypeImpl(
             arrayOf(QLiveUser::class.java),
             List::class.java,
@@ -178,6 +179,13 @@ class QLiveDataSource {
             "/client/user/users",
             HashMap<String, String>().apply {
                 put("user_ids", uid)
+            },
+            if (useCache) {
+                HashMap<String, String>().apply {
+                    put(header_cache_name, "60")
+                }
+            } else {
+                null
             },
             null,
             p
