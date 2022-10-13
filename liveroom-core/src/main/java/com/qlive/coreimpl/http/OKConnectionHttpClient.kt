@@ -72,6 +72,7 @@ class OKConnectionHttpClient(context: Context) : HttpClient() {
         headers?.entries?.forEach {
             requestBuild.addHeader(it.key,it.value)
         }
+        QLiveLogUtil.d("QLiveHttpService", " req $method $path $jsonString")
         val body = jsonString.toRequestBody("application/json;charset=utf-8".toMediaType())
         val req = when (method) {
             "GET" -> {
@@ -95,6 +96,11 @@ class OKConnectionHttpClient(context: Context) : HttpClient() {
         val resultCode = response.code
         val resultMsg = response.message
         var resultStr: String = response.body?.string() ?: ""
+        QLiveLogUtil.d(
+            "QLiveHttpService",
+            " response -> $method $path $jsonString   $resultCode resultStr-> $resultStr"
+        )
+
         if (resultCode == HttpURLConnection.HTTP_OK) {
             val jsonObj = JSONObject(resultStr)
             //旧版本服务端搞错一个字段

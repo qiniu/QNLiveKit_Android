@@ -31,7 +31,7 @@ open class BaseService : QLiveService, QClientLifeCycleListener {
      *
      * @param roomInfo
      */
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
+    override fun onJoined(roomInfo: QLiveRoomInfo) {
         this.currentRoomInfo = roomInfo
     }
 

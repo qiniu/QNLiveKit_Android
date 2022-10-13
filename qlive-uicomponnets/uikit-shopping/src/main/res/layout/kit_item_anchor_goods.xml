@@ -51,7 +51,7 @@
                     android:gravity="center"
                     android:orientation="horizontal">
 
-                    <com.qlive.uikitshopping.ui.AutoVoiceWaveView
+                    <com.qlive.uikitcore.view.wave.AutoVoiceWaveView
                         android:id="@+id/mAutoVoiceWaveView"
                         android:layout_width="32dp"
                         android:layout_height="32dp" />
@@ -94,7 +94,7 @@
                 android:textSize="12sp"
                 tools:text="dasdsdasdnasldnasdnaksdnasldnaslkdnasldnkasldnasldnsaldnsaldnasldas" />
 
-            <com.qlive.uikitshopping.ui.flowlayout.TagFlowLayout
+            <com.qlive.uikitcore.view.flowlayout.TagFlowLayout
                 android:id="@+id/flGoodsTag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -232,7 +232,6 @@
                      />
             </LinearLayout>
         </FrameLayout>
-
 
         <TextView
             android:id="@+id/tvExplaining"

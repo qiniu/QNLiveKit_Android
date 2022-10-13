@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/llTrack"
+        android:layout_width="160dp"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:layout_marginEnd="10dp"
+        android:orientation="horizontal"
+        tools:background="@drawable/shape_gift_track_bg_00aae7">
+
+        <com.qlive.uikitcore.view.CircleImageView
+            android:id="@+id/ivUserAvatar"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="2dp"
+            tools:src="@drawable/kit_select_my_mic" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="3dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12sp"
+                android:textColor="#ffffff"
+
+                />
+
+            <TextView
+                android:id="@+id/tvGiftName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="9sp"
+                android:textColor="#E5E5E5"
+
+                />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/ivSmallGiftIcon"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:scaleType="fitCenter"
+            android:layout_gravity="center"
+            android:layout_marginEnd="2dp"
+            tools:src="@drawable/kit_select_my_mic" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginBottom="10dp">
+
+        <ImageView
+            android:id="@+id/ivBigGiftIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:maxWidth="60dp"
+            tools:src="@drawable/kit_select_my_mic" />
+    </FrameLayout>
+
+</FrameLayout>

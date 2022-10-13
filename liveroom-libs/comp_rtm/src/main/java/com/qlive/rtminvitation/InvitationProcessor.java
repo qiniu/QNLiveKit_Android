@@ -70,9 +70,9 @@ public class InvitationProcessor {
         };
 
         if (TextUtils.isEmpty(channelId)) {
-            RtmManager.INSTANCE.getRtmClient().sendC2cMsg(rtmTextMsg.toJsonString(), peerId, false, call);
+            RtmManager.INSTANCE.getRtmClient().sendC2cCMDMsg(rtmTextMsg.toJsonString(), peerId, false, call);
         } else {
-            RtmManager.INSTANCE.getRtmClient().sendChannelMsg(rtmTextMsg.toJsonString(), channelId, false, call);
+            RtmManager.INSTANCE.getRtmClient().sendChannelCMDMsg(rtmTextMsg.toJsonString(), channelId, false, call);
         }
         return invitation.getInvitation();
     }
@@ -125,9 +125,9 @@ public class InvitationProcessor {
         reMoveTimeOutRun(invitation);
 
         if (TextUtils.isEmpty(invitation.getChannelId())) {
-            RtmManager.INSTANCE.getRtmClient().sendC2cMsg(rtmTextMsg.toJsonString(), invitation.getInitiatorUid(), false, callback);
+            RtmManager.INSTANCE.getRtmClient().sendC2cCMDMsg(rtmTextMsg.toJsonString(), invitation.getInitiatorUid(), false, callback);
         } else {
-            RtmManager.INSTANCE.getRtmClient().sendChannelMsg(rtmTextMsg.toJsonString(), invitation.getChannelId(), false, callback);
+            RtmManager.INSTANCE.getRtmClient().sendChannelCMDMsg(rtmTextMsg.toJsonString(), invitation.getChannelId(), false, callback);
         }
     }
 
@@ -137,9 +137,9 @@ public class InvitationProcessor {
         invitationMsg.setInvitationName(invitationName);
         RtmTextMsg<InvitationMsg> rtmTextMsg = new RtmTextMsg<InvitationMsg>(ACTION_ACCEPT, (invitationMsg));
         if (TextUtils.isEmpty(invitation.getChannelId())) {
-            RtmManager.INSTANCE.getRtmClient().sendC2cMsg(rtmTextMsg.toJsonString(), invitation.getInitiatorUid(), false, callback);
+            RtmManager.INSTANCE.getRtmClient().sendC2cCMDMsg(rtmTextMsg.toJsonString(), invitation.getInitiatorUid(), false, callback);
         } else {
-            RtmManager.INSTANCE.getRtmClient().sendChannelMsg(rtmTextMsg.toJsonString(), invitation.getChannelId(), false, callback);
+            RtmManager.INSTANCE.getRtmClient().sendChannelCMDMsg(rtmTextMsg.toJsonString(), invitation.getChannelId(), false, callback);
         }
         reMoveTimeOutRun(invitation);
     }
@@ -150,9 +150,9 @@ public class InvitationProcessor {
         invitationMsg.setInvitationName(invitationName);
         RtmTextMsg<InvitationMsg> rtmTextMsg = new RtmTextMsg<InvitationMsg>(ACTION_REJECT, (invitationMsg));
         if (TextUtils.isEmpty(invitation.getChannelId())) {
-            RtmManager.INSTANCE.getRtmClient().sendC2cMsg(rtmTextMsg.toJsonString(), invitation.getInitiatorUid(), false, callback);
+            RtmManager.INSTANCE.getRtmClient().sendC2cCMDMsg(rtmTextMsg.toJsonString(), invitation.getInitiatorUid(), false, callback);
         } else {
-            RtmManager.INSTANCE.getRtmClient().sendChannelMsg(rtmTextMsg.toJsonString(), invitation.getChannelId(), false, callback);
+            RtmManager.INSTANCE.getRtmClient().sendChannelCMDMsg(rtmTextMsg.toJsonString(), invitation.getChannelId(), false, callback);
         }
         reMoveTimeOutRun(invitation);
     }
@@ -163,9 +163,9 @@ public class InvitationProcessor {
         invitationMsg.setInvitationName(invitationName);
         RtmTextMsg<InvitationMsg> rtmTextMsg = new RtmTextMsg<InvitationMsg>(ACTION_HANGUP, (invitationMsg));
         if (TextUtils.isEmpty(invitation.getChannelId())) {
-            RtmManager.INSTANCE.getRtmClient().sendC2cMsg(rtmTextMsg.toJsonString(), invitation.getInitiatorUid(), false, callback);
+            RtmManager.INSTANCE.getRtmClient().sendC2cCMDMsg(rtmTextMsg.toJsonString(), invitation.getInitiatorUid(), false, callback);
         } else {
-            RtmManager.INSTANCE.getRtmClient().sendChannelMsg(rtmTextMsg.toJsonString(), invitation.getChannelId(), false, callback);
+            RtmManager.INSTANCE.getRtmClient().sendChannelCMDMsg(rtmTextMsg.toJsonString(), invitation.getChannelId(), false, callback);
         }
     }
 

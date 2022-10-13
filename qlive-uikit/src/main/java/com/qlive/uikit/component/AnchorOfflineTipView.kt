@@ -10,6 +10,9 @@ import com.qlive.core.anchorStatusToLiveStatus
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.uikit.R
 import com.qlive.uikitcore.QKitTextView
+import com.qlive.uikitcore.ext.isTrailering
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AnchorOfflineTipView : QKitTextView {
     constructor(context: Context) : this(context, null)
@@ -36,6 +39,14 @@ class AnchorOfflineTipView : QKitTextView {
 
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
         super.onJoined(roomInfo, isResumeUIFromFloating)
+        if (roomInfo.isTrailering()) {
+            visibility = View.VISIBLE
+            val format = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault())
+            val d1 = Date(roomInfo.startTime * 1000)
+            val timeFormat: String = format.format(d1)
+            text = String.format(context.getString(R.string.live_room_trailer_tip), timeFormat)
+            return
+        }
         if (roomInfo.anchorStatus.anchorStatusToLiveStatus() == QLiveStatus.ANCHOR_OFFLINE) {
             visibility = View.VISIBLE
             text = context.getString(R.string.live_anchor_offline_tip)

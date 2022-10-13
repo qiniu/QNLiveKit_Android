@@ -31,7 +31,7 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
                 obj.onEntering(liveId, QLive.getLoginUser())
             }
             if (roomInfo != null) {
-                obj.onJoined(roomInfo!!, false)
+                obj.onJoined(roomInfo!!)
             }
         } catch (e: ClassNotFoundException) {
             e.printStackTrace()
@@ -135,7 +135,7 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
         anchorStatus = roomInfo.anchorStatus
         mHeartBeatJob.start()
         mLifeCycleListener.forEach {
-            it.onJoined(roomInfo, false)
+            it.onJoined(roomInfo)
         }
     }
 

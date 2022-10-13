@@ -208,7 +208,7 @@ internal class QChatRoomServiceImpl : BaseService(),
         memberID: String,
         callBack: QLiveCallBack<Void>?
     ) {
-        RtmManager.rtmClient.sendC2cMsg(msg, memberID, true, object : RtmCallBack {
+        RtmManager.rtmClient.sendC2cCMDMsg(msg, memberID, true, object : RtmCallBack {
             override fun onSuccess() {
                 callBack?.onSuccess(null)
             }
@@ -225,7 +225,7 @@ internal class QChatRoomServiceImpl : BaseService(),
      * @param callBack
      */
     override fun sendCustomGroupMsg(msg: String, callBack: QLiveCallBack<Void>?) {
-        RtmManager.rtmClient.sendChannelMsg(
+        RtmManager.rtmClient.sendChannelCMDMsg(
             msg,
             currentRoomInfo?.chatID ?: "",
             true,

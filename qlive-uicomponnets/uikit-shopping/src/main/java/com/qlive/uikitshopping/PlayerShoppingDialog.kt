@@ -23,8 +23,8 @@ import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
 import com.qlive.uikitshopping.TagItem.Companion.strToTagItem
 import com.qlive.uikitshopping.databinding.KitDialogPlayerShoppingBinding
 import com.qlive.uikitshopping.databinding.KitItemPlayerGoodsBinding
-import com.qlive.uikitshopping.ui.flowlayout.FlowLayout
-import com.qlive.uikitshopping.ui.flowlayout.TagAdapter
+import com.qlive.uikitcore.view.flowlayout.FlowLayout
+import com.qlive.uikitcore.view.flowlayout.TagAdapter
 
 /**
  * 观众看到的商品弹窗

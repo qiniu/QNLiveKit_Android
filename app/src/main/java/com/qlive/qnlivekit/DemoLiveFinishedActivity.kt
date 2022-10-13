@@ -88,6 +88,13 @@ class DemoLiveFinishedActivity : AppCompatActivity() {
             if (it.type == QLiveStatistics.TYPE_PUBCHAT_COUNT) {
                 wraps.add(QLiveStatisticsWrap("聊天互动", it.pageView.toFormatNumber()))
             }
+
+            if (it.type == QLiveStatistics.TYPE_LIKE_COUNT) {
+                wraps.add(QLiveStatisticsWrap("点赞", it.pageView.toFormatNumber()))
+            }
+            if (it.type == QLiveStatistics.TYPE_GIFT_COUNT) {
+                wraps.add(QLiveStatisticsWrap("观众打赏", it.pageView.toFormatNumber()))
+            }
         }
         return wraps
     }

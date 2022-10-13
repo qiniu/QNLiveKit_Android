@@ -10,6 +10,7 @@ import com.qlive.core.QLiveClient
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.pubchatservice.QPublicChatService
 import com.qlive.uikit.R
+import com.qlive.uikit.RoomPushActivity
 import com.qlive.uikit.databinding.KitDialogCloseTypeBinding
 import com.qlive.uikitcore.QKitImageView
 import com.qlive.uikitcore.QLiveUIKitContext
@@ -17,6 +18,7 @@ import com.qlive.uikitcore.dialog.FinalDialogFragment
 import com.qlive.uikitcore.dialog.LoadingDialog
 import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
 import com.qlive.uikitcore.ext.asToast
+import com.qlive.uikitcore.ext.isTrailering
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
 
 //关闭房间按钮
@@ -138,6 +140,14 @@ class CloseRoomView : QKitImageView {
         visibility = View.GONE
     }
 
+    override fun onGetLiveRoomInfo(roomInfo: QLiveRoomInfo) {
+        super.onGetLiveRoomInfo(roomInfo)
+        val roomId = kitContext!!.currentActivity.intent.getStringExtra(RoomPushActivity.KEY_ROOM_ID) ?: ""
+        if (roomInfo.isTrailering() && client?.clientType == QClientType.PUSHER && roomId.isNotEmpty()) {
+            visibility = VISIBLE
+        }
+    }
+
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
         super.onJoined(roomInfo, isResumeUIFromFloating)
         visibility = VISIBLE
@@ -149,8 +159,6 @@ class CloseRoomView : QKitImageView {
     }
 
     class AnchorCloseTypeDialog : ViewBindingDialogFragment<KitDialogCloseTypeBinding>() {
-
-
         override fun init() {
             binding.btnClose.setDoubleCheckClickListener {
                 mDefaultListener?.onDialogPositiveClick(this, AnchorCloseType.CLOSE)

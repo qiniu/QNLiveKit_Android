@@ -117,7 +117,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
                     val mode = LiveIdExtensionMode()
                     mode.liveId = currentRoomInfo?.liveID ?: ""
                     mode.extension = extension
-                    RtmManager.rtmClient.sendChannelMsg(
+                    RtmManager.rtmClient.sendChannelCMDMsg(
                         RtmTextMsg<LiveIdExtensionMode>(
                             liveroom_extension_change,
                             mode

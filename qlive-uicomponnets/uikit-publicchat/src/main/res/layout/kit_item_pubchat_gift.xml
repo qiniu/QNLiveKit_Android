@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="3dp"
+    android:layout_marginBottom="3dp"
+    android:orientation="horizontal">
+
+    <com.qlive.uikitcore.view.CircleImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+
+        android:layout_marginEnd="4dp" />
+
+    <TextView
+        android:id="@+id/tvContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/kit_shape_40000000_6"
+        android:orientation="vertical"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:textColor="#ffffff"
+        android:textSize="13sp"
+        tools:text="androadandroadjasuidasidsaidasdhuaiusdaisdhaiiandroadjasuidasidsaidasdhuaiusdaisdhaiiandroadjasuidasidsaidasdhuaiusdaisdhaiiandroadjasuidasidsaidasdhuaiusdaisdhaiijasuidasidsaidasdhuaiusdaisdhaii" />
+
+
+</LinearLayout>

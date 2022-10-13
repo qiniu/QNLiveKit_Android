@@ -11,13 +11,14 @@ import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.pkservice.QPKSession
 import com.qlive.linkmicservice.QLinkMicService
 import com.qlive.uikitcore.QKitViewBindingFrameLayout
+import com.qlive.uikitcore.QKitViewBindingFrameMergeLayout
 import com.qlive.uikitcore.dialog.FinalDialogFragment
 import com.qlive.uikitcore.dialog.LoadingDialog
 import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
 import com.qlive.uikitpk.databinding.KitStartPkViewBinding
 
-class StartPKView : QKitViewBindingFrameLayout<KitStartPkViewBinding> {
+class StartPKView : QKitViewBindingFrameMergeLayout<KitStartPkViewBinding> {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -34,13 +35,13 @@ class StartPKView : QKitViewBindingFrameLayout<KitStartPkViewBinding> {
         QPKServiceListener {
 
         override fun onStart(pkSession: QPKSession) {
-            binding.llStartPK.visibility = View.GONE
+            binding.ivStartPK.visibility = View.GONE
             binding.tvStopPK.visibility = View.VISIBLE
             mPkSession = pkSession
         }
 
         override fun onStop(pkSession: QPKSession, code: Int, msg: String) {
-            binding.llStartPK.visibility = View.VISIBLE
+            binding.ivStartPK.visibility = View.VISIBLE
             binding.tvStopPK.visibility = View.GONE
             mPkSession = null
         }
@@ -98,7 +99,7 @@ class StartPKView : QKitViewBindingFrameLayout<KitStartPkViewBinding> {
             mPKInvitationListener
         )
 
-        binding.flPkBtn.setDoubleCheckClickListener {
+        binding.root.setDoubleCheckClickListener {
             if (mPkSession != null) {
                 client?.getService(QPKService::class.java)?.stop(object :
                     QLiveCallBack<Void> {

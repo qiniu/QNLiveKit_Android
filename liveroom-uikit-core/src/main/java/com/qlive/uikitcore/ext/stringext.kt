@@ -46,18 +46,18 @@ private var mLastClickTime = 0L
 fun View.setDoubleCheckClickListener(call: (view: View) -> Unit) {
     this.setOnClickListener {
         val now = System.currentTimeMillis()
-        if (now - mLastClickTime > 1000) {
+        if (now - mLastClickTime > 500) {
             call.invoke(it)
         }
         mLastClickTime = now
     }
 }
 
-fun String.asToast(context: Context?){
-    if(this.isEmpty()){
+fun String.asToast(context: Context?) {
+    if (this.isEmpty()) {
         return
     }
-    if(context==null){
+    if (context == null) {
         return
     }
     Toast.makeText(context, this, Toast.LENGTH_SHORT).show()

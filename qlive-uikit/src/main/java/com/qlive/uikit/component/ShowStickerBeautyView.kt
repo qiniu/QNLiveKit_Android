@@ -6,10 +6,11 @@ import android.util.Log
 import android.view.View
 import com.qlive.uikitcore.BeautyHook
 import com.qlive.uikitcore.QKitImageView
+import com.qlive.uikitcore.QKitTextView
 import com.qlive.uikitcore.TestUIEvent
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
 
-class ShowStickerBeautyView : QKitImageView {
+class ShowStickerBeautyView : QKitTextView {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)

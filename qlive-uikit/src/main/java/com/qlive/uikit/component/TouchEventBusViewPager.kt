@@ -6,11 +6,14 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.DecorView
+import com.qlive.core.QClientType
 import com.qlive.core.QLiveClient
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
+import com.qlive.uikit.RoomPushActivity
 import com.qlive.uikitcore.QLiveComponent
 import com.qlive.uikitcore.QLiveUIKitContext
+import com.qlive.uikitcore.ext.isTrailering
 import com.qlive.uikitcore.view.CommonViewPagerAdapter
 
 @DecorView
@@ -48,8 +51,24 @@ class TouchEventBusViewPager : ViewPager, QLiveComponent {
         }
     }
 
+    override fun onGetLiveRoomInfo(roomInfo: QLiveRoomInfo) {
+        super.onGetLiveRoomInfo(roomInfo)
+        val roomId = kitContext!!.currentActivity.intent.getStringExtra(RoomPushActivity.KEY_ROOM_ID) ?: ""
+        if (roomInfo.isTrailering() && roomId.isNotEmpty()
+            && client?.clientType == QClientType.PUSHER) {
+            views.forEach {
+                it.visibility = View.VISIBLE
+            }
+            if (views.size > 1) {
+                setCurrentItem(1, true)
+            } else {
+                currentItem = views.size - 1
+            }
+        }
+    }
+
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo,isResumeUIFromFloating)
+        super.onJoined(roomInfo, isResumeUIFromFloating)
         views.forEach {
             it.visibility = View.VISIBLE
         }

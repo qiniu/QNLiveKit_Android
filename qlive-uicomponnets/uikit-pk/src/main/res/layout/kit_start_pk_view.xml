@@ -1,34 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="32dp"
-    android:orientation="horizontal"
-    android:id="@+id/flPkBtn"
-    android:layout_marginStart="15dp"
-    android:layout_marginEnd="15dp"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-    <LinearLayout
-        android:id="@+id/llStartPK"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/ivStartPK"
+        android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="center"
+        android:src="@mipmap/kit_ic_start_pk"
         android:orientation="horizontal">
 
-        <ImageView
-            android:layout_width="19dp"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:src="@mipmap/kit_ic_p" />
-
-        <ImageView
-            android:layout_width="19dp"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:src="@mipmap/kit_ic_k" />
-
-    </LinearLayout>
+    </ImageView>
 
     <TextView
         android:id="@+id/tvStopPK"
@@ -46,4 +27,4 @@
 
     </TextView>
 
-</FrameLayout>
+</merge>

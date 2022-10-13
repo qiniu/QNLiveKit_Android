@@ -8,6 +8,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.qlive.core.QLiveClient
 import com.qlive.core.been.QLiveRoomInfo
+import com.qlive.giftservice.QGiftMsg
+import com.qlive.giftservice.QGiftService
+import com.qlive.giftservice.QGiftServiceListener
 import com.qlive.pubchatservice.QPublicChat
 import com.qlive.pubchatservice.QPublicChatService
 import com.qlive.pubchatservice.QPublicChatServiceLister
@@ -55,6 +58,15 @@ class PublicChatView : QKitRecyclerView {
                 this.smoothScrollToPosition(position)
             }
         }
+    private val mGiftServiceLister = QGiftServiceListener {
+        val localMsg = QPublicChat().apply {
+            action = QGiftMsg.GIFT_ACTION
+            sendUser = it.sender
+            content = it.gift.name
+            senderRoomId = it.liveID
+        }
+        client?.getService(QPublicChatService::class.java)?.pubMsgToLocal(localMsg)
+    }
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -70,10 +82,13 @@ class PublicChatView : QKitRecyclerView {
         super.onStateChanged(source, event)
     }
 
+
     override fun attachLiveClient(client: QLiveClient) {
         super.attachLiveClient(client)
         client.getService(QPublicChatService::class.java)
             .addServiceLister(mPublicChatServiceLister)
+        client.getService(QGiftService::class.java)
+            .addGiftServiceListener(mGiftServiceLister)
         this.adapter = mAdapter
         mAdapter.setOnItemChildClickListener { adapter, view, position ->
             onItemMsgClickListener.invoke(kitContext!!, client, view, mAdapter.data[position])
@@ -99,6 +114,8 @@ class PublicChatView : QKitRecyclerView {
     override fun onDestroyed() {
         client?.getService(QPublicChatService::class.java)
             ?.removeServiceLister(mPublicChatServiceLister)
+        client?.getService(QGiftService::class.java)
+            ?.removeGiftServiceListener(mGiftServiceLister)
         super.onDestroyed()
     }
 

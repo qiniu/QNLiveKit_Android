@@ -23,7 +23,7 @@ import com.qlive.uikitlinkmic.databinding.KitViewLinkersBinding
 /**
  * 连麦麦位列表
  */
-open class MicLinkersView : QKitViewBindingFrameLayout<KitViewLinkersBinding> {
+open class MicLinkersView : QKitViewBindingFrameMergeLayout<KitViewLinkersBinding> {
 
     companion object {
         /**

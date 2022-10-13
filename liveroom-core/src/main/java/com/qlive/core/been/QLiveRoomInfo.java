@@ -146,4 +146,5 @@ public class QLiveRoomInfo implements Serializable, Cloneable {
             throw new AssertionError();
         }
     }
+
 }

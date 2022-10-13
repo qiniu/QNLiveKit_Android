@@ -6,10 +6,11 @@ import com.qlive.avparam.QBeautySetting
 import com.qlive.pushclient.QPusherClient
 import com.qlive.uikitcore.BeautyHook
 import com.qlive.uikitcore.QKitImageView
+import com.qlive.uikitcore.QKitTextView
 import com.qlive.uikitcore.TestUIEvent
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
 
-class ShowBeautyView : QKitImageView {
+class ShowBeautyView : QKitTextView {
 
     private var isOpen = false
 

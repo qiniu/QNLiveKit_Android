@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".RoomListActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+        <com.qlive.uikit.component.QBackNavigationImg
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="6dp"
+            android:padding="6dp"
+            android:src="@mipmap/kit_navigation_back_black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="直播记录"
+            android:textColor="#333333"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#E5E5E5">
+
+        <!--  empty_placeholder_tips   没有数据的占位提示-->
+        <!--  empty_placeholder_no_net_icon     没有网络的占位图片-->
+        <!--  empty_placeholder_icon    没有数据的占位图片-->
+        <com.qlive.uikit.component.LiveRecordListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:empty_placeholder_icon="@drawable/kit_pic_empty"
+            app:empty_placeholder_no_net_icon="@drawable/kit_pic_empty_network"
+            app:empty_placeholder_tips="@string/empty_tip_str" />
+
+    </FrameLayout>
+
+</LinearLayout>

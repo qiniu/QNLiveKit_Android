@@ -40,6 +40,7 @@ class QLiveUIKitImpl(val appContext: Context) : QLiveUIKit {
         private val mRoomListPage = RoomListPage()
         private val mRoomPage = RoomPage()
         private val mWatchExplainingPage = WatchExplainingPage()
+        private val mLiveRecordPage = LiveRecordPage()
     }
 
     init {
@@ -168,6 +169,7 @@ class QLiveUIKitImpl(val appContext: Context) : QLiveUIKit {
             RoomListPage::class.simpleName -> mRoomListPage as T?
             RoomPage::class.simpleName -> mRoomPage as T?
             WatchExplainingPage::class.simpleName -> mWatchExplainingPage as T?
+            LiveRecordPage::class.java.simpleName ->mLiveRecordPage as T?
             else -> null
         }
         return page

@@ -5,7 +5,7 @@ import com.qlive.avparam.QPlayerProvider
 import com.qlive.rtm.RtmException
 import com.qlive.rtm.RtmManager
 import com.qlive.rtm.msg.RtmTextMsg
-import com.qlive.rtm.sendChannelMsg
+import com.qlive.rtm.sendChannelCMDMsg
 import com.qlive.rtclive.*
 import com.qiniu.droid.rtc.*
 import com.qlive.jsonutil.JsonUtils
@@ -167,8 +167,8 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
         micLinkContext.mQRtcLiveRoom.close()
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo,isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo) {
+        super.onJoined(roomInfo)
         mMicListJob.start()
     }
 
@@ -191,7 +191,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
             doWork {
                 val token = mLinkDateSource.upMic(linker)
                 linker.user = user
-                RtmManager.rtmClient.sendChannelMsg(
+                RtmManager.rtmClient.sendChannelCMDMsg(
                     RtmTextMsg<QMicLinker>(
                         liveroom_miclinker_join,
                         linker
@@ -258,7 +258,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
                 }
                 if (isPositive) {
                     try {
-                        RtmManager.rtmClient.sendChannelMsg(
+                        RtmManager.rtmClient.sendChannelCMDMsg(
                             RtmTextMsg<UidMode>(
                                 liveroom_miclinker_left,
                                 mode
@@ -271,7 +271,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
                 }
                 if (isKick) {
                     try {
-                        RtmManager.rtmClient.sendChannelMsg(
+                        RtmManager.rtmClient.sendChannelCMDMsg(
                             RtmTextMsg<UidMsgMode>(
                                 liveroom_miclinker_kick,
                                 kick!!
@@ -361,7 +361,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
                     mLinkDateSource.switch(
                         mMeLinker!!, false, !muted
                     )
-                    RtmManager.rtmClient.sendChannelMsg(
+                    RtmManager.rtmClient.sendChannelCMDMsg(
                         RtmTextMsg<MuteMode>(
                             liveroom_miclinker_camera_mute,
                             mode
@@ -395,7 +395,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
                     mLinkDateSource.switch(
                         mMeLinker!!, true, !muted
                     )
-                    RtmManager.rtmClient.sendChannelMsg(
+                    RtmManager.rtmClient.sendChannelCMDMsg(
                         RtmTextMsg<MuteMode>(
                             liveroom_miclinker_microphone_mute,
                             mode

@@ -132,8 +132,9 @@ class PKAnchorPreview : QKitViewBindingFrameLayout<KitAnchorPkPreviewBinding> {
         context,
         attrs,
         defStyleAttr
-    )
+    ){
 
+    }
     //混流适配
     private val mQPKMixStreamAdapter = object : QPKMixStreamAdapter {
 

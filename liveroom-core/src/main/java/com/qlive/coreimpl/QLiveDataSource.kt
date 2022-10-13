@@ -50,6 +50,20 @@ class QLiveDataSource {
         return date
     }
 
+    suspend fun liveRecord(pageNumber: Int, pageSize: Int): PageData<QLiveRoomInfo> {
+        val p = ParameterizedTypeImpl(
+            arrayOf(QLiveRoomInfo::class.java),
+            PageData::class.java,
+            PageData::class.java
+        )
+        val date: PageData<QLiveRoomInfo> =
+            HttpClient.httpClient.get("/client/live/room/list/anchor", HashMap<String, String>().apply {
+                put("page_num", pageNumber.toString())
+                put("page_size", pageSize.toString())
+            }, null, p)
+        return date
+    }
+
     suspend fun createRoom(param: QCreateRoomParam): QLiveRoomInfo {
         return HttpClient.httpClient.post(
             "/client/live/room/instance",
@@ -236,4 +250,6 @@ class QLiveDataSource {
         user.extensions = extensions
         HttpClient.httpClient.put("/client/user/user", JsonUtils.toJson(user), Any::class.java)
     }
+
+
 }
