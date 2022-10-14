@@ -37,12 +37,12 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QLiveServiceO
     private var mLiveStatusListeners = ArrayList<QLiveStatusListener>()
     private val mLiveContext by lazy {
         QNLiveRoomContext(this).apply {
-            roomStatusChange = { status ->
+            roomStatusChange = { status ,msg->
                 if (status == QLiveStatus.ANCHOR_ONLINE) {
                     mMediaPlayer.start()
                 }
                 mLiveStatusListeners.forEach {
-                    it.onLiveStatusChanged(status)
+                    it.onLiveStatusChanged(status,msg)
                 }
             }
         }

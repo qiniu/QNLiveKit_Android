@@ -40,11 +40,14 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
                     return true
                 }
                 censor_notify -> {
-                    if (toID !== user?.imUid) {
+                    if (toID != user?.imUid) {
                         return true
                     }
                     val data = JsonUtils.parseObject(msg.optData(), Censor::class.java)
                         ?: return true
+                    if (data.live_id != currentRoomInfo?.liveID) {
+                        return true
+                    }
                     mQRoomServiceListeners.forEach {
                         it.onReceivedCensorNotify(data.message)
                     }

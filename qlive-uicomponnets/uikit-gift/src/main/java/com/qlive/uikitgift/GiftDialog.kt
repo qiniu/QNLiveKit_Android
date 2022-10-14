@@ -2,7 +2,9 @@ package com.qlive.uikitgift
 
 import android.content.Context
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
@@ -11,7 +13,6 @@ import com.qlive.core.QLiveClient
 import com.qlive.giftservice.QGift
 import com.qlive.giftservice.QGiftService
 import com.qlive.sdk.QLive
-import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.adapter.QRecyclerViewBindHolder
 import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
 import com.qlive.uikitcore.ext.asToast
@@ -51,6 +52,20 @@ class GiftDialog(private val client: QLiveClient) :
     }
 
     private var adapter = GiftAdapter()
+
+    private val payToast by lazy {
+        Toast(context).apply {
+            setGravity(Gravity.CENTER, 0, 0)
+            duration = Toast.LENGTH_SHORT
+            view = LayoutInflater.from(requireContext())
+                .inflate(R.layout.kit_toast_pay_succes, null, false)
+        }
+    }
+
+    private fun showPaySuccessToast() {
+        payToast.show()
+    }
+
     override fun init() {
 
         binding.giftRecycler.layoutManager = GridLayoutManager(requireContext(), 4)
@@ -78,6 +93,7 @@ class GiftDialog(private val client: QLiveClient) :
                         }
 
                         override fun onSuccess(data: Void?) {
+                            showPaySuccessToast()
                         }
                     })
                 }

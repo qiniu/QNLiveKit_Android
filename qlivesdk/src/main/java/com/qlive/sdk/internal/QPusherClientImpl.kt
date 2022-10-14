@@ -51,9 +51,9 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider, QLiveServiceObse
     }
     private val mLiveContext by lazy {
         QNLiveRoomContext(this).apply {
-            roomStatusChange = { status ->
+            roomStatusChange = { status, msg ->
                 mLiveStatusListeners.forEach {
-                    it.onLiveStatusChanged(status)
+                    it.onLiveStatusChanged(status, msg)
                 }
             }
         }

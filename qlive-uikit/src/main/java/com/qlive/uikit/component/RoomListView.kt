@@ -54,6 +54,19 @@ open class RoomListView : SmartRecyclerView, QComponent {
     ) {
         recyclerView.layoutManager = getLayoutManager()
         recyclerView.addItemDecoration(itemDirection)
+        roomAdapter.setItemClick { view, item, index ->
+            QLive.getLiveUIKit().getPage(RoomPage::class.java)
+                .startRoomActivity(this.context, item,
+                    object :
+                        QLiveCallBack<QLiveRoomInfo> {
+                        override fun onError(code: Int, msg: String?) {
+                            msg?.asToast(this@RoomListView.context)
+                        }
+
+                        override fun onSuccess(data: QLiveRoomInfo?) {
+                        }
+                    })
+        }
     }
 
     open fun getLayoutManager(): RecyclerView.LayoutManager {
@@ -109,6 +122,7 @@ open class RoomListView : SmartRecyclerView, QComponent {
         }
     }
 
+
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         super.onStateChanged(source, event)
         if (event == Lifecycle.Event.ON_RESUME) {
@@ -143,13 +157,39 @@ open class RoomListView : SmartRecyclerView, QComponent {
 }
 
 class LiveRecordListView : RoomListView {
+
+    companion object {
+        var onClickFinishedRoomCall: ((context: Context, roomInfo: QLiveRoomInfo) -> Unit)? = null
+    }
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
-    )
+    ) {
+        roomAdapter.setItemClick { view, item, index ->
+
+            if ((item.liveStatus.roomStatusToLiveStatus() == QLiveStatus.FORCE_CLOSE ||
+                        item.liveStatus.roomStatusToLiveStatus() == QLiveStatus.OFF)
+                && item.anchor.userId == QLive.getLoginUser().userId
+            ) {
+                onClickFinishedRoomCall?.invoke(context, item)
+                return@setItemClick
+            }
+            QLive.getLiveUIKit().getPage(RoomPage::class.java)
+                .startRoomActivity(this.context, item,
+                    object :
+                        QLiveCallBack<QLiveRoomInfo> {
+                        override fun onError(code: Int, msg: String?) {
+                            msg?.asToast(this@LiveRecordListView.context)
+                        }
+
+                        override fun onSuccess(data: QLiveRoomInfo?) {
+                        }
+                    })
+        }
+    }
 
     override suspend fun suspendLoad(page: Int) = suspendCoroutine<List<QLiveRoomInfo>> { ct ->
         QLive.getRooms().liveRecord(page + 1, 20, object : QLiveCallBack<List<QLiveRoomInfo>> {
@@ -162,7 +202,6 @@ class LiveRecordListView : RoomListView {
             }
         })
     }
-
 }
 
 class RoomListAdapter : QSmartViewBindAdapter<QLiveRoomInfo, KitItemRoomBinding>() {
@@ -209,18 +248,5 @@ class RoomListAdapter : QSmartViewBindAdapter<QLiveRoomInfo, KitItemRoomBinding>
         helper.binding.tvRoomId.text = item.anchor.nick
         helper.binding.tvRoomName.text = item.title
         helper.binding.tvOnlineCount.text = item.onlineCount.toString()
-        helper.itemView.setOnClickListener {
-            QLive.getLiveUIKit().getPage(RoomPage::class.java)
-                .startRoomActivity(mContext, item,
-                    object :
-                        QLiveCallBack<QLiveRoomInfo> {
-                        override fun onError(code: Int, msg: String?) {
-                            msg?.asToast(mContext)
-                        }
-
-                        override fun onSuccess(data: QLiveRoomInfo?) {
-                        }
-                    })
-        }
     }
 }

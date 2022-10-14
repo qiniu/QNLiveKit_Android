@@ -1,5 +1,6 @@
 package com.qlive.qnlivekit
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -29,18 +30,12 @@ class DemoLiveFinishedActivity : AppCompatActivity() {
 
     companion object {
         fun checkStart(
-            context: QLiveUIKitContext,
-            client: QLiveClient,
+            context: Context,
             room: QLiveRoomInfo,
-            isAnchorActionCloseRoom: Boolean
         ) {
-            if (isAnchorActionCloseRoom) {
-                val intent = Intent(context.androidContext, DemoLiveFinishedActivity::class.java)
-                intent.putExtra("QLiveRoomInfo", room)
-                context.androidContext.startActivity(intent)
-            } else {
-                return
-            }
+            val intent = Intent(context, DemoLiveFinishedActivity::class.java)
+            intent.putExtra("QLiveRoomInfo", room)
+            context.startActivity(intent)
         }
     }
 

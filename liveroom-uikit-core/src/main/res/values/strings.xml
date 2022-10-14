@@ -10,6 +10,7 @@
     <string name="hangup">挂断</string>
     <string name="invite">邀请</string>
     <string name="tip">提示</string>
+    <string name="warn">警告</string>
     <string name="close_room">结束直播</string>
     <string name="close">关闭</string>
     <string name="just_left_room">仅暂停直播</string>
@@ -37,6 +38,7 @@
     <string name="live_dialog_send_red_tittle">发红包</string>
     <string name="live_dialog_send_red_pay">支付</string>
     <string name="live_dialog_send_red_edit_hit">请输入红包金额</string>
+
 
     <string name="live_welcome_tip">进入了房间</string>
     <string name="live_bye_bye_tip">离开了房间</string>
@@ -130,4 +132,5 @@
     <string name="gift_dialog_tittle">礼物打赏</string>
     <string name="gift_str_pay">支付</string>
     <string name="gift_track_send_hit">送出%s</string>
+    <string name="gift_pay_success_hit">支付成功</string>
 </resources>

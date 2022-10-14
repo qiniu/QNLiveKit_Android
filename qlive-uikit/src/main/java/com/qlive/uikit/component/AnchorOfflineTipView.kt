@@ -25,7 +25,7 @@ class AnchorOfflineTipView : QKitTextView {
         visibility = View.GONE
     }
 
-    private val mQLiveStatusListener = QLiveStatusListener { liveStatus -> //如果房主离线 关闭页面
+    private val mQLiveStatusListener = QLiveStatusListener { liveStatus,_ -> //如果房主离线 关闭页面
         if (liveStatus == QLiveStatus.ANCHOR_OFFLINE) {
             visibility = View.VISIBLE
             text = context.getString(R.string.live_anchor_offline_tip)
