@@ -150,15 +150,8 @@ class PlayerBottomMoreFuncDialog(
 
 class BottomMoreFuncButton : QKitImageView {
 
-    private val mAnchorBottomMoreFuncDialog by lazy {
-        AnchorBottomMoreFuncDialog(
-            kitContext!!,
-            client!!
-        )
-    }
-    private val mPlayerBottomMoreFuncDialog by lazy {
-        PlayerBottomMoreFuncDialog(kitContext!!, client!!, roomInfo!!)
-    }
+    private var mAnchorBottomMoreFuncDialog: AnchorBottomMoreFuncDialog? = null
+    private var mPlayerBottomMoreFuncDialog: PlayerBottomMoreFuncDialog? = null
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -168,12 +161,21 @@ class BottomMoreFuncButton : QKitImageView {
         defStyleAttr
     ) {
         setDoubleCheckClickListener {
+            client ?: return@setDoubleCheckClickListener
+            kitContext ?: return@setDoubleCheckClickListener
             roomInfo ?: return@setDoubleCheckClickListener
             if (client?.clientType == QClientType.PLAYER) {
-                mPlayerBottomMoreFuncDialog.roomInfo = roomInfo!!
-                mPlayerBottomMoreFuncDialog.show(kitContext!!.fragmentManager, "")
+                if (mPlayerBottomMoreFuncDialog == null) {
+                    mPlayerBottomMoreFuncDialog =
+                        PlayerBottomMoreFuncDialog(kitContext!!, client!!, roomInfo!!)
+                }
+                mPlayerBottomMoreFuncDialog?.roomInfo = roomInfo!!
+                mPlayerBottomMoreFuncDialog?.show(kitContext!!.fragmentManager, "")
             } else {
-                mAnchorBottomMoreFuncDialog.show(kitContext!!.fragmentManager, "")
+                if (mAnchorBottomMoreFuncDialog == null) {
+                    mAnchorBottomMoreFuncDialog = AnchorBottomMoreFuncDialog(kitContext!!, client!!)
+                }
+                mAnchorBottomMoreFuncDialog?.show(kitContext!!.fragmentManager, "")
             }
         }
     }
@@ -181,13 +183,13 @@ class BottomMoreFuncButton : QKitImageView {
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
         super.onJoined(roomInfo, isResumeUIFromFloating)
         if (client?.clientType == QClientType.PLAYER) {
-            mPlayerBottomMoreFuncDialog.roomInfo = roomInfo
+            mPlayerBottomMoreFuncDialog?.roomInfo = roomInfo
         }
     }
 
     override fun onDestroyed() {
         if (client?.clientType == QClientType.PLAYER) {
-            mPlayerBottomMoreFuncDialog.release()
+            mPlayerBottomMoreFuncDialog?.release()
         }
         super.onDestroyed()
     }
