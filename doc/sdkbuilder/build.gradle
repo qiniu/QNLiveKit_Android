@@ -66,8 +66,8 @@ android {
 fataar {
     transitive = true
 }
-def uikitversion = 'qlive-uikit-1.0.3'
-def qliveversion = 'qlive-sdk-1.0.3'
+def uikitversion = 'qlive-uikit-1.0.4'
+def qliveversion = 'qlive-sdk-1.0.4'
 
 task makeAAR(type: Copy) {
     def localProperties = new Properties()
@@ -128,10 +128,22 @@ dependencies {
         embed project(':qlive-uicomponnets:uikit-pk')
         embed project(':qlive-uicomponnets:uiwidget-input')
         embed project(':qlive-uicomponnets:uikit-shopping')
-        embed project(':liveroom-service:giftservice')
-        embed project(':liveroom-service:likeservice')
+        embed project(':qlive-uicomponnets:uikit-gift')
+        embed project(':qlive-uicomponnets:uikit-like')
         implementation depend.appcompat()
         implementation depend.cardview()
+        embed ('com.github.gzu-liyujiang.AndroidPicker:WheelPicker:4.1.9'){
+            exclude group: 'com.android.support'
+            transitive = false
+        }
+        embed ('com.github.gzu-liyujiang.AndroidPicker:WheelView:4.1.9'){
+            exclude group: 'com.android.support'
+            transitive = false
+        }
+        embed ('com.github.gzu-liyujiang.AndroidPicker:Common:4.1.9'){
+            exclude group: 'com.android.support'
+            transitive = false
+        }
     }
     if (buidQLiveSdk) {
 //        implementation files('libs/qlive-coreimpl.jar')
@@ -150,15 +162,12 @@ dependencies {
         embed project(':liveroom-service:publicchatservice')
         embed project(':liveroom-service:roomservice')
         embed project(':liveroom-service:shoppingservice')
+        embed project(':liveroom-service:giftservice')
+        embed project(':liveroom-service:likeservice')
         embed project(':liveroom-libs:comp_player')
         embed project(':liveroom-libs:comp_imadapter')
         embed project(':liveroom-libs:comp_rtclive')
         embed project(':liveroom-libs:lib_log')
-        embed project(':qlive-uicomponnets:uikit-gift')
-        embed project(':qlive-uicomponnets:uikit-like')
-        embed 'com.github.gzu-liyujiang.AndroidPicker:Common:4.1.9'
-        embed 'com.github.gzu-liyujiang.AndroidPicker:WheelView:4.1.9'
-        embed 'com.github.gzu-liyujiang.AndroidPicker:WheelPicker:4.1.9'
 
         compileOnly project(':app-sdk:depends_sdk_qnim')
         compileOnly project(':app-sdk:depends_sdk_qrtc')
