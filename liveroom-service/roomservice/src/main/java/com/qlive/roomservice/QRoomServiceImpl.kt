@@ -29,7 +29,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
             val action = msg.optAction()
             when (action) {
                 liveroom_extension_change -> {
-                    if (toID !== roomInfo?.chatID) {
+                    if (toID != roomInfo?.chatID) {
                         return true
                     }
                     val data = JsonUtils.parseObject(msg.optData(), LiveIdExtensionMode::class.java)
@@ -54,7 +54,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
                     return true
                 }
                 censor_stop -> {
-                    if (toID !== roomInfo?.chatID) {
+                    if (toID != roomInfo?.chatID) {
                         return true
                     }
                     val data = JsonUtils.parseObject(msg.optData(), Censor::class.java)

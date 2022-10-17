@@ -234,7 +234,7 @@ private fun MakeUpBeautyPage.initMakeupListener(
 fun MakeUpBeautyPage.notifyMakeupViewState(makeupItem: MakeupItem, position: Int, name: String?) {
     val viewHolder = mMakeupOptionsRecycleView.findViewHolderForAdapterPosition(position)
     //排除不必要变更
-    if (viewHolder == null || mMakeupOptionsRecycleView.adapter !== mMakeupAdapters[name]) {
+    if (viewHolder == null || mMakeupOptionsRecycleView.adapter != mMakeupAdapters[name]) {
         return
     }
     val itemView = viewHolder.itemView
