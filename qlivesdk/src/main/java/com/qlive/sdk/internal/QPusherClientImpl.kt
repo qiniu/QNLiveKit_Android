@@ -189,7 +189,7 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider, QLiveServiceObse
 
     override fun switchCamera(callBack: QLiveCallBack<QCameraFace>?) {
         mRtcRoom.switchCamera() { it, msg ->
-            if (it !== null) {
+            if (it != null) {
                 callBack?.onSuccess(
                     if (it) {
                         QCameraFace.FRONT

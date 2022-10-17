@@ -332,7 +332,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
             return
         }
         micLinkContext.mQRtcLiveRoom.switchCamera() { it, msg ->
-            if (it !== null) {
+            if (it != null) {
                 callBack?.onSuccess(
                     if (it) {
                         QCameraFace.FRONT
