@@ -13,6 +13,7 @@ import com.qlive.likeservice.inner.LikeDataSource
 import com.qlive.rtm.RtmManager
 import com.qlive.rtm.RtmMsgListener
 import com.qlive.rtm.optAction
+import com.qlive.rtm.optData
 
 class QLikeServiceImpl : QLikeService, BaseService() {
     companion object {
@@ -27,7 +28,7 @@ class QLikeServiceImpl : QLikeService, BaseService() {
             val action = msg.optAction()
             if (LIKE_ACTION == action && toID == currentRoomInfo?.chatID) {
                 val msgBeen =
-                    JsonUtils.parseObject(msg.optAction(), InnerLike::class.java) ?: return true
+                    JsonUtils.parseObject(msg.optData(), InnerLike::class.java) ?: return true
                 backGround {
                     doWork {
                         val user = liveDataSource.searchUserByUserId(msgBeen.user_id)

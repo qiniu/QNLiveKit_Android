@@ -10,6 +10,7 @@
     <string name="hangup">挂断</string>
     <string name="invite">邀请</string>
     <string name="tip">提示</string>
+    <string name="warn">警告</string>
     <string name="close_room">结束直播</string>
     <string name="close">关闭</string>
     <string name="just_left_room">仅暂停直播</string>
@@ -17,12 +18,27 @@
     <string name="record">录制</string>
     <string name="multiple">倍数</string>
     <string name="no_more_tips">没有更多了</string>
-    <string name="live_anchor_offline_tip">主播马上回来，敬请期待。</string>
+    <string name="live_anchor_offline_tip">主播马上回来\n敬请期待</string>
+    <string name="live_room_trailer_tip">预计开播\n %s</string>
     <string name="live_room_destroyed_tip">房间已经销毁</string>
     <string name="live_close_confirm">是否结束直播？</string>
     <string name="live_close_confirm_desc">结束后，本直播间将关闭</string>
     <string name="live_float_permission_tip">小窗播放功能需要开启悬浮窗权限</string>
     <string name="live_goto_float_permission_tip">去开启</string>
+    <string name="live_dialog_morefunc_tittle">更多</string>
+    <string name="live_dialog_morefunc_switch">翻转摄像头</string>
+    <string name="live_dialog_morefunc_micphone">麦克风</string>
+    <string name="live_dialog_morefunc_micphone_on">开启</string>
+    <string name="live_dialog_morefunc_micphone_off">关闭</string>
+    <string name="live_dialog_morefunc_mirror">画面镜像</string>
+    <string name="live_dialog_morefunc_beauty">美颜</string>
+    <string name="live_dialog_morefunc_stick">贴纸</string>
+    <string name="live_dialog_morefunc_gift">礼物</string>
+    <string name="live_dialog_morefunc_link">申请连麦</string>
+    <string name="live_dialog_send_red_tittle">发红包</string>
+    <string name="live_dialog_send_red_pay">支付</string>
+    <string name="live_dialog_send_red_edit_hit">请输入红包金额</string>
+
 
     <string name="live_welcome_tip">进入了房间</string>
     <string name="live_bye_bye_tip">离开了房间</string>
@@ -32,6 +48,11 @@
     <string name="preview_hit_room_notice">请输入直播公告</string>
     <string name="preview_tip_start_live">开始直播</string>
     <string name="preview_tip_input_title">请输入标题</string>
+    <string name="preview_tip_input_time">开播时间</string>
+    <string name="preview_hit_live_now">立即开播</string>
+    <string name="preview_hit_reserve">预约开播</string>
+    <string name="preview_hit_select_time">选择时间</string>
+    <string name="preview_hit_select_date">请选择日期</string>
 
     <string name="pk_stop_btn">结束PK</string>
     <string name="pk_dialog_pkable_title">欢乐pk</string>
@@ -49,7 +70,11 @@
 
     <string name="room_list_tittle">直播列表</string>
     <string name="room_list_create">创建直播间</string>
+    <string name="room_list_record">记录</string>
+    <string name="room_list_live_notice">预告：%s</string>
     <string name="room_list_item_anchor_offline_str">已暂停</string>
+    <string name="room_list_item_live_off_str">已结束</string>
+
 
     <string name="link_dialog_apply_tittle">连麦申请</string>
     <string name="link_dialog_apply_content">%s 申请连麦，是否接受？</string>
@@ -102,4 +127,10 @@
     <string name="player_click_try">点击重试</string>
     <string name="player_super_quality">超清</string>
     <string name="player_select_multiple_tittle">选择倍数</string>
+
+
+    <string name="gift_dialog_tittle">礼物打赏</string>
+    <string name="gift_str_pay">支付</string>
+    <string name="gift_track_send_hit">送出%s</string>
+    <string name="gift_pay_success_hit">支付成功</string>
 </resources>

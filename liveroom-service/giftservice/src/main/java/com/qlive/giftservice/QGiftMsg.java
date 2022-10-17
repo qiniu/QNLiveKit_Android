@@ -8,6 +8,9 @@ import java.io.Serializable;
  * 礼物消息
  */
 public class QGiftMsg implements Serializable {
+
+    public static String GIFT_ACTION = "gift_notify";
+
     /**
      * 所在直播间
      */

@@ -3,23 +3,30 @@ package com.qlive.giftservice.inner
 import com.google.gson.JsonObject
 import com.qlive.coreimpl.http.HttpClient
 import com.qlive.coreimpl.http.PageData
+import com.qlive.coreimpl.http.header_cache_name
 import com.qlive.giftservice.QGift
 import com.qlive.giftservice.QGiftStatistics
 import com.qlive.jsonutil.ParameterizedTypeImpl
 
 class GiftDataSource {
 
-    suspend fun giftList(type: Int): List<QGift> {
+    suspend fun giftList(type: Int, useCache: Boolean = true): List<QGift> {
         val p = ParameterizedTypeImpl(
             arrayOf(QGift::class.java),
             List::class.java,
             List::class.java
         )
-        return HttpClient.httpClient.get("/server/gift/config/${type}", null, null, p)
+        return HttpClient.httpClient.get("/client/gift/config/${type}", null, if (useCache) {
+            HashMap<String, String>().apply {
+                put(header_cache_name, "60")
+            }
+        } else {
+            null
+        }, null, p)
     }
 
     suspend fun giftByID(giftID: Int): QGift {
-        val gift: QGift = giftList(0).first {
+        val gift: QGift = giftList(-1).first {
             it.giftID == giftID
         }
         return gift
@@ -36,7 +43,7 @@ class GiftDataSource {
             PageData::class.java
         )
         return HttpClient.httpClient.get<PageData<QGiftStatistics>>(
-            "/server/gift/live/${liveID}",
+            "/client/gift/list/live/${liveID}",
             HashMap<String, String>().apply {
                 put("page_num", page_num.toString())
                 put("page_size", page_size.toString())
@@ -46,11 +53,11 @@ class GiftDataSource {
         ).list
     }
 
-    suspend fun sendGift(live_id: String, gift_id: Int, amount: Int, redo: Boolean) {
-        HttpClient.httpClient.put("/client/gift/live/${live_id}", JsonObject().apply {
+    suspend fun sendGift(live_id: String, gift_id: Int, amount: Int) {
+        HttpClient.httpClient.post("/client/gift/send", JsonObject().apply {
+            addProperty("live_id", live_id)
             addProperty("gift_id", gift_id)
             addProperty("amount", amount)
-            addProperty("redo", redo)
         }.toString(), Any::class.java)
     }
 
@@ -61,7 +68,7 @@ class GiftDataSource {
             PageData::class.java
         )
         return HttpClient.httpClient.get<PageData<QGiftStatistics>>(
-            "/client/gift/anchor",
+            "/client/gift/list/anchor",
             HashMap<String, String>().apply {
                 put("page_num", page_num.toString())
                 put("page_size", page_size.toString())
@@ -78,7 +85,7 @@ class GiftDataSource {
             PageData::class.java
         )
         return HttpClient.httpClient.get<PageData<QGiftStatistics>>(
-            "/client/gift/user",
+            "/client/gift/list/user",
             HashMap<String, String>().apply {
                 put("page_num", page_num.toString())
                 put("page_size", page_size.toString())

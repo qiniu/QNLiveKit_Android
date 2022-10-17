@@ -68,7 +68,7 @@ internal class QDanmakuServiceImpl : QDanmakuService, BaseService() {
             QDanmaku.action_danmu,
             mode
         )
-        RtmManager.rtmClient.sendChannelMsg(rtmMsg.toJsonString(),
+        RtmManager.rtmClient.sendChannelCMDMsg(rtmMsg.toJsonString(),
             currentRoomInfo?.chatID ?: "",
             true,
             object : RtmCallBack {

@@ -1,11 +1,12 @@
 package com.qlive.likeservice;
 
 import com.qlive.core.QLiveCallBack;
+import com.qlive.core.QLiveService;
 
 /**
  * 点赞服务
  */
-public interface QLikeService {
+public interface QLikeService extends QLiveService {
 
     /**
      * 点赞

@@ -95,7 +95,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
 
                     try {
                         //群信号
-                        RtmManager.rtmClient.sendChannelMsg(
+                        RtmManager.rtmClient.sendChannelCMDMsg(
                             RtmTextMsg<QPKSession>(
                                 liveroom_pk_start,
                                 mPKSession
@@ -216,7 +216,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
 
                         try {
                             //群信号
-                            RtmManager.rtmClient.sendChannelMsg(
+                            RtmManager.rtmClient.sendChannelCMDMsg(
                                 RtmTextMsg<QPKSession>(
                                     liveroom_pk_start,
                                     mPKSession
@@ -276,7 +276,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 }
                 stopMediaRelay()
                 try {
-                    RtmManager.rtmClient.sendChannelMsg(
+                    RtmManager.rtmClient.sendChannelCMDMsg(
                         RtmTextMsg<QPKSession>(
                             liveroom_pk_stop,
                             mPKSession
@@ -426,13 +426,13 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         }
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo) {
+        super.onJoined(roomInfo)
 
         if (client?.clientType == QClientType.PUSHER) {
-            pkPKInvitationHandlerImpl.onJoined(roomInfo, isResumeUIFromFloating)
+            pkPKInvitationHandlerImpl.onJoined(roomInfo)
         } else {
-            mAudiencePKSynchro.onJoined(roomInfo, isResumeUIFromFloating)
+            mAudiencePKSynchro.onJoined(roomInfo)
         }
     }
 
@@ -486,7 +486,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 mPKSession = pkSession
 
                 //发c2c消息
-                RtmManager.rtmClient.sendC2cMsg(
+                RtmManager.rtmClient.sendC2cCMDMsg(
                     RtmTextMsg<QPKSession>(
                         liveroom_pk_start,
                         mPKSession
@@ -576,7 +576,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 mPKDateSource.stopPk(mPKSession?.sessionID ?: "")
                 stopMediaRelay()
                 try {
-                    RtmManager.rtmClient.sendC2cMsg(
+                    RtmManager.rtmClient.sendC2cCMDMsg(
                         RtmTextMsg<QPKSession>(
                             liveroom_pk_stop,
                             mPKSession
@@ -588,7 +588,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                     e.printStackTrace()
                 }
                 try {
-                    RtmManager.rtmClient.sendChannelMsg(
+                    RtmManager.rtmClient.sendChannelCMDMsg(
                         RtmTextMsg<QPKSession>(
                             liveroom_pk_stop,
                             mPKSession

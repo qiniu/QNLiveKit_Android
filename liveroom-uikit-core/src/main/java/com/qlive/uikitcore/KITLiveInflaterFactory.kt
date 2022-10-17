@@ -19,7 +19,7 @@ class KITLiveInflaterFactory(
     private val appDelegate: AppCompatDelegate,
     private val roomClient: QLiveClient,
     private val kitContext: QLiveUIKitContext
-) : LayoutInflater.Factory2, QClientLifeCycleListener {
+) : LayoutInflater.Factory2, QLiveUILifeCycleListener {
 
     val mComponents = HashSet<QLiveComponent>()
 
@@ -91,6 +91,12 @@ class KITLiveInflaterFactory(
     override fun onEntering(liveId: String, user: QLiveUser) {
         mComponents.forEach {
             it.onEntering(liveId, user)
+        }
+    }
+
+    override fun onGetLiveRoomInfo(roomInfo: QLiveRoomInfo) {
+        mComponents.forEach {
+            it.onGetLiveRoomInfo(roomInfo)
         }
     }
 

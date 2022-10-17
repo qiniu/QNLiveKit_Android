@@ -20,9 +20,7 @@ import com.qlive.shoppingservice.QItemStatus
 import com.qlive.shoppingservice.QShoppingService
 import com.qlive.shoppingservice.QShoppingServiceListener
 import com.qlive.uikitcore.QLiveUIKitContext
-import com.qlive.uikitcore.adapter.QRecyclerAdapter
 import com.qlive.uikitcore.adapter.QRecyclerViewBindHolder
-import com.qlive.uikitcore.adapter.QRecyclerViewHolder
 import com.qlive.uikitcore.dialog.CommonTipDialog
 import com.qlive.uikitcore.dialog.LoadingDialog
 import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
@@ -31,8 +29,8 @@ import com.qlive.uikitcore.ext.setDoubleCheckClickListener
 import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
 import com.qlive.uikitshopping.databinding.KitDialogAnchorShoppingBinding
 import com.qlive.uikitshopping.databinding.KitItemAnchorGoodsBinding
-import com.qlive.uikitshopping.ui.flowlayout.FlowLayout
-import com.qlive.uikitshopping.ui.flowlayout.TagAdapter
+import com.qlive.uikitcore.view.flowlayout.FlowLayout
+import com.qlive.uikitcore.view.flowlayout.TagAdapter
 import java.util.*
 
 /**

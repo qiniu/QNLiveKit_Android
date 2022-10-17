@@ -40,6 +40,7 @@ class QLiveUIKitImpl(val appContext: Context) : QLiveUIKit {
         private val mRoomListPage = RoomListPage()
         private val mRoomPage = RoomPage()
         private val mWatchExplainingPage = WatchExplainingPage()
+        private val mLiveRecordPage = LiveRecordPage()
     }
 
     init {
@@ -84,6 +85,11 @@ class QLiveUIKitImpl(val appContext: Context) : QLiveUIKit {
                     context,
                     attrs
                 )
+                FuncCPTRoomWarnMonitor::class.java.canonicalName -> FuncCPTRoomWarnMonitor(
+                    context,
+                    attrs
+                )
+
                 QKitImageView::class.java.canonicalName -> QKitImageView(context, attrs)
                 PKAnchorPreview::class.java.canonicalName -> PKAnchorPreview(context, attrs)
                 MicLinkersView::class.java.canonicalName -> MicLinkersView(context, attrs)
@@ -124,6 +130,9 @@ class QLiveUIKitImpl(val appContext: Context) : QLiveUIKit {
                 CloseRoomView::class.java.canonicalName -> CloseRoomView(context, attrs)
                 StartLinkView::class.java.canonicalName -> StartLinkView(context, attrs)
                 PKPlayerPreview::class.java.canonicalName -> PKPlayerPreview(context, attrs)
+                BottomMoreFuncButton::class.java.canonicalName -> BottomMoreFuncButton(context, attrs)
+                LiveStatisticsView::class.java.canonicalName -> LiveStatisticsView(context, attrs)
+                AnchorStartTrailerLiveView::class.java.canonicalName -> AnchorStartTrailerLiveView(context, attrs)
                 else -> null
             }
         }
@@ -168,6 +177,7 @@ class QLiveUIKitImpl(val appContext: Context) : QLiveUIKit {
             RoomListPage::class.simpleName -> mRoomListPage as T?
             RoomPage::class.simpleName -> mRoomPage as T?
             WatchExplainingPage::class.simpleName -> mWatchExplainingPage as T?
+            LiveRecordPage::class.java.simpleName -> mLiveRecordPage as T?
             else -> null
         }
         return page

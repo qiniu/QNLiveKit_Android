@@ -15,26 +15,29 @@ import kotlinx.coroutines.*
  */
 class RoomNoticeView : QKitTextView {
 
-    companion object{
+    companion object {
         //显示公告
         var noticeHtmlShowAdapter: ((notice: String) -> String) = {
             "  <font color='#3ce1ff'>官方公告</font>" + " <font color='#ffb83c'>" + ":${it}</font>";
         }
     }
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
-    )
+    ) {
+        visibility = View.INVISIBLE
+    }
 
     private var goneJob: Job? = null
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo,isResumeUIFromFloating)
+        super.onJoined(roomInfo, isResumeUIFromFloating)
         goneJob?.cancel()
-        text = noticeHtmlShowAdapter.invoke(roomInfo.notice?:"").toHtml()
-        if (text.isEmpty()) {
+        text = noticeHtmlShowAdapter.invoke(roomInfo.notice ?: "").toHtml()
+        if (roomInfo.notice.isEmpty()) {
             visibility = View.INVISIBLE
             return
         }

@@ -126,9 +126,8 @@ class RoomPlayerActivity : BaseFrameActivity() {
             })
         }
 
-
     //加入房间函数
-    private val createAndJoinRoomActionCall: (param: QCreateRoomParam, resultCall: QLiveCallBack<Void>) -> Unit =
+    private val createAndJoinRoomActionCall: (param: QCreateRoomParam?, resultCall: QLiveCallBack<Void>) -> Unit =
         { p, c ->
             Toast.makeText(this, "player activity can not create", Toast.LENGTH_SHORT).show()
         }
@@ -259,12 +258,14 @@ class RoomPlayerActivity : BaseFrameActivity() {
 
         val joinCall = {
             mInflaterFactory.onEntering(mRoomId, QLive.getLoginUser())
+
             Handler(Looper.myLooper()!!).post {
                 bg {
                     showLoading(true)
                     doWork {
                         //加入房间
                         val room = suspendJoinRoom(mRoomId)
+                        mInflaterFactory.onGetLiveRoomInfo(room)
                         startCallBack?.onSuccess(room)
                         //开始播放
                         mRoomClient!!.play(playerRenderView)
@@ -309,6 +310,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
                 Handler(Looper.myLooper()!!).post {
                     //加入房间
                     startCallBack?.onSuccess(room)
+                    mInflaterFactory.onGetLiveRoomInfo(room)
                     //分发状态到各个UI组件
                     mInflaterFactory.onJoined(room, true)
                     //开始播放

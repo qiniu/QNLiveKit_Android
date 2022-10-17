@@ -32,10 +32,14 @@ suspend fun RtmAdapter.joinChannel(channelId: String) = suspendCoroutine<Unit> {
 }
 
 
-suspend fun RtmAdapter.sendChannelMsg(msg: String, channelId: String, isDispatchToLocal: Boolean) =
+suspend fun RtmAdapter.sendChannelCMDMsg(
+    msg: String,
+    channelId: String,
+    isDispatchToLocal: Boolean
+) =
     suspendCoroutine<Unit> { continuation ->
 
-        sendChannelMsg(msg, channelId, isDispatchToLocal, object : RtmCallBack {
+        sendChannelCMDMsg(msg, channelId, isDispatchToLocal, object : RtmCallBack {
             override fun onSuccess() {
                 continuation.resume(Unit)
             }
@@ -46,9 +50,40 @@ suspend fun RtmAdapter.sendChannelMsg(msg: String, channelId: String, isDispatch
         })
     }
 
-suspend fun RtmAdapter.sendC2cMsg(msg: String, peerId: String, isDispatchToLocal: Boolean) =
+suspend fun RtmAdapter.sendC2cCMDMsg(msg: String, peerId: String, isDispatchToLocal: Boolean) =
     suspendCoroutine<Unit> { continuation ->
-        sendC2cMsg(msg, peerId, isDispatchToLocal, object : RtmCallBack {
+        sendC2cCMDMsg(msg, peerId, isDispatchToLocal, object : RtmCallBack {
+            override fun onSuccess() {
+                continuation.resume(Unit)
+            }
+
+            override fun onFailure(code: Int, msg: String) {
+                continuation.resumeWithException(RtmException(code, msg))
+            }
+        })
+    }
+
+
+suspend fun RtmAdapter.sendChannelTextMsg(
+    msg: String,
+    channelId: String,
+    isDispatchToLocal: Boolean
+) =
+    suspendCoroutine<Unit> { continuation ->
+        sendChannelTextMsg(msg, channelId, isDispatchToLocal, object : RtmCallBack {
+            override fun onSuccess() {
+                continuation.resume(Unit)
+            }
+
+            override fun onFailure(code: Int, msg: String) {
+                continuation.resumeWithException(RtmException(code, msg))
+            }
+        })
+    }
+
+suspend fun RtmAdapter.sendC2cTextMsg(msg: String, peerId: String, isDispatchToLocal: Boolean) =
+    suspendCoroutine<Unit> { continuation ->
+        sendC2cTextMsg(msg, peerId, isDispatchToLocal, object : RtmCallBack {
             override fun onSuccess() {
                 continuation.resume(Unit)
             }

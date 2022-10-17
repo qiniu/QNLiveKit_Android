@@ -71,6 +71,11 @@ class QNIMAdapter : RtmAdapter {
             }
         }
 
+        override fun onReceiveCommandMessages(list: BMXMessageList) {
+            super.onReceiveCommandMessages(list)
+            onReceive(list)
+        }
+
         override fun onReceive(list: BMXMessageList) {
             //收到消息
             if (list.isEmpty) {
@@ -120,7 +125,7 @@ class QNIMAdapter : RtmAdapter {
      * 初始化
      */
     fun init(config: BMXSDKConfig, context: Context) {
-        if(QNIMClient.isInit()){
+        if (QNIMClient.isInit()) {
             QNIMClient.getUserManager()?.removeUserListener(mBMXUserServiceListener)
         }
         QNIMClient.init(config)
@@ -150,7 +155,56 @@ class QNIMAdapter : RtmAdapter {
             }
         }
 
-    override fun sendC2cMsg(
+    //cmd消息暂时没有成功失败回调
+    override fun sendC2cCMDMsg(
+        msg: String,
+        peerId: String,
+        isDispatchToLocal: Boolean,
+        callBack: RtmCallBack?
+    ) {
+        //目前只处理文本消息
+        val targetId = peerId
+        val imMsg = BMXMessage.createCommandMessage(
+            loginImUid.toLong(),
+            peerId.toLong(),
+            BMXMessage.MessageType.Single,
+            peerId.toLong(),
+            (msg)
+        )
+        QNIMClient.sendMessage(imMsg)
+        callBack?.onSuccess()
+        if (isDispatchToLocal) {
+            c2cMessageReceiver(msg, loginImUid, peerId)
+        }
+    }
+
+    // cmd消息暂时没有成功失败回调
+    override fun sendChannelCMDMsg(
+        msg: String,
+        channelId: String,
+        isDispatchToLocal: Boolean,
+        callBack: RtmCallBack?
+    ) {
+        Log.d("sendChannelMsg", " $channelId  $msg")
+        if (channelId.isEmpty()) {
+            callBack?.onFailure(0, "")
+            return
+        }
+        val imMsg = BMXMessage.createCommandMessage(
+            loginImUid.toLong(),
+            channelId.toLong(),
+            BMXMessage.MessageType.Group,
+            channelId.toLong(),
+            (msg)
+        )
+        QNIMClient.sendMessage(imMsg)
+        callBack?.onSuccess()
+        if (isDispatchToLocal) {
+            channelMsgReceiver(msg, loginImUid, channelId)
+        }
+    }
+
+    override fun sendC2cTextMsg(
         msg: String,
         peerId: String,
         isDispatchToLocal: Boolean,
@@ -180,23 +234,20 @@ class QNIMAdapter : RtmAdapter {
                 false
             )
         )
-
         QNIMClient.sendMessage(imMsg)
-
     }
 
-    override fun sendChannelMsg(
+    override fun sendChannelTextMsg(
         msg: String,
         channelId: String,
         isDispatchToLocal: Boolean,
         callBack: RtmCallBack?
     ) {
-        Log.d("sendChannelMsg"," $channelId  $msg")
+        Log.d("sendChannelMsg", " $channelId  $msg")
         if (channelId.isEmpty()) {
             callBack?.onFailure(0, "")
             return
         }
-
         val imMsg = BMXMessage.createMessage(
             loginImUid.toLong(),
             channelId.toLong(),
@@ -204,10 +255,8 @@ class QNIMAdapter : RtmAdapter {
             channelId.toLong(),
             (msg)
         )
-
         val clientTime = System.currentTimeMillis()
         imMsg.setClientTimestamp(clientTime)
-
         mMsgCallMap.put(
             clientTime,
             com.qlive.qnim.QNIMAdapter.MsgCallTemp(

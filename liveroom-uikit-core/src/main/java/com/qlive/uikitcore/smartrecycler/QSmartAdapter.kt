@@ -1,5 +1,6 @@
 package com.qlive.uikitcore.smartrecycler
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.qlive.uikitcore.adapter.QRecyclerViewHolder
@@ -26,6 +27,12 @@ abstract class QSmartAdapter<T> : QRecyclerAdapter<T>, IAdapter<T> {
     override fun isCanShowEmptyView(): Boolean {
         return this.data.isEmpty() && (this.headerLayoutCount + this.footerLayoutCount == 0)
     }
+
+    override fun setItemClick(listener: (View, T, index: Int) -> Unit) {
+        onItemClickListener = OnItemClickListener { _, view, position ->
+            listener.invoke(view, data[position],position)
+        }
+    }
 }
 
 abstract class QSmartViewBindAdapter<T, R : ViewBinding>() :
@@ -45,6 +52,11 @@ abstract class QSmartViewBindAdapter<T, R : ViewBinding>() :
     override fun isCanShowEmptyView(): Boolean {
         return this.data.isEmpty() && (this.headerLayoutCount + this.footerLayoutCount == 0)
     }
+    override fun setItemClick(listener: (View, T, index: Int) -> Unit) {
+        onItemClickListener = OnItemClickListener { _, view, position ->
+            listener.invoke(view, data[position],position)
+        }
+    }
 }
 
 abstract class QSmartMultipleAdapter<T>(data: List<T>) : QMultipleItemRvAdapter<T>(data),
@@ -63,5 +75,10 @@ abstract class QSmartMultipleAdapter<T>(data: List<T>) : QMultipleItemRvAdapter<
 
     override fun isCanShowEmptyView(): Boolean {
         return this.data.isEmpty() && (this.headerLayoutCount + this.footerLayoutCount == 0)
+    }
+    override fun setItemClick(listener: (View, T, index: Int) -> Unit) {
+        onItemClickListener = OnItemClickListener { _, view, position ->
+            listener.invoke(view, data[position],position)
+        }
     }
 }

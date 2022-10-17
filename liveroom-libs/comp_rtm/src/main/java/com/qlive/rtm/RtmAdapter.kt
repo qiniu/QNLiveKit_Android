@@ -10,13 +10,20 @@ interface RtmAdapter {
      * @param isDispatchToLocal 发送成功后是否马上往本地的监听分发这个消息
      *
      */
-    fun sendC2cMsg(msg: String, peerId:String, isDispatchToLocal:Boolean, callBack: RtmCallBack?)
+    fun sendC2cCMDMsg(msg: String, peerId:String, isDispatchToLocal:Boolean, callBack: RtmCallBack?)
 
     /**
      * 发频道消息
      */
-    fun sendChannelMsg(msg:String,channelId:String,isDispatchToLocal:Boolean,callBack: RtmCallBack?)
+    fun sendChannelCMDMsg(msg:String, channelId:String, isDispatchToLocal:Boolean, callBack: RtmCallBack?)
 
+
+    fun sendC2cTextMsg(msg: String, peerId:String, isDispatchToLocal:Boolean, callBack: RtmCallBack?)
+
+    /**
+     * 发频道消息
+     */
+    fun sendChannelTextMsg(msg:String, channelId:String, isDispatchToLocal:Boolean, callBack: RtmCallBack?)
     /**
      * 创建频道
      */

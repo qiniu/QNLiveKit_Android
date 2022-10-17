@@ -14,7 +14,7 @@ import kotlin.coroutines.suspendCoroutine
 
 abstract class HttpClient {
     companion object {
-        val httpClient: HttpClient = URLConnectionHttpClient()
+        lateinit var httpClient: HttpClient
     }
 
     // var tokenGetter: QTokenGetter? = null
@@ -31,6 +31,7 @@ abstract class HttpClient {
         method: String,
         path: String,
         jsonString: String,
+        headers: Map<String, String>?,
         clazz: Class<T>? = null,
         type: Type? = null
     ): HttpResp<T>
@@ -39,16 +40,17 @@ abstract class HttpClient {
         method: String,
         path: String,
         jsonString: String,
+        headers: Map<String, String>?,
         clazz: Class<T>?,
         type: Type?
     ): T {
-        var ret = req(method, path, jsonString, clazz, type)
+        var ret = req(method, path, jsonString, headers, clazz, type)
         if (ret.code == 200 || ret.code == 0) {
             return ret.data
         }
         if (ret.code == 499 || ret.code == 401) {
             if (reGetTokenInfo()) {
-                ret = req(method, path, jsonString, clazz, type)
+                ret = req(method, path, jsonString, headers, clazz, type)
             }
         }
         if (ret.code == 200 || ret.code == 0) {
@@ -70,7 +72,7 @@ abstract class HttpClient {
         suspendCoroutine<T> { contine ->
             mExecutorService.execute {
                 try {
-                    val resp = request("PUT", path, jsonString, clazz, type)
+                    val resp = request("PUT", path, jsonString, null, clazz, type)
                     contine.resume(resp)
                 } catch (e: Exception) {
                     contine.resumeWithException(e)
@@ -84,7 +86,7 @@ abstract class HttpClient {
     ) = suspendCoroutine<T> { contine ->
         mExecutorService.execute {
             try {
-                val resp = request("POST", path, jsonString, clazz, type)
+                val resp = request("POST", path, jsonString, null, clazz, type)
                 contine.resume(resp)
             } catch (e: Exception) {
                 contine.resumeWithException(e)
@@ -98,7 +100,7 @@ abstract class HttpClient {
     ) = suspendCoroutine<T> { contine ->
         mExecutorService.execute {
             try {
-                val resp = request("DELETE", path, jsonString, clazz, type)
+                val resp = request("DELETE", path, jsonString, null, clazz, type)
                 contine.resume(resp)
             } catch (e: Exception) {
                 contine.resumeWithException(e)
@@ -126,7 +128,36 @@ abstract class HttpClient {
         val path2 = path + params
         mExecutorService.execute {
             try {
-                val resp = request("GET", path2, "{}", clazz, type)
+                val resp = request("GET", path2, "{}", null, clazz, type)
+                contine.resume(resp)
+            } catch (e: Exception) {
+                contine.resumeWithException(e)
+            }
+        }
+    }
+
+    suspend fun <T> get(
+        path: String,
+        map: Map<String, String>?,
+        headers: Map<String, String>?,
+        clazz: Class<T>? = null,
+        type: Type? = null
+    ) = suspendCoroutine<T> { contine ->
+        var params = ""
+        map?.let {
+            params += "?"
+            it.entries.forEachIndexed { index, item ->
+                params += if (index == 0) {
+                    ""
+                } else {
+                    "&"
+                } + item.key + "=" + item.value
+            }
+        }
+        val path2 = path + params
+        mExecutorService.execute {
+            try {
+                val resp = request("GET", path2, "{}", headers, clazz, type)
                 contine.resume(resp)
             } catch (e: Exception) {
                 contine.resumeWithException(e)

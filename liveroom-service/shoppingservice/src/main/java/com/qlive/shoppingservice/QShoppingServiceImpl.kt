@@ -56,7 +56,7 @@ internal class QShoppingServiceImpl : BaseService(), QShoppingService {
     }
 
     private fun sendActionRefresh() {
-        RtmManager.rtmClient.sendChannelMsg(
+        RtmManager.rtmClient.sendChannelCMDMsg(
             RtmTextMsg<String>(ACTION_REFRESH, "").toJsonString(),
             currentRoomInfo?.chatID ?: "",
             false, object : RtmCallBack {
@@ -129,8 +129,8 @@ internal class QShoppingServiceImpl : BaseService(), QShoppingService {
         }
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo) {
+        super.onJoined(roomInfo)
         if (mShoppingServiceListeners.size > 0) {
             mItemShader.start()
         }
@@ -197,7 +197,7 @@ internal class QShoppingServiceImpl : BaseService(), QShoppingService {
                 val msg = QItemExtMsg()
                 msg.item = item
                 msg.extension = extension
-                RtmManager.rtmClient.sendChannelMsg(
+                RtmManager.rtmClient.sendChannelCMDMsg(
                     RtmTextMsg<QItemExtMsg>(ACTION_EXTENSION, msg).toJsonString(),
                     currentRoomInfo?.chatID ?: "",
                     true
@@ -217,7 +217,7 @@ internal class QShoppingServiceImpl : BaseService(), QShoppingService {
                     currentRoomInfo?.liveID ?: "", item.itemID
                 )
                 try {
-                    RtmManager.rtmClient.sendChannelMsg(
+                    RtmManager.rtmClient.sendChannelCMDMsg(
                         RtmTextMsg<QItem?>(ACTION_EXPLAINING, item).toJsonString(),
                         currentRoomInfo?.chatID ?: "",
                         false
@@ -244,7 +244,7 @@ internal class QShoppingServiceImpl : BaseService(), QShoppingService {
                     currentRoomInfo?.liveID ?: ""
                 )
                 try {
-                    RtmManager.rtmClient.sendChannelMsg(
+                    RtmManager.rtmClient.sendChannelCMDMsg(
                         RtmTextMsg<QItem?>(ACTION_EXPLAINING, QItem()).toJsonString(),
                         currentRoomInfo?.chatID ?: "",
                         false

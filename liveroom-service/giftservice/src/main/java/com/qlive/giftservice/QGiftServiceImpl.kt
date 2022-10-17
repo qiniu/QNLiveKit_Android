@@ -7,6 +7,7 @@ import com.qlive.coreimpl.BaseService
 import com.qlive.coreimpl.QLiveDataSource
 import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.getCode
+import com.qlive.giftservice.QGiftMsg.GIFT_ACTION
 import com.qlive.giftservice.inner.GiftDataSource
 import com.qlive.giftservice.inner.InnerGiftMsg
 import com.qlive.jsonutil.JsonUtils
@@ -16,9 +17,7 @@ import com.qlive.rtm.optAction
 import com.qlive.rtm.optData
 
 internal class QGiftServiceImpl : QGiftService, BaseService() {
-    companion object {
-        private const val GIFT_ACTION = "gift_notify"
-    }
+
 
     private val liveDataSource = QLiveDataSource()
     private val giftDataSource = GiftDataSource()
@@ -51,11 +50,19 @@ internal class QGiftServiceImpl : QGiftService, BaseService() {
         }
     }
 
-    override fun sendGift(giftID: Int, amount: Int, redo: Boolean, callback: QLiveCallBack<Void>?) {
+    override fun sendGift(giftID: Int, amount: Int, callback: QLiveCallBack<Void>?) {
         backGround {
             doWork {
-                giftDataSource.sendGift(currentRoomInfo?.liveID ?: "", giftID, amount, redo)
+                giftDataSource.sendGift(currentRoomInfo?.liveID ?: "", giftID, amount)
                 callback?.onSuccess(null)
+//                val giftMsg = QGiftMsg().apply {
+//                    liveID = currentRoomInfo?.liveID?:""
+//                    gift =  giftDataSource.giftByID(giftID)
+//                    sender = user
+//                }
+//                listeners.forEach {
+//                    it.onReceivedGiftMsg(giftMsg)
+//                }
             }
             catchError {
                 callback?.onError(it.getCode(), it.message)

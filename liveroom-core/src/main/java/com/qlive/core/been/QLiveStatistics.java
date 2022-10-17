@@ -29,6 +29,16 @@ public class QLiveStatistics implements Serializable {
      */
     public static int TYPE_LINK_MIC_COUNT=5;
 
+    /**
+     * 统计类型 - 点赞
+     */
+    public static int TYPE_LIKE_COUNT=6;
+
+    /**
+     * 统计类型 - 礼物
+     */
+    public static int TYPE_GIFT_COUNT=7;
+
     public String flow;
     public List<Info> info;
 

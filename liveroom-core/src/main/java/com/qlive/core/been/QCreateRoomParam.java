@@ -1,4 +1,5 @@
 package com.qlive.core.been;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -16,16 +17,36 @@ public class QCreateRoomParam implements Serializable {
     /**
      * 房间公告
      */
-   @SerializedName(value =  "notice")
+    @SerializedName(value = "notice")
     public String notice;
     /**
      * 封面
      */
-   @SerializedName(value =  "cover_url")
+    @SerializedName(value = "cover_url")
     public String coverURL;
     /**
      * 扩展字段
      */
-   @SerializedName(value =  "extension")
+    @SerializedName(value = "extension")
     public HashMap<String, String> extension;
+
+    /**
+     * 非必须
+     * 预计开播时间
+     */
+    @SerializedName(value = "start_at")
+    public long startAt;
+    /**
+     * 非必须
+     * 预计结束时间
+     */
+    @SerializedName(value = "end_at")
+    public long endAt;
+    /**
+     * 非必须
+     * 推流token 过期时间
+     */
+    @SerializedName(value = "publish_expire_at")
+    public long publishExpireAt;
+
 }

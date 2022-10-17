@@ -63,7 +63,7 @@ interface QComponent : BaseComponent<QUIKitContext> {
  * QClientLifeCycleListener -> client 生命周期
  * LifecycleEventObserver ->  房间客户端生命周期
  */
-interface QLiveComponent : QClientLifeCycleListener, BaseComponent<QLiveUIKitContext> {
+interface QLiveComponent : QLiveUILifeCycleListener, BaseComponent<QLiveUIKitContext> {
 
     var client: QLiveClient?
     var roomInfo: QLiveRoomInfo?
@@ -93,6 +93,10 @@ interface QLiveComponent : QClientLifeCycleListener, BaseComponent<QLiveUIKitCon
         this.user = user
     }
 
+    override fun onGetLiveRoomInfo(roomInfo: QLiveRoomInfo) {
+
+    }
+
     /**
      * 当前房间已经离开回调 - 我是观众-离开 我是主播对应关闭房间
      */
@@ -106,6 +110,7 @@ interface QLiveComponent : QClientLifeCycleListener, BaseComponent<QLiveUIKitCon
     override fun onDestroyed() {
         client = null
     }
+
 }
 
 /**

@@ -45,8 +45,8 @@ class RoomHostView : QKitViewBindingFrameLayout<KitViewRoomHostSlotBinding> {
         binding.tvTitle.isSelected = true
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onGetLiveRoomInfo(roomInfo: QLiveRoomInfo) {
+        super.onGetLiveRoomInfo(roomInfo)
         binding.ivHost.setOnClickListener {
             onAnchorAvatarClickListener(kitContext, client, it, roomInfo.anchor)
         }

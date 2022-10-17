@@ -90,8 +90,8 @@ internal class AudiencePKSynchro() : BaseService() {
     override fun onEntering(liveId: String, user: QLiveUser) {
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo) {
+        super.onJoined(roomInfo)
         if (!roomInfo.pkID.isEmpty()) {
             backGround {
                 doWork {

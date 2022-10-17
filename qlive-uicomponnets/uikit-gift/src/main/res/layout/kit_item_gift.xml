@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tvFLGiftContent"
+    android:layout_width="80dp"
+    android:layout_height="100dp"
+    android:background="@drawable/kit_selecter_item_gift"
+    android:orientation="vertical"
+    tools:background="@drawable/shape_0b1c29_top12radius">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="42dp"
+        tools:background="@drawable/kit_bg_item_gift_select">
+
+        <ImageView
+            android:id="@+id/ivGiftIcon"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            tools:src="@drawable/kit_select_my_mic" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvPriceBig"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="26dp"
+        android:textColor="#ffffff"
+        android:textSize="10sp"
+        tools:text="asdsa" />
+
+    <TextView
+        android:id="@+id/tvGiftName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="16dp"
+        android:textColor="#ffffff"
+        android:textSize="10sp"
+        tools:text="8duasda" />
+
+    <TextView
+        android:id="@+id/tvPriceSmall"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:gravity="center"
+        android:textColor="#999999"
+        android:textSize="10sp"
+        tools:text="88$" />
+
+    <TextView
+        android:id="@+id/tvPay"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:gravity="center"
+        android:text="@string/gift_str_pay"
+        android:textColor="#ffffff"
+        android:textSize="10sp" />
+
+</FrameLayout>

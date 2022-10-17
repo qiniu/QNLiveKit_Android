@@ -1,7 +1,12 @@
 package com.qlive.uikitcore.adapter
 
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.viewbinding.ViewBinding
+import com.qlive.uikitcore.QLiveComponent
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.ParameterizedType
 
 abstract class BaseItemProvider<T> {
     var mContext: Context? = null
@@ -23,15 +28,59 @@ abstract class BaseItemProvider<T> {
     }
 }
 
+abstract class ViewBindingItemProvider<T, R : ViewBinding> : BaseItemProvider<T>() {
+
+    final override fun layout(): Int {
+        return -1
+    }
+
+    final override fun convert(helper: QRecyclerViewHolder?, data: T, position: Int) {
+        convertViewBindHolder(helper as QRecyclerViewBindHolder<R>, data, position)
+    }
+
+    abstract fun convertViewBindHolder(helper: QRecyclerViewBindHolder<R>, data: T, position: Int)
+
+    internal fun create(
+        viewGroup: ViewGroup?,
+        context: Context
+    ): QRecyclerViewBindHolder<R> {
+        val sup = javaClass.genericSuperclass
+        val binding = create<R>(sup as ParameterizedType, viewGroup, context, false)
+        return QRecyclerViewBindHolder<R>(binding, binding.root)
+    }
+
+    private fun <T : ViewBinding> create(
+        sup: ParameterizedType,
+        viewGroup: ViewGroup?,
+        context: Context,
+        attach: Boolean
+    ): T {
+        var binding: T? = null
+        val cls = (sup as ParameterizedType).actualTypeArguments[1] as Class<*>
+        try {
+            val mInflate = cls.getDeclaredMethod(
+                "inflate",
+                LayoutInflater::class.java,
+                ViewGroup::class.java,
+                Boolean::class.java
+            )
+            binding = mInflate.invoke(null, LayoutInflater.from(context), viewGroup, attach) as T
+        } catch (e: NoSuchMethodException) {
+            e.printStackTrace()
+        } catch (e: IllegalAccessException) {
+            e.printStackTrace()
+        } catch (e: InvocationTargetException) {
+            e.printStackTrace()
+        }
+        return binding!!
+    }
+}
+
+
 abstract class QMultipleItemRvAdapter<T>(data: List<T>) : QRecyclerAdapter<T>(data) {
     protected val itemProvider = HashMap<Int, BaseItemProvider<T>>()
     protected abstract fun getViewType(t: T): Int
     abstract fun registerItemProvider()
-
-    override fun initAdapter() {
-        super.initAdapter()
-        registerItemProvider()
-    }
 
     override fun convert(helper: QRecyclerViewHolder, item: T) {
         val itemViewType = helper.itemViewType
@@ -43,9 +92,21 @@ abstract class QMultipleItemRvAdapter<T>(data: List<T>) : QRecyclerAdapter<T>(da
         bindClick(helper, item, position, provider)
     }
 
+    private var isRegistedItemProvider = false
     override fun onCreateDefViewHolder(parent: ViewGroup, viewType: Int): QRecyclerViewHolder {
-        val layoutId = itemProvider[viewType]!!.layout()
-        return createBaseViewHolder(parent, layoutId)
+        if (!isRegistedItemProvider) {
+            registerItemProvider()
+            isRegistedItemProvider = true
+        }
+        val p = itemProvider[viewType]
+
+        if (ViewBindingItemProvider::class.java.isAssignableFrom(p!!.javaClass)) {
+            val binding = (p as ViewBindingItemProvider<*, *>).create(parent, mContext)
+            return binding
+        } else {
+            val layoutId = p.layout()
+            return createBaseViewHolder(parent, layoutId)
+        }
     }
 
     override fun getDefItemViewType(position: Int): Int {

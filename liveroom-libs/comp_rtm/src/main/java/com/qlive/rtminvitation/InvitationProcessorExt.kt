@@ -30,8 +30,8 @@ suspend fun InvitationProcessor.suspendInvite(
         }
     }
     if (TextUtils.isEmpty(channelId)) {
-        rtmClient.sendC2cMsg(rtmTextMsg.toJsonString(), peerId, false, call)
+        rtmClient.sendC2cCMDMsg(rtmTextMsg.toJsonString(), peerId, false, call)
     } else {
-        rtmClient.sendChannelMsg(rtmTextMsg.toJsonString(), channelId, false, call)
+        rtmClient.sendChannelCMDMsg(rtmTextMsg.toJsonString(), channelId, false, call)
     }
 }

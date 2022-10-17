@@ -45,18 +45,52 @@
             app:empty_placeholder_no_net_icon="@drawable/kit_pic_empty_network"
             app:empty_placeholder_tips="@string/empty_tip_str" />
 
-        <com.qlive.uikit.component.CreateRoomButton
-            android:layout_width="210dp"
-            android:layout_height="44dp"
-
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="14dp"
-            android:background="@drawable/kit_shape_007aff_50"
-            android:gravity="center"
-            android:text="创建直播间"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:layout_marginBottom="50dp"
+            android:orientation="horizontal">
+
+            <com.qlive.uikit.component.CreateRoomButton
+                android:layout_width="134dp"
+                android:layout_height="44dp"
+                android:background="@drawable/kit_shape_007aff_lt50_lb50">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:drawableStart="@mipmap/kit_ic_roomlist_create"
+                    android:drawablePadding="6dp"
+                    android:gravity="center"
+                    android:text="@string/room_list_create"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </com.qlive.uikit.component.CreateRoomButton>
+
+            <com.qlive.uikit.component.LiveRecordButton
+                android:layout_width="86dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="1dp"
+                android:background="@drawable/kit_shape_007aff_rt50_rb50">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:drawableStart="@mipmap/kit_ic_roomlist_record"
+                    android:drawablePadding="6dp"
+                    android:gravity="center"
+                    android:text="@string/room_list_record"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </com.qlive.uikit.component.LiveRecordButton>
+
+        </LinearLayout>
+
     </FrameLayout>
 
 

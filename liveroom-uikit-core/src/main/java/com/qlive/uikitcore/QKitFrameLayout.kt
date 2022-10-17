@@ -51,6 +51,28 @@ abstract class QKitFrameLayout : FrameLayout, QLiveComponent {
     abstract fun initView()
 }
 
+abstract class QKitLinearLayout : LinearLayout, QLiveComponent {
+    override var client: QLiveClient? = null
+    override var roomInfo: QLiveRoomInfo? = null
+    override var user: QLiveUser? = null
+    override var kitContext: QLiveUIKitContext? = null
+
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+
+    }
+    override fun attachLiveClient(client: QLiveClient) {
+        super.attachLiveClient(client)
+        initView()
+    }
+    abstract fun initView()
+}
+
 abstract class QKitViewBindingFrameLayout<T : ViewBinding> : FrameLayout, QLiveComponent {
     override var client: QLiveClient? = null
     override var roomInfo: QLiveRoomInfo? = null
@@ -67,6 +89,32 @@ abstract class QKitViewBindingFrameLayout<T : ViewBinding> : FrameLayout, QLiveC
     ) {
         val sup = javaClass.genericSuperclass
         binding = ViewBindingExt.create(sup as ParameterizedType, this, context, true)
+    }
+
+    override fun attachLiveClient(client: QLiveClient) {
+        super.attachLiveClient(client)
+        initView()
+    }
+
+    abstract fun initView()
+}
+
+abstract class QKitViewBindingFrameMergeLayout<T : ViewBinding> : FrameLayout, QLiveComponent {
+    override var client: QLiveClient? = null
+    override var roomInfo: QLiveRoomInfo? = null
+    override var user: QLiveUser? = null
+    override var kitContext: QLiveUIKitContext? = null
+    lateinit var binding: T
+
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        val sup = javaClass.genericSuperclass
+        binding = ViewBindingExt.create2(sup as ParameterizedType, this, context)
     }
 
     override fun attachLiveClient(client: QLiveClient) {

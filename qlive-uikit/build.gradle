@@ -44,8 +44,12 @@ dependencies {
     api project(':qlive-uicomponnets:uikit-linkmic')
     api project(':qlive-uicomponnets:uikit-pk')
     api project(':qlive-uicomponnets:uikit-shopping')
+    api project(':qlive-uicomponnets:uikit-gift')
+    api project(':qlive-uicomponnets:uikit-like')
     api depend.gson() //必选 json解析
     api depend.okhttp3() //demo依赖
+
+    implementation 'com.github.gzu-liyujiang.AndroidPicker:WheelPicker:4.1.9'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

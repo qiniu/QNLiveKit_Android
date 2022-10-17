@@ -4,35 +4,37 @@ import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
-import android.widget.EditText
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.qlive.core.*
-import com.qlive.uikit.R
-import com.qlive.core.been.QLiveRoomInfo
-import com.qlive.uikitcore.QKitFrameLayout
 import com.qlive.core.been.QCreateRoomParam
+import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.sdk.QLive
+import com.qlive.uikit.R
 import com.qlive.uikit.RoomPushActivity.Companion.KEY_ROOM_ID
+import com.qlive.uikit.databinding.KitLivePreviewBinding
+import com.qlive.uikitcore.QKitViewBindingFrameMergeLayout
 import com.qlive.uikitcore.QLiveUIKitContext
+import com.qlive.uikitcore.dialog.LoadingDialog
 import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
 
 /**
  * 开播预览槽位
  */
-open class LivePreView : QKitFrameLayout {
+open class LivePreView : QKitViewBindingFrameMergeLayout<KitLivePreviewBinding> {
 
     companion object {
         /**
          * 设置房间参数回调
          */
-        var makeCreateRoomParamCall: (kitContext: QLiveUIKitContext, client: QLiveClient, titleStr: String, noticeStr: String) -> QCreateRoomParam =
-            { _, _, titleStr: String, noticeStr: String ->
+        var makeCreateRoomParamCall: (kitContext: QLiveUIKitContext, client: QLiveClient, titleStr: String, noticeStr: String, startTime: Long) -> QCreateRoomParam =
+            { _, _, titleStr: String, noticeStr: String, startTime: Long ->
                 QCreateRoomParam().apply {
                     title = titleStr
                     notice = noticeStr
                     coverURL = QLive.getLoginUser()?.avatar ?: ""
+                    startAt = startTime
                 }
             }
     }
@@ -56,31 +58,76 @@ open class LivePreView : QKitFrameLayout {
         }
     }
 
-    override fun getLayoutId(): Int {
-        return R.layout.kit_live_preview
-    }
-
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
         super.onJoined(roomInfo, isResumeUIFromFloating)
         //开播预览加入成功不可见
         visibility = View.GONE
     }
 
+    private var reserveTime = 0L
     override fun initView() {
-        findViewById<View>(R.id.tvStart).setDoubleCheckClickListener {
-            val titleStr = findViewById<EditText>(R.id.etTitle).text.toString()
+        binding.tvStart.setDoubleCheckClickListener {
+            val titleStr = binding.etTitle.text.toString()
             if (titleStr.isEmpty()) {
                 context?.getString(R.string.preview_hit_room_title)?.asToast(context)
                 return@setDoubleCheckClickListener
             }
-            val noticeStr = findViewById<EditText>(R.id.etNotice).text.toString() ?: ""
-            //开始创建并且加入房间
-            kitContext?.createAndJoinRoomActionCall?.invoke(
-                makeCreateRoomParamCall(kitContext!!, client!!, titleStr, noticeStr),
-                object : QLiveCallBack<Void> {
-                    override fun onError(code: Int, msg: String?) {}
-                    override fun onSuccess(data: Void?) {}
+            val noticeStr = binding.etNotice.text.toString() ?: ""
+
+            if (binding.rgLiveMode.checkedRadioButtonId == R.id.rbLiveNow) {
+                //开始创建并且加入房间
+                kitContext?.startPusherRoomActionCall?.invoke(
+                    makeCreateRoomParamCall(kitContext!!, client!!, titleStr, noticeStr, 0),
+                    object : QLiveCallBack<Void> {
+                        override fun onError(code: Int, msg: String?) {}
+                        override fun onSuccess(data: Void?) {}
+                    })
+            } else {
+                if (reserveTime == 0L) {
+                    context?.getString(R.string.preview_hit_select_date)?.asToast(context)
+                    return@setDoubleCheckClickListener
+                }
+                val param = makeCreateRoomParamCall(
+                    kitContext!!,
+                    client!!,
+                    titleStr,
+                    noticeStr,
+                    reserveTime/1000
+                )
+                LoadingDialog.showLoading(kitContext!!.fragmentManager)
+                QLive.getRooms().createRoom(param, object : QLiveCallBack<QLiveRoomInfo> {
+                    override fun onError(code: Int, msg: String?) {
+                        msg?.asToast(context)
+                        LoadingDialog.cancelLoadingDialog()
+                    }
+
+                    override fun onSuccess(data: QLiveRoomInfo) {
+                        "创建成功".asToast(context)
+                        LoadingDialog.cancelLoadingDialog()
+                        kitContext?.currentActivity?.finish()
+                    }
                 })
+            }
         }
+
+        binding.rgLiveMode.setOnCheckedChangeListener { radioGroup, id ->
+            if (id == R.id.rbLiveNow) {
+                binding.tvCalendar.visibility = GONE
+                binding.tvCalendarHit.visibility = GONE
+            } else {
+                binding.tvCalendar.visibility = visibility
+                binding.tvCalendarHit.visibility = visibility
+            }
+        }
+
+        binding.tvCalendar.setOnClickListener {
+            TimePickPop(context).apply {
+                onTimeSelectedCall = { timeLong, timeFormat ->
+                    binding.tvCalendar.text = timeFormat
+                    reserveTime = timeLong
+                }
+            }.show(binding.popAnchorView)
+        }
+        binding.rgLiveMode.check(R.id.rbLiveNow)
     }
 }

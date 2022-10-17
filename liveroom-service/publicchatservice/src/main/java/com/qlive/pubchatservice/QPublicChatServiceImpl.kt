@@ -65,7 +65,7 @@ internal class QPublicChatServiceImpl : QPublicChatService, BaseService() {
 
     private fun sendModel(model: QPublicChat, callBack: QLiveCallBack<QPublicChat>?) {
         val msg = RtmTextMsg(model.action, model).toJsonString()
-        RtmManager.rtmClient.sendChannelMsg(
+        RtmManager.rtmClient.sendChannelCMDMsg(
             msg,
             currentRoomInfo?.chatID ?: "",
             true,
@@ -170,7 +170,7 @@ internal class QPublicChatServiceImpl : QPublicChatService, BaseService() {
             QPublicChat.action_pubchat_custom,
             mode
         ).toJsonString()
-        RtmManager.rtmClient.sendChannelMsg(
+        RtmManager.rtmClient.sendChannelCMDMsg(
             rtmmsg,
             currentRoomInfo?.chatID ?: "",
             false,

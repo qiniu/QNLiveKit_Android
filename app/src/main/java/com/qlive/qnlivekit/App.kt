@@ -1,7 +1,5 @@
 package com.qlive.qnlivekit
 
-import android.app.Activity
-import android.app.ActivityManager
 import android.app.Application
 import android.os.Process
 import android.util.Log
@@ -16,6 +14,7 @@ import com.qlive.qnlivekit.uitil.*
 import com.qlive.sdk.QLive
 import com.qlive.shoppingservice.QItem
 import com.qlive.uikit.component.CloseRoomView
+import com.qlive.uikit.component.LiveRecordListView
 import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitshopping.PlayerShoppingDialog
 
@@ -24,7 +23,7 @@ import okhttp3.Request
 class App : Application() {
     companion object {
         val demo_url = "https://niucube-api.qiniu.com"
-      //  val demo_url="http://10.200.20.28:5080"
+        //  val demo_url="http://10.200.20.28:5080"
     }
 
     override fun onCreate() {
@@ -34,10 +33,9 @@ class App : Application() {
         Log.d("App", "onCreate")
         QLive.init(this, QLiveConfig()) { callback ->
             //业务方获取token
-            Log.d("QTokenGetter", "QTokenGetter ${ UserManager.user?.data?.loginToken}")
+            Log.d("QTokenGetter", "QTokenGetter ${UserManager.user?.data?.loginToken}")
             getLoginToken(callback)
         }
-
         //自定义事件
         PlayerShoppingDialog.onItemClickCall =
             { context: QLiveUIKitContext, client: QLiveClient, view: View, item: QItem ->
@@ -47,7 +45,12 @@ class App : Application() {
                                            client: QLiveClient,
                                            room: QLiveRoomInfo,
                                            isAnchorActionCloseRoom: Boolean ->
-            DemoLiveFinishedActivity.checkStart(context, client, room, isAnchorActionCloseRoom)
+            if (isAnchorActionCloseRoom) {
+                DemoLiveFinishedActivity.checkStart(context.androidContext, room)
+            }
+        }
+        LiveRecordListView.onClickFinishedRoomCall = { context, roomInfo ->
+            DemoLiveFinishedActivity.checkStart(context, roomInfo)
         }
     }
 
@@ -62,9 +65,9 @@ class App : Application() {
         Thread {
             try {
                 val requestToken = Request.Builder()
-                    .url("${demo_url}/v1/live/auth_token?userID=${ UserManager.user?.data?.accountId}&deviceID=adjajdasod")
+                    .url("${demo_url}/v1/live/auth_token?userID=${UserManager.user?.data?.accountId}&deviceID=adjajdasod")
                     .addHeader("Content-Type", "application/json")
-                    .addHeader("Authorization", "Bearer " +  UserManager.user?.data?.loginToken)
+                    .addHeader("Authorization", "Bearer " + UserManager.user?.data?.loginToken)
                     .get()
                     .build();
                 val callToken = OKHttpManger.okHttp.newCall(requestToken);

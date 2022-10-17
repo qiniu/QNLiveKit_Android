@@ -3,6 +3,7 @@ package com.qlive.uikit.component
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
+import android.widget.FrameLayout
 import android.widget.TextView
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.been.QLiveRoomInfo
@@ -17,7 +18,7 @@ import com.qlive.uikitcore.ext.setDoubleCheckClickListener
  * 创建房间按钮
  */
 @SuppressLint("AppCompatCustomView")
-class CreateRoomButton : TextView, QComponent {
+class CreateRoomButton : FrameLayout, QComponent {
     override var kitContext: QUIKitContext? = null
 
     constructor(context: Context) : this(context, null)

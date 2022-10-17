@@ -5,6 +5,7 @@ import com.qlive.core.been.*
 import com.qlive.coreimpl.http.HttpClient
 import com.qlive.coreimpl.http.NetBzException
 import com.qlive.coreimpl.http.PageData
+import com.qlive.coreimpl.http.header_cache_name
 import com.qlive.coreimpl.model.*
 import com.qlive.coreimpl.model.LiveStatisticsReq
 import com.qlive.jsonutil.JsonUtils
@@ -43,6 +44,20 @@ class QLiveDataSource {
         )
         val date: PageData<QLiveRoomInfo> =
             HttpClient.httpClient.get("/client/live/room/list", HashMap<String, String>().apply {
+                put("page_num", pageNumber.toString())
+                put("page_size", pageSize.toString())
+            }, null, p)
+        return date
+    }
+
+    suspend fun liveRecord(pageNumber: Int, pageSize: Int): PageData<QLiveRoomInfo> {
+        val p = ParameterizedTypeImpl(
+            arrayOf(QLiveRoomInfo::class.java),
+            PageData::class.java,
+            PageData::class.java
+        )
+        val date: PageData<QLiveRoomInfo> =
+            HttpClient.httpClient.get("/client/live/room/list/anchor", HashMap<String, String>().apply {
                 put("page_num", pageNumber.toString())
                 put("page_size", pageSize.toString())
             }, null, p)
@@ -168,7 +183,7 @@ class QLiveDataSource {
      *
      * @param uid
      */
-    suspend fun searchUserByUserId(uid: String): QLiveUser {
+    suspend fun searchUserByUserId(uid: String, useCache: Boolean = true): QLiveUser {
         val p = ParameterizedTypeImpl(
             arrayOf(QLiveUser::class.java),
             List::class.java,
@@ -178,6 +193,13 @@ class QLiveDataSource {
             "/client/user/users",
             HashMap<String, String>().apply {
                 put("user_ids", uid)
+            },
+            if (useCache) {
+                HashMap<String, String>().apply {
+                    put(header_cache_name, "60")
+                }
+            } else {
+                null
             },
             null,
             p
@@ -228,4 +250,6 @@ class QLiveDataSource {
         user.extensions = extensions
         HttpClient.httpClient.put("/client/user/user", JsonUtils.toJson(user), Any::class.java)
     }
+
+
 }

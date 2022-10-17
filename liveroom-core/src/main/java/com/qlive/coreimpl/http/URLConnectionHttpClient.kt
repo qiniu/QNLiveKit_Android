@@ -15,6 +15,7 @@ internal class URLConnectionHttpClient : HttpClient() {
         method: String,
         path: String,
         jsonString: String,
+        headers: Map<String, String>?,
         clazz: Class<T>?,
         type: Type?
     ): HttpResp<T> {
@@ -34,6 +35,9 @@ internal class URLConnectionHttpClient : HttpClient() {
             urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
             urlConnection.addRequestProperty("Connection", "Keep-Alive")
             urlConnection.setRequestProperty("Authorization", token)
+            headers?.entries?.forEach {
+                urlConnection.setRequestProperty(it.key, it.value)
+            }
             urlConnection.requestMethod = method
             if (method != "GET") {
                 urlConnection.doOutput = true

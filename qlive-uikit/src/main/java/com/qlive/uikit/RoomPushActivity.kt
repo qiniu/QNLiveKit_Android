@@ -23,6 +23,7 @@ import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.activity.BaseFrameActivity
 import com.qlive.uikitcore.dialog.LoadingDialog
 import com.qlive.uikitcore.ext.bg
+import com.qlive.uikitcore.ext.isTrailering
 import com.qlive.uikitcore.ext.permission.PermissionAnywhere
 import kotlin.coroutines.resume
 import com.qlive.uikitcore.getCode
@@ -35,6 +36,7 @@ import kotlin.coroutines.suspendCoroutine
  */
 class RoomPushActivity : BaseFrameActivity() {
     private var roomId = ""
+
     companion object {
         var replaceLayoutId = -1
         private var startCallBack: QLiveCallBack<QLiveRoomInfo>? = null
@@ -69,6 +71,7 @@ class RoomPushActivity : BaseFrameActivity() {
     private val preTextureView: QPushTextureView by lazy {
         findViewById<QPushTextureView>(R.id.preTextureView)
     }
+
     /**
      * 主播客户端
      */
@@ -121,13 +124,20 @@ class RoomPushActivity : BaseFrameActivity() {
         }
 
     //创建并且加入函数
-    private val createAndJoinRoomActionCall: (param: QCreateRoomParam, resultCall: QLiveCallBack<Void>) -> Unit =
+    private val createAndJoinRoomActionCall: (param: QCreateRoomParam?, resultCall: QLiveCallBack<Void>) -> Unit =
         { p, c ->
             bg {
                 LoadingDialog.showLoading(supportFragmentManager)
                 doWork {
-                    val room = createSuspend(p)
-                    suspendJoinRoom(room.liveID)
+                    if (p == null) {
+                        val roomId = intent.getStringExtra(KEY_ROOM_ID) ?: ""
+                        suspendJoinRoom(roomId)
+                    } else {
+                        val room = createSuspend(p)
+                        mInflaterFactory.onEntering(room.liveID, QLive.getLoginUser())
+                        mInflaterFactory.onGetLiveRoomInfo(room)
+                        suspendJoinRoom(room.liveID)
+                    }
                     startCallBack?.onSuccess(null)
                     startCallBack = null
                     c.onSuccess(null)
@@ -140,7 +150,6 @@ class RoomPushActivity : BaseFrameActivity() {
                     LoadingDialog.cancelLoadingDialog()
                 }
             }
-
         }
 
     //创建房间
@@ -157,9 +166,23 @@ class RoomPushActivity : BaseFrameActivity() {
         })
     }
 
+    private suspend fun suspendGetRoomInfo(roomId: String) =
+        suspendCoroutine<QLiveRoomInfo> { cont ->
+            QLive.getRooms().getRoomInfo(roomId, object :
+                QLiveCallBack<QLiveRoomInfo> {
+                override fun onError(code: Int, msg: String?) {
+                    cont.resumeWithException(KitException(code, msg ?: ""))
+                }
+
+                override fun onSuccess(data: QLiveRoomInfo) {
+                    cont.resume(data)
+                }
+            })
+        }
+
     //加入房间
     private suspend fun suspendJoinRoom(roomId: String) = suspendCoroutine<QLiveRoomInfo> { cont ->
-        mInflaterFactory.onEntering(roomId, QLive.getLoginUser())
+
         mRoomClient.joinRoom(roomId, object :
             QLiveCallBack<QLiveRoomInfo> {
             override fun onError(code: Int, msg: String?) {
@@ -205,9 +228,15 @@ class RoomPushActivity : BaseFrameActivity() {
             bg {
                 LoadingDialog.showLoading(supportFragmentManager)
                 doWork {
-                    suspendJoinRoom(roomId)
-                    startCallBack?.onSuccess(null)
-                    startCallBack = null
+                    mInflaterFactory.onEntering(roomId, QLive.getLoginUser())
+                    val roomInfo = suspendGetRoomInfo(roomId)
+                    mInflaterFactory.onGetLiveRoomInfo(roomInfo)
+
+                    if(!roomInfo.isTrailering()){
+                        suspendJoinRoom(roomId)
+                        startCallBack?.onSuccess(null)
+                        startCallBack = null
+                    }
                 }
                 catchError {
                     startCallBack?.onError(it.getCode(), "")

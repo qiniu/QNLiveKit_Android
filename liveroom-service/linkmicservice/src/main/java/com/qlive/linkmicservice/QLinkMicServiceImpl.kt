@@ -177,7 +177,7 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
                     liveroom_miclinker_kick,
                     uidMsgMode
                 )
-                RtmManager.rtmClient.sendC2cMsg(rtmMsg.toJsonString(),
+                RtmManager.rtmClient.sendC2cCMDMsg(rtmMsg.toJsonString(),
                     u.imUid,
                     false,
                     object : RtmCallBack {
@@ -218,7 +218,7 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
                         liveroom_miclinker_extension_change,
                         extMode
                     )
-                RtmManager.rtmClient.sendChannelMsg(
+                RtmManager.rtmClient.sendChannelCMDMsg(
                     rtmMsg.toJsonString(),
                     currentRoomInfo?.chatID ?: "",
                     true
@@ -267,12 +267,12 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
         return mAnchorHostMicLinker
     }
 
-      override fun attachRoomClient(client: QLiveClient, appContext: Context) {
-        super.attachRoomClient(client,appContext)
+    override fun attachRoomClient(client: QLiveClient, appContext: Context) {
+        super.attachRoomClient(client, appContext)
         if (client.clientType == QClientType.PUSHER) {
-            mAnchorHostMicLinker.attachRoomClient(client,appContext)
+            mAnchorHostMicLinker.attachRoomClient(client, appContext)
         } else {
-            mAudienceMicLinker.attachRoomClient(client,appContext)
+            mAudienceMicLinker.attachRoomClient(client, appContext)
         }
         mLinkMicInvitationHandler.attach()
         RtmManager.addRtmChannelListener(mRtmMsgListener)
@@ -290,8 +290,8 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
         mLinkMicInvitationHandler.onEntering(roomId, user)
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo) {
+        super.onJoined(roomInfo)
         //添加一个房主麦位
         mMicLinkContext.addLinker(QMicLinker().apply {
             user = roomInfo.anchor
@@ -301,12 +301,12 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
         })
 
         if (client!!.clientType == QClientType.PUSHER) {
-            mAnchorHostMicLinker.onJoined(roomInfo, isResumeUIFromFloating)
+            mAnchorHostMicLinker.onJoined(roomInfo)
         } else {
-            mAudienceMicLinker.onJoined(roomInfo, isResumeUIFromFloating)
+            mAudienceMicLinker.onJoined(roomInfo)
         }
 
-        mLinkMicInvitationHandler.onJoined(roomInfo, isResumeUIFromFloating)
+        mLinkMicInvitationHandler.onJoined(roomInfo)
     }
 
     override fun onLeft() {

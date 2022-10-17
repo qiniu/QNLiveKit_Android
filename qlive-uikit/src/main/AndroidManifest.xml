@@ -11,22 +11,25 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application>
-
         <activity
-            android:name="com.qlive.uikit.RoomListActivity"
+            android:name=".LiveRecordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        </activity>
+        <activity
+            android:name=".RoomListActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
-            android:name="com.qlive.uikit.RoomPlayerActivity"
+            android:name=".RoomPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="adjustNothing" />
-
         <activity
-            android:name="com.qlive.uikit.RoomPushActivity"
+            android:name=".RoomPushActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
             android:launchMode="standard"
