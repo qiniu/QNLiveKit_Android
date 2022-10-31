@@ -80,13 +80,19 @@ class CloseRoomView : QKitImageView {
                 override fun onError(code: Int, msg: String?) {
                     LoadingDialog.cancelLoadingDialog()
                     msg?.asToast(context)
-                    beforeFinishCall.invoke(kitContext!!, client!!, room!!, isAnchorClose)
+                    kitContext?:return
+                    client?:return
+                    room?:return
+                    beforeFinishCall.invoke(kitContext!!, client!!, room, isAnchorClose)
                     kitContext?.currentActivity?.finish()
                 }
 
                 override fun onSuccess(data: Void?) {
                     LoadingDialog.cancelLoadingDialog()
-                    beforeFinishCall.invoke(kitContext!!, client!!, room!!, isAnchorClose)
+                    kitContext?:return
+                    client?:return
+                    room?:return
+                    beforeFinishCall.invoke(kitContext!!, client!!, room, isAnchorClose)
                     kitContext?.currentActivity?.finish()
                 }
             }

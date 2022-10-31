@@ -173,7 +173,8 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
     }
 
     override fun startLink(
-        extension: HashMap<String, String>?, cameraParams: QCameraParam?,
+        extension: HashMap<String, String>?,
+        cameraParams: QCameraParam?,
         microphoneParams: QMicrophoneParam?, callBack: QLiveCallBack<Void>?
     ) {
         mMicListJob.cancel()

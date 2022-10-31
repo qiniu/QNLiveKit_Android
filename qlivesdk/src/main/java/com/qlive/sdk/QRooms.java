@@ -70,24 +70,39 @@ public interface QRooms {
      */
     void getLiveStatistics(String roomID, QLiveCallBack<QLiveStatistics> callBack);
 
-
     /**
      * 获取礼物配置
+     *
+     * @param type     礼物类型 -1代表全部
+     * @param callback
      */
     public void getGiftConfig(int type, QLiveCallBack<List<QGift>> callback);
 
     /**
      * 获取直播间礼物统计
+     *
+     * @param roomID
+     * @param pageNumber
+     * @param pageSize
+     * @param callback
      */
     public void getLiveGiftStatistics(String roomID, int pageNumber, int pageSize, QLiveCallBack<List<QGiftStatistics>> callback);
 
     /**
      * 获取主播礼物统计
+     *
+     * @param pageNumber
+     * @param pageSize
+     * @param callback
      */
     public void getAnchorGiftStatistics(int pageNumber, int pageSize, QLiveCallBack<List<QGiftStatistics>> callback);
 
     /**
      * 获取用户礼物统计
+     *
+     * @param pageNumber
+     * @param pageSize
+     * @param callback
      */
     public void getUserGiftStatistics(int pageNumber, int pageSize, QLiveCallBack<List<QGiftStatistics>> callback);
 

@@ -11,7 +11,7 @@ public interface QLikeService extends QLiveService {
     /**
      * 点赞
      *
-     * @param count
+     * @param count 单次点赞数量
      * @param callback
      */
     void like(int count, QLiveCallBack<QLikeResponse> callback);
@@ -23,6 +23,10 @@ public interface QLikeService extends QLiveService {
      */
     void addLikeServiceListener(QLikeServiceListener listener);
 
+    /**
+     * 移除点赞监听
+     * @param listener
+     */
     void removeLikeServiceListener(QLikeServiceListener listener);
 }
 

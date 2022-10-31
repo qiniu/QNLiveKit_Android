@@ -20,7 +20,7 @@
         "org.gradle.category": "library",
         "org.gradle.dependency.bundling": "external",
         "org.gradle.jvm.environment": "standard-jvm",
-        "org.gradle.jvm.version": 7,
+        "org.gradle.jvm.version": 8,
         "org.gradle.libraryelements": "jar",
         "org.gradle.usage": "java-api",
         "org.jetbrains.kotlin.platform.type": "jvm"
@@ -38,11 +38,11 @@
         {
           "name": "docBuiderPlugin-1.0.jar",
           "url": "docBuiderPlugin-1.0.jar",
-          "size": 16200,
-          "sha512": "d8b7d4b9b7e32ae465fe4be555a1b366ef490a2666568b1dc8513b6d90b9b96e3ac5b93830193dabbbfb75ab0f262529cf997ba776393e0bd347c1b50d1cf8c9",
-          "sha256": "a991f5f6becf3bbde8a4e8b1a62180588b2fa4c06cb66df5a2371421be74f93b",
-          "sha1": "f90c96e182fe74fb837ddbcb16d0c17f8f336ada",
-          "md5": "7810ca88995c1dd64fba33d0272778af"
+          "size": 17156,
+          "sha512": "035705137d4f448932c6530701855a0957c20e7988559376d6fe1042600c81a6f62eed0d436d817b229dcf85eb70949146411d9d779510f34c4e53d72cdaf0fa",
+          "sha256": "19df7b4aaf280aa5dc8f29c24fbb8756b9360006fc3a358b16793d108a3dc69a",
+          "sha1": "c3f7b3fbb82dfe55ce328676bbf9c27005da1318",
+          "md5": "2c2a9b91d94626bb87e538bb1b3d6a8e"
         }
       ]
     },
@@ -52,7 +52,7 @@
         "org.gradle.category": "library",
         "org.gradle.dependency.bundling": "external",
         "org.gradle.jvm.environment": "standard-jvm",
-        "org.gradle.jvm.version": 7,
+        "org.gradle.jvm.version": 8,
         "org.gradle.libraryelements": "jar",
         "org.gradle.usage": "java-runtime",
         "org.jetbrains.kotlin.platform.type": "jvm"
@@ -90,11 +90,11 @@
         {
           "name": "docBuiderPlugin-1.0.jar",
           "url": "docBuiderPlugin-1.0.jar",
-          "size": 16200,
-          "sha512": "d8b7d4b9b7e32ae465fe4be555a1b366ef490a2666568b1dc8513b6d90b9b96e3ac5b93830193dabbbfb75ab0f262529cf997ba776393e0bd347c1b50d1cf8c9",
-          "sha256": "a991f5f6becf3bbde8a4e8b1a62180588b2fa4c06cb66df5a2371421be74f93b",
-          "sha1": "f90c96e182fe74fb837ddbcb16d0c17f8f336ada",
-          "md5": "7810ca88995c1dd64fba33d0272778af"
+          "size": 17156,
+          "sha512": "035705137d4f448932c6530701855a0957c20e7988559376d6fe1042600c81a6f62eed0d436d817b229dcf85eb70949146411d9d779510f34c4e53d72cdaf0fa",
+          "sha256": "19df7b4aaf280aa5dc8f29c24fbb8756b9360006fc3a358b16793d108a3dc69a",
+          "sha1": "c3f7b3fbb82dfe55ce328676bbf9c27005da1318",
+          "md5": "2c2a9b91d94626bb87e538bb1b3d6a8e"
         }
       ]
     }

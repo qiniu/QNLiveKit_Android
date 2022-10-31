@@ -22,8 +22,6 @@ public class QCameraParam {
      * 帧率 默认值25
      */
     public int FPS = 25;
-    /**
-     * 码率 默认值1500
-     */
+
     public int bitrate = DEFAULT_BITRATE;
 }

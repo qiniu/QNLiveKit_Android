@@ -33,6 +33,10 @@
                                                     +--->  QDanmakuService  //弹幕服务 
                                                     | 
                                                     +--->  QShoppingService //电商购物服务 
+                                                    |
+                                                    +--->  QGiftService //礼物服务  
+                                                    |
+                                                    +--->  QLikeService //点赞服务                                                                                                         
 
 ```    
 
@@ -68,6 +72,8 @@ implementation 'androidx.recyclerview:recyclerview:1.1.0'
 implementation 'androidx.cardview:cardview:1.0.0'
 //图片加载
 implementation 'com.github.bumptech.glide:glide:4.11.0' 
+//如果没有开启 viewbinding 选项 务必依赖这个库
+implementation "androidx.databinding:viewbinding:7.1.2"
 ```
 
 > UIkit也可以直接使用源码模块-可直接修改代码
