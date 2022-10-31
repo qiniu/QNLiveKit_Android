@@ -38,11 +38,11 @@
         {
           "name": "docBuiderPlugin-1.0.jar",
           "url": "docBuiderPlugin-1.0.jar",
-          "size": 17156,
-          "sha512": "035705137d4f448932c6530701855a0957c20e7988559376d6fe1042600c81a6f62eed0d436d817b229dcf85eb70949146411d9d779510f34c4e53d72cdaf0fa",
-          "sha256": "19df7b4aaf280aa5dc8f29c24fbb8756b9360006fc3a358b16793d108a3dc69a",
-          "sha1": "c3f7b3fbb82dfe55ce328676bbf9c27005da1318",
-          "md5": "2c2a9b91d94626bb87e538bb1b3d6a8e"
+          "size": 17226,
+          "sha512": "1aab607bcdb108e0d00405460ca77e83e0368708b2da2ce6a0b3fd02ff768f7ca81cd8b834e9364d225eef4a7d400e0409ca384b5800fa66a125a333cd36c7dc",
+          "sha256": "c94bf10d769fad33b9840aa40d3c39dc6d029015ab1511a452dab8b553a5431d",
+          "sha1": "233610569ad1e8208467b8c4291bc964a0fe3069",
+          "md5": "43d49193c19fdd706b24c0d31ddeffb2"
         }
       ]
     },
@@ -90,11 +90,11 @@
         {
           "name": "docBuiderPlugin-1.0.jar",
           "url": "docBuiderPlugin-1.0.jar",
-          "size": 17156,
-          "sha512": "035705137d4f448932c6530701855a0957c20e7988559376d6fe1042600c81a6f62eed0d436d817b229dcf85eb70949146411d9d779510f34c4e53d72cdaf0fa",
-          "sha256": "19df7b4aaf280aa5dc8f29c24fbb8756b9360006fc3a358b16793d108a3dc69a",
-          "sha1": "c3f7b3fbb82dfe55ce328676bbf9c27005da1318",
-          "md5": "2c2a9b91d94626bb87e538bb1b3d6a8e"
+          "size": 17226,
+          "sha512": "1aab607bcdb108e0d00405460ca77e83e0368708b2da2ce6a0b3fd02ff768f7ca81cd8b834e9364d225eef4a7d400e0409ca384b5800fa66a125a333cd36c7dc",
+          "sha256": "c94bf10d769fad33b9840aa40d3c39dc6d029015ab1511a452dab8b553a5431d",
+          "sha1": "233610569ad1e8208467b8c4291bc964a0fe3069",
+          "md5": "43d49193c19fdd706b24c0d31ddeffb2"
         }
       ]
     }

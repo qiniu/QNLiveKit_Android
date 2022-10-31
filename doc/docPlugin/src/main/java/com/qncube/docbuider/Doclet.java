@@ -169,7 +169,7 @@ public class Doclet {
 
             format.reflect = links;
 
-            sb.append("\n//" + classDoc.commentText() + "\n");
+            sb.append("\n//" + replaceBlank2(classDoc.commentText()) + "\n");
             sb.append((classDoc.name()) + "{\n");
 
             FieldDoc[] fields = classDoc.fields();
@@ -183,8 +183,10 @@ public class Doclet {
                 i.desc.add(field.commentText());
                 i.sign = field.modifiers() + " " + checkLinker(field.type().simpleTypeName()) + " " + field.name();
                 filedItem.elements.add(i);
-
-                sb.append("\t").append(field.modifiers() + " " + (field.type().simpleTypeName()) + " " + field.name() + ";//" + i.desc + "\n");
+                for (String desc : i.desc) {
+                    sb.append("\t").append("//" + replaceBlank2(desc)).append("\n");
+                }
+                sb.append("\t").append(field.modifiers() + " " + (field.type().simpleTypeName()) + " " + field.name() + "\n");
             }
             if (filedItem.elements.size() > 0) {
                 format.blocks.add(filedItem);
@@ -246,7 +248,7 @@ public class Doclet {
                         sb.append("\n");
                     }
                     //   sb.append("\t").append((method.modifiers() + " " + method.returnType().simpleTypeName() + " " + method.name() + " " + method.flatSignature())).append(replaceBlank(method.commentText())).append(replaceBlank(method.commentText())).append("\n");
-                    sb.append("\t").append(mn).append(replaceBlank(method.commentText())).append("\n");
+                    sb.append("\t").append(mn).append("\n");
 
                     methodItem.elements.add(elementItem);
                 }
@@ -346,7 +348,7 @@ public class Doclet {
     }
 
     public static String replaceBlank2(String str) {
-        String dest = str.replaceAll("\n", "");
+        String dest = str.replaceAll("\n", " ");
         return dest;
     }
 }
