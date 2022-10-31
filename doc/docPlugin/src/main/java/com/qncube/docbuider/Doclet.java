@@ -6,13 +6,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import com.sun.javadoc.*;
 
 public class Doclet {
-    private static HashMap<String, String> links = new HashMap<>();
+    private static final HashMap<String, String> links = new LinkedHashMap<>();
 
     private static void initLink() {
         links.clear();
@@ -83,6 +90,15 @@ public class Doclet {
         links.put("QSingleOrderParam", "https://developer.qiniu.com/lowcode/api/12131/QSingleOrderParam");
         links.put("QShoppingService", "https://developer.qiniu.com/lowcode/api/12132/QShoppingService");
         links.put("QShoppingServiceListener", "https://developer.qiniu.com/lowcode/api/12133/QShoppingServiceListener");
+        links.put("QGift", "https://developer.qiniu.com/lowcode/api/12277/qgift");
+        links.put("QGiftMsg", "https://developer.qiniu.com/lowcode/api/12278/qgiftmsg");
+        links.put("QGiftService", "https://developer.qiniu.com/lowcode/api/12279/qgiftservice");
+        links.put("QGiftServiceListener", "https://developer.qiniu.com/lowcode/api/12280/qgiftservicelistener");
+        links.put("QLike", "https://developer.qiniu.com/lowcode/api/12281/qlike");
+        links.put("QLikeResponse", "https://developer.qiniu.com/lowcode/api/12282/qlikeresponse");
+        links.put("QLikeService", "https://developer.qiniu.com/lowcode/api/12283/qlikeservice");
+        links.put("QLikeServiceListener", "https://developer.qiniu.com/lowcode/api/12284/qlikeservicelistener");
+
     }
 
     private static String checkLinker(String name) {
@@ -127,7 +143,16 @@ public class Doclet {
         ClassDoc[] classes = Doclet.root.classes();
         System.out.println("结束调用doc " + classes.length);
         StringBuilder sb = new StringBuilder();
-        for (ClassDoc classDoc : classes) {
+
+        LinkedList<String> classNameList = new LinkedList<String>();
+        for (Map.Entry<String, String> entry : links.entrySet()) {
+            classNameList.add(entry.getKey());
+        }
+        LinkedList<ClassDoc> classDocsList = new LinkedList<ClassDoc>(Arrays.asList(classes));
+        classDocsList.sort(Comparator.comparingInt(classDoc -> classNameList.indexOf(classDoc.name()))
+        );
+
+        for (ClassDoc classDoc : classDocsList) {
             boolean isBuildDoc = links.containsKey(classDoc.name());
             System.out.println("是否生成文档 " + classDoc.name() + "  " + isBuildDoc);
             if (!isBuildDoc) {
@@ -144,7 +169,7 @@ public class Doclet {
 
             format.reflect = links;
 
-            sb.append("\n//" + classDoc.commentText() + "\n");
+            sb.append("\n//" + replaceBlank2(classDoc.commentText()) + "\n");
             sb.append((classDoc.name()) + "{\n");
 
             FieldDoc[] fields = classDoc.fields();
@@ -158,8 +183,10 @@ public class Doclet {
                 i.desc.add(field.commentText());
                 i.sign = field.modifiers() + " " + checkLinker(field.type().simpleTypeName()) + " " + field.name();
                 filedItem.elements.add(i);
-
-                sb.append("\t").append(field.modifiers() + " " + (field.type().simpleTypeName()) + " " + field.name() + ";//" + i.desc + "\n");
+                for (String desc : i.desc) {
+                    sb.append("\t").append("//" + replaceBlank2(desc)).append("\n");
+                }
+                sb.append("\t").append(field.modifiers() + " " + (field.type().simpleTypeName()) + " " + field.name() + "\n");
             }
             if (filedItem.elements.size() > 0) {
                 format.blocks.add(filedItem);
@@ -211,7 +238,7 @@ public class Doclet {
                         sb.append("@param-").append(parameterItem.name).append(":").append(parameterItem.desc).append('\t');
                         paramsMap.append(parameters[index].type().simpleTypeName()).append(" ").append(parameterItem.name);
                         index++;
-                        if(index!=tags.length){
+                        if (index != tags.length) {
                             paramsMap.append(",");
                         }
                     }
@@ -221,7 +248,7 @@ public class Doclet {
                         sb.append("\n");
                     }
                     //   sb.append("\t").append((method.modifiers() + " " + method.returnType().simpleTypeName() + " " + method.name() + " " + method.flatSignature())).append(replaceBlank(method.commentText())).append(replaceBlank(method.commentText())).append("\n");
-                    sb.append("\t").append(mn).append(replaceBlank(method.commentText())).append("\n");
+                    sb.append("\t").append(mn).append("\n");
 
                     methodItem.elements.add(elementItem);
                 }
@@ -242,7 +269,7 @@ public class Doclet {
         format.home = true;
         format.reflect = links;
 
-        for (ClassDoc classDoc : classes) {
+        for (ClassDoc classDoc : classDocsList) {
             if (links.get(classDoc.name()) == null) {
                 continue;
             }
@@ -321,7 +348,7 @@ public class Doclet {
     }
 
     public static String replaceBlank2(String str) {
-        String dest = str.replaceAll("\n", "");
+        String dest = str.replaceAll("\n", " ");
         return dest;
     }
 }
