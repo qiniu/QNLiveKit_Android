@@ -24,5 +24,5 @@ interface QIPlayer {
      * 连麦状态变化
      * @param isLink
      */
-    fun onLinkStatusChange(isLink: Boolean)
+    fun switchLinkRole(isLink: Boolean)
 }

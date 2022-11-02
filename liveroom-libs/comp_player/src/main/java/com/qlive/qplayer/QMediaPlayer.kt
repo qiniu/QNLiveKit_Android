@@ -46,7 +46,7 @@ class QMediaPlayer(val context: Context) : QIPlayer {
     }
 
     //切换rtc模式为了下麦快速恢复保持链接
-    override fun onLinkStatusChange(isLink: Boolean) {
+    override fun switchLinkRole(isLink: Boolean) {
         if (isLink) {
             mIMediaPlayer?.stop()
             mIMediaPlayer?.release()

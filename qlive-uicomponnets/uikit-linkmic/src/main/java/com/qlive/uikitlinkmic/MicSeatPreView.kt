@@ -154,9 +154,7 @@ class MicItemPreView : FrameLayout, QLinkMicServiceListener {
         tempMixLp.height = LinkerUIHelper.uiMicHeight + LinkerUIHelper.micBottomUIMargin
         tempMixLp.marginEnd = LinkerUIHelper.micRightUIMargin
         binding.tempMix.layoutParams = tempMixLp
-
     }
-
 
     override fun onLinkerJoin(micLinker: QMicLinker) {
         mMicLinker = micLinker

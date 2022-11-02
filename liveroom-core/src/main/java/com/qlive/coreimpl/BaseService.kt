@@ -7,7 +7,7 @@ import com.qlive.core.QLiveService
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
 
-open class BaseService : QLiveService, QClientLifeCycleListener {
+open class BaseService : QLiveService {
 
     protected var user: QLiveUser? = null
     protected var currentRoomInfo: QLiveRoomInfo? = null
@@ -47,8 +47,4 @@ open class BaseService : QLiveService, QClientLifeCycleListener {
      */
     override fun onDestroyed() {
     }
-
-    open suspend fun checkLeave() {
-    }
-
 }

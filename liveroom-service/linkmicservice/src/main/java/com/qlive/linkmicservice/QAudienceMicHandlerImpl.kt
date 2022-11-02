@@ -220,7 +220,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
                     user?.userId ?: "",
                     JsonUtils.toJson(linker)
                 )
-                mPlayer?.onLinkStatusChange(true)
+                mPlayer?.switchLinkRole(true)
                 callBack?.onSuccess(null)
             }
             catchError {
@@ -285,7 +285,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
                 }
                 micLinkContext.mQRtcLiveRoom.leaveBgDestroyTrack()
                 QLiveLogUtil.d("leaveBgDestroyTrack", "onLinkStatusChange")
-                mPlayer?.onLinkStatusChange(false)
+                mPlayer?.switchLinkRole(false)
                 QLiveLogUtil.d("leaveBgDestroyTrack", "onLinkStatusChange")
                 micLinkContext.mExtQNClientEventListener.onUserLeft(
                     user?.userId ?: ""
