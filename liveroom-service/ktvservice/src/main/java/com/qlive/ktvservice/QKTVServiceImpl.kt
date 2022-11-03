@@ -234,24 +234,6 @@ class QKTVServiceImpl : QKTVService, BaseService() {
         })
     }
 
-    private fun getRingDuring(mUri: String): Long {
-        var duration: String = "0"
-        val mmr = MediaMetadataRetriever()
-        try {
-            if (mUri.startsWith("/")) {
-                mmr.setDataSource(mUri)
-            } else {
-                mmr.setDataSource(mUri, HashMap<String, String>())
-            }
-            duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION) ?: "0"
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-        } finally {
-            mmr.release()
-        }
-        return duration.toLong()
-    }
-
     override fun play(
         tracks: HashMap<String, String>,
         playTrack: String,
@@ -270,7 +252,7 @@ class QKTVServiceImpl : QKTVService, BaseService() {
         }
         mQNAudioMixer?.stop()
         val path = tracks[playTrack]
-        val duration = getRingDuring(path ?: "")//QNAudioMusicMixer.getDuration(path)
+        val duration = QNAudioMusicMixer.getDuration(path)
         var isFirstMIXING = true
         val mQNAudioMixerListener = object : QNAudioMusicMixerListener {
             override fun onStateChanged(p0: QNAudioMusicMixerState) {
