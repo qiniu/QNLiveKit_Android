@@ -1,13 +1,11 @@
 package com.qlive.qplayer
 
 import android.content.Context
-import android.media.AudioManager
 import android.util.Log
 import android.view.Surface
 import com.pili.pldroid.player.*
 import com.pili.pldroid.player.PLOnErrorListener.ERROR_CODE_OPEN_FAILED
 import com.pili.pldroid.player.PLOnInfoListener.*
-import com.qlive.SEIUtil
 import com.qlive.avparam.*
 import com.qlive.liblog.QLiveLogUtil
 

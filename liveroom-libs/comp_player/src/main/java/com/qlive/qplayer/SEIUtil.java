@@ -1,13 +1,13 @@
-package com.qlive;
+package com.qlive.qplayer;
 
 import com.pili.pldroid.player.PLOnVideoFrameListener;
 
 import java.util.Arrays;
 
-public class SEIUtil {
+class SEIUtil {
 
-    public static String parseSEI(byte[] data, int size, int width, int height, int format){
-        String content="";
+    public static String parseSEI(byte[] data, int size, int width, int height, int format) {
+        String content = "";
         if (format == PLOnVideoFrameListener.VIDEO_FORMAT_SEI && size > 0) {
             // If the RTMP stream is from Qiniu
             // Add &addtssei=true to the end of URL to enable SEI timestamp.
@@ -28,13 +28,13 @@ public class SEIUtil {
             int length = payloadSize - 16;
             int start_index = index + 16;
             if (start_index >= 0 && length > 0 && (start_index + length) <= data.length) {
-                 content = new String(data, index + 16, length);
+                content = new String(data, index + 16, length);
             }
         }
         return content;
     }
 
-    private static  String bytesToHex(byte[] bytes) {
+    private static String bytesToHex(byte[] bytes) {
         char[] hexArray = "0123456789ABCDEF".toCharArray();
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
