@@ -62,7 +62,7 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
     fun forceSetStatus(qLiveStatus: QLiveStatus, msg: String) {
         if (roomStatus != qLiveStatus) {
             roomStatus = qLiveStatus
-            roomStatusChange.invoke(roomStatus,msg)
+            roomStatusChange.invoke(roomStatus, msg)
         }
     }
 
@@ -89,7 +89,7 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
                 roomInfo?.copyRoomInfo(room)
                 if (anchorStatus != room.anchorStatus) {
                     anchorStatus = room.anchorStatus
-                    roomStatusChange.invoke(anchorStatus.anchorStatusToLiveStatus(),"")
+                    roomStatusChange.invoke(anchorStatus.anchorStatusToLiveStatus(), "")
                 }
                 hearRet ?: HearBeatResp().apply {
                     liveId = roomInfo?.liveID ?: ""
@@ -97,7 +97,7 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
                 }
                 if (hearRet!!.liveStatus.roomStatusToLiveStatus() != roomStatus) {
                     roomStatus = hearRet.liveStatus.roomStatusToLiveStatus()
-                    roomStatusChange.invoke(roomStatus,"")
+                    roomStatusChange.invoke(roomStatus, "")
                 }
                 QLiveLogUtil.d("res.liveStatus ${hearRet.liveStatus}   room.anchorStatus ${room.anchorStatus} ")
             }
@@ -125,6 +125,14 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
         serviceMap.forEach {
             if (it.value is BaseService) {
                 (it.value as BaseService).checkLeave()
+            }
+        }
+    }
+
+    fun notifyLinkRoleSwitched(isLink: Boolean){
+        serviceMap.forEach {
+            if (it.value is BaseService) {
+                (it.value as BaseService).onLinkRoleSwitched(isLink)
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.qlive.sdk.internal
+package com.qlive.qplayer
 
 import com.qlive.avparam.QPlayerEventListener
 
@@ -12,6 +12,7 @@ internal class QPlayerEventListenerWarp: QPlayerEventListener {
     fun removeEventListener(listener: QPlayerEventListener){
         mQPlayerEventListeners.remove(listener)
     }
+
     fun clear(){
         mQPlayerEventListeners.clear()
     }

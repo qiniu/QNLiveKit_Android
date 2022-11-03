@@ -7,12 +7,12 @@ import com.qlive.core.QLiveService
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
 
-open class BaseService : QLiveService {
+open class BaseService : QLiveService ,QClientLifeCycleListener{
 
     protected var user: QLiveUser? = null
     protected var currentRoomInfo: QLiveRoomInfo? = null
     protected var client: QLiveClient? = null
-
+    protected var isLinker = false
     open fun attachRoomClient(client: QLiveClient, appContext: Context) {
         this.client = client
     }
@@ -46,5 +46,11 @@ open class BaseService : QLiveService {
      * 销毁回调
      */
     override fun onDestroyed() {
+    }
+    open suspend fun checkLeave() {
+    }
+
+    open fun onLinkRoleSwitched(isLink: Boolean) {
+        isLinker = isLink
     }
 }

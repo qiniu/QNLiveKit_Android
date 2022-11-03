@@ -28,7 +28,8 @@ import kotlin.collections.HashMap
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContext) : QAudienceMicHandler, BaseService() {
+internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContext) :
+    QAudienceMicHandler, BaseService() {
 
     init {
         micLinkContext.hostLeftCall = {
@@ -40,7 +41,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
     }
 
     private val mLinkDateSource = LinkDataSource()
-    private var mPlayer: QIPlayer? = null
+
     private val mLinkMicHandlerListeners = ArrayList<QAudienceMicHandler.LinkMicHandlerListener>()
     private val mMeLinker: QMicLinker?
         get() {
@@ -149,11 +150,12 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
     }
 
     override fun attachRoomClient(client: QLiveClient, appContext: Context) {
-        super.attachRoomClient(client,appContext)
-        mPlayer = playerGetter
+        super.attachRoomClient(client, appContext)
         micLinkContext.mQRtcLiveRoom = QRtcLiveRoom(appContext)
         micLinkContext.mQRtcLiveRoom.addExtraQNRTCEngineEventListener(micLinkContext.mExtQNClientEventListener)
-        micLinkContext.mQRtcLiveRoom.addExtraQNRTCEngineEventListener(mAudienceExtQNClientEventListener)
+        micLinkContext.mQRtcLiveRoom.addExtraQNRTCEngineEventListener(
+            mAudienceExtQNClientEventListener
+        )
         micLinkContext.onKickCall = { linker, m ->
             if (linker.user.userId == user?.userId) {
                 stopInner(true, null, false, true, m)
@@ -220,7 +222,9 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
                     user?.userId ?: "",
                     JsonUtils.toJson(linker)
                 )
-                mPlayer?.switchLinkRole(true)
+                if (client is LinkRoleObserver) {
+                    (client as LinkRoleObserver).notifyLinkRoleSwitched(true)
+                }
                 callBack?.onSuccess(null)
             }
             catchError {
@@ -255,7 +259,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
                     e.printStackTrace()
                 }
                 val mode = UidMode().apply {
-                    uid = user?.userId?:""
+                    uid = user?.userId ?: ""
                 }
                 if (isPositive) {
                     try {
@@ -285,7 +289,9 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
                 }
                 micLinkContext.mQRtcLiveRoom.leaveBgDestroyTrack()
                 QLiveLogUtil.d("leaveBgDestroyTrack", "onLinkStatusChange")
-                mPlayer?.switchLinkRole(false)
+                if (client is LinkRoleObserver) {
+                    (client as LinkRoleObserver).notifyLinkRoleSwitched(false)
+                }
                 QLiveLogUtil.d("leaveBgDestroyTrack", "onLinkStatusChange")
                 micLinkContext.mExtQNClientEventListener.onUserLeft(
                     user?.userId ?: ""
@@ -353,7 +359,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
             return
         }
         val mode = MuteMode().apply {
-            uid = user?.userId?:""
+            uid = user?.userId ?: ""
             mute = muted
         }
         backGround {
@@ -387,7 +393,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
             return
         }
         val mode = MuteMode().apply {
-            uid = user?.userId?:""
+            uid = user?.userId ?: ""
             mute = muted
         }
         backGround {
@@ -427,13 +433,28 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
         micLinkContext.mQRtcLiveRoom.localVideoTrack?.setBeauty(beautySetting.toQNBeautySetting())
     }
 
-    private val playerGetter by lazy {
-        (client as QPlayerProvider).playerGetter.invoke()
-    }
-
     override suspend fun checkLeave() {
         if (isLinked) {
             stopSuspend(true)
         }
+    }
+
+    override fun enableEarMonitor(boolean: Boolean) {
+        micLinkContext.mQRtcLiveRoom.localAudioTrack?.isEarMonitorEnabled = boolean
+    }
+
+    override fun isEarMonitorEnable(): Boolean {
+        return micLinkContext.mQRtcLiveRoom.localAudioTrack?.isEarMonitorEnabled ?: false
+    }
+
+    private var mMicrophoneVolume = 1.0
+
+    override fun setMicrophoneVolume(volume: Double) {
+        mMicrophoneVolume = volume
+        micLinkContext.mQRtcLiveRoom.localAudioTrack?.setVolume(volume)
+    }
+
+    override fun getMicrophoneVolume(): Double {
+        return mMicrophoneVolume
     }
 }

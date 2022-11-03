@@ -362,6 +362,7 @@ class MixStreamManager(val mQRtcLiveRoom: RtcClientWrap) {
                     mQNMergeJob!!.streamID,
                     listOf(QNTranscodingLiveStreamingTrack().apply {
                         this.trackID = cTrack.trackID
+                        isSEIEnabled=true
                     })
                 )
             }
@@ -390,6 +391,7 @@ class MixStreamManager(val mQRtcLiveRoom: RtcClientWrap) {
                     mQNMergeJob!!.streamID,
                     listOf(QNTranscodingLiveStreamingTrack().apply {
                         this.trackID = aTrack.trackID
+                        isSEIEnabled=true
                     })
                 )
             }
@@ -453,6 +455,7 @@ class MixStreamManager(val mQRtcLiveRoom: RtcClientWrap) {
                         zOrder = op.z
                         width = op.width
                         height = op.height
+                        isSEIEnabled=true
                         // renderMode = op.stretchMode
                     }
                     mMergeTrackOptions.add(trackOp)
@@ -461,6 +464,7 @@ class MixStreamManager(val mQRtcLiveRoom: RtcClientWrap) {
                 if (op is QMixStreaming.MicrophoneMergeOption) {
                     val opTrack = QNTranscodingLiveStreamingTrack().apply {
                         trackID = key
+                        isSEIEnabled=true
                     }
                     mMergeTrackOptions.add(opTrack)
                     sb.append("${key} MicrophoneMergeOption" + opTrack.toJsonObject().toString())

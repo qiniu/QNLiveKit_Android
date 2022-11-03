@@ -262,4 +262,22 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider, QLiveServiceObse
         mLiveContext.forceSetStatus(newStatus, msg)
     }
 
+    override fun enableEarMonitor(boolean: Boolean) {
+        mRtcRoom.localAudioTrack?.isEarMonitorEnabled = boolean
+    }
+
+    override fun isEarMonitorEnable(): Boolean {
+        return mRtcRoom.localAudioTrack?.isEarMonitorEnabled ?: false
+    }
+
+    private var mMicrophoneVolume = 1.0
+
+    override fun setMicrophoneVolume(volume: Double) {
+        mMicrophoneVolume = volume
+        mRtcRoom.localAudioTrack?.setVolume(volume)
+    }
+
+    override fun getMicrophoneVolume(): Double {
+        return mMicrophoneVolume
+    }
 }

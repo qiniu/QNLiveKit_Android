@@ -117,7 +117,7 @@ internal class QAnchorHostMicHandlerImpl(private val micLinkContext: MicLinkCont
 
     override fun attachRoomClient(client: QLiveClient, appContext: Context) {
         super.attachRoomClient(client, appContext)
-        val room: QRtcLiveRoom = rtcRoomGetter
+        val room: QRtcLiveRoom =rtcRoomGetter
         micLinkContext.mQLinkMicServiceListeners.addFirst(mQLinkMicServiceListener)
         micLinkContext.mQRtcLiveRoom = room
         micLinkContext.mQRtcLiveRoom.addExtraQNRTCEngineEventListener(micLinkContext.mExtQNClientEventListener)

@@ -25,4 +25,12 @@ interface QIPlayer {
      * @param isLink
      */
     fun switchLinkRole(isLink: Boolean)
+
+    fun addEventListener(listener: QPlayerEventListener)
+
+    fun removeEventListener(listener: QPlayerEventListener)
+
+    fun addSEIListener(listener: QPlayerSEIListener)
+
+    fun removeSEIListener(listener: QPlayerSEIListener)
 }

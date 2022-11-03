@@ -156,4 +156,9 @@ public interface QPusherClient extends QLiveClient {
      * @param beautySetting 美颜参数
      */
     void setDefaultBeauty(QBeautySetting beautySetting);
+
+    void enableEarMonitor(boolean isEnable);
+    boolean isEarMonitorEnable();
+    void setMicrophoneVolume(double volume);
+    double getMicrophoneVolume();
 }

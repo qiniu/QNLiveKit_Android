@@ -7,15 +7,14 @@ import android.view.Surface
 import com.pili.pldroid.player.*
 import com.pili.pldroid.player.PLOnErrorListener.ERROR_CODE_OPEN_FAILED
 import com.pili.pldroid.player.PLOnInfoListener.*
-import com.qlive.avparam.QIPlayer
-import com.qlive.avparam.QPlayerEventListener
-import com.qlive.avparam.QPlayerRenderView
-import com.qlive.avparam.QRenderCallback
+import com.qlive.SEIUtil
+import com.qlive.avparam.*
 import com.qlive.liblog.QLiveLogUtil
 
 class QMediaPlayer(val context: Context) : QIPlayer {
 
-    private var mPlayerEventListener: QPlayerEventListener? = null
+    private var mPlayerEventListener = QPlayerEventListenerWarp()
+    private var mQPlayerSEIListener = QPlayerSEIListenerWrap()
     private var currentUrl = ""
     private var isRelease = false
     private var lastW = 0
@@ -32,12 +31,14 @@ class QMediaPlayer(val context: Context) : QIPlayer {
         mIMediaPlayer?.setOnErrorListener(mOnErrorListener)
         mIMediaPlayer?.setOnInfoListener(mOnInfoListener)
         mIMediaPlayer?.setOnVideoSizeChangedListener(mPLOnVideoSizeChangedListener)
+        mIMediaPlayer?.setOnVideoFrameListener(mPLOnVideoFrameListener)
     }
 
     override fun release() {
         isRelease = true
         currentUrl = ""
-        mPlayerEventListener = null
+        mPlayerEventListener.clear()
+        mQPlayerSEIListener.clear()
         mIMediaPlayer?.release()
         if (mRenderView is QPlayerTextureRenderView) {
             (mRenderView as QPlayerTextureRenderView).stopPlayback()
@@ -126,8 +127,20 @@ class QMediaPlayer(val context: Context) : QIPlayer {
         mIMediaPlayer?.start()
     }
 
-    fun setEventListener(listener: QPlayerEventListener) {
-        this.mPlayerEventListener = listener
+    override fun addEventListener(listener: QPlayerEventListener) {
+        this.mPlayerEventListener.addEventListener(listener)
+    }
+
+    override fun removeEventListener(listener: QPlayerEventListener) {
+        this.mPlayerEventListener.removeEventListener(listener)
+    }
+
+    override fun addSEIListener(listener: QPlayerSEIListener) {
+        mQPlayerSEIListener.addSEIListener(listener)
+    }
+
+    override fun removeSEIListener(listener: QPlayerSEIListener) {
+        mQPlayerSEIListener.removeSEIListener(listener)
     }
 
     private var mSurface: Surface? = null
@@ -175,8 +188,9 @@ class QMediaPlayer(val context: Context) : QIPlayer {
 
     private val mOnPreparedListener = PLOnPreparedListener { mp ->
         // mIMediaPlayer?.start()
-        mPlayerEventListener?.onPrepared(mp)
+        mPlayerEventListener.onPrepared(mp)
     }
+
     private val mOnErrorListener = PLOnErrorListener { p0, p1 ->
         QLiveLogUtil.d(
             "mIMediaPlayer", "PLOnErrorListener  ${p0} ${p1}  "
@@ -185,9 +199,16 @@ class QMediaPlayer(val context: Context) : QIPlayer {
             QLiveLogUtil.d(
                 "mIMediaPlayer", "ERROR_CODE_OPEN_FAILED restart  "
             )
-           start()
+            start()
         }
-        mPlayerEventListener?.onError(p0) ?: false
+        mPlayerEventListener.onError(p0)
+    }
+
+    private val mPLOnVideoFrameListener = PLOnVideoFrameListener { bytes, size, w, h, format, ts ->
+        val sei = SEIUtil.parseSEI(bytes, size, w, h, format)
+        if(sei.isNotEmpty()){
+           mQPlayerSEIListener.onSEI(sei)
+        }
     }
 
     private val mOnInfoListener = PLOnInfoListener { what, extra, _ ->
@@ -198,7 +219,7 @@ class QMediaPlayer(val context: Context) : QIPlayer {
                 "mIMediaPlayer", "PLOnInfoListener  ${what} ${extra}  "
             )
         }
-        mPlayerEventListener?.onInfo(what, extra)
+        mPlayerEventListener.onInfo(what, extra)
     }
     private val mPLOnVideoSizeChangedListener =
         PLOnVideoSizeChangedListener { p0, p1 ->
@@ -211,7 +232,7 @@ class QMediaPlayer(val context: Context) : QIPlayer {
             if (mRenderView is QSurfaceRenderView) {
                 (mRenderView as QSurfaceRenderView).setVideoSize(p0, p1)
             }
-            mPlayerEventListener?.onVideoSizeChanged(p0, p1)
+            mPlayerEventListener.onVideoSizeChanged(p0, p1)
         }
 
     init {

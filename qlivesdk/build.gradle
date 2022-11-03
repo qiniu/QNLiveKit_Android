@@ -41,6 +41,7 @@ dependencies {
     api project(':liveroom-service:shoppingservice')
     api project(':liveroom-service:giftservice')
     api project(':liveroom-service:likeservice')
+    api project(':liveroom-service:ktvservice')
     api project(':liveroom-core')
     api project(':liveroom-libs:comp_rtclive')
     api project(':liveroom-libs:comp_player')
