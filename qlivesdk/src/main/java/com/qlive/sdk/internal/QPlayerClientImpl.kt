@@ -6,10 +6,7 @@ import com.qlive.avparam.QPlayerProvider
 import com.qlive.avparam.QPlayerRenderView
 import com.qlive.core.*
 import com.qlive.core.been.QLiveRoomInfo
-import com.qlive.coreimpl.QLiveServiceObserver
-import com.qlive.coreimpl.QLiveDataSource
-import com.qlive.coreimpl.backGround
-import com.qlive.coreimpl.getCode
+import com.qlive.coreimpl.*
 import com.qlive.playerclient.QPlayerClient
 import com.qlive.qplayer.QMediaPlayer
 import com.qlive.rtm.RtmManager
@@ -18,7 +15,10 @@ import com.qlive.rtm.leaveChannel
 import com.qlive.sdk.QLive
 import com.qlive.sdk.internal.AppCache.Companion.appContext
 
-internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QLiveServiceObserver {
+internal class QPlayerClientImpl : QPlayerClient,
+    QPlayerProvider,
+    QLiveServiceObserver,
+    LinkRoleObserver {
     companion object {
         fun create(): QPlayerClient {
             return QPlayerClientImpl()
@@ -26,23 +26,21 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QLiveServiceO
     }
 
     private val roomDataSource = QLiveDataSource()
-    private val mQPlayerEventListenerWarp = QPlayerEventListenerWarp()
+
     private val mMediaPlayer by lazy {
-        QMediaPlayer(appContext).apply {
-            setEventListener(mQPlayerEventListenerWarp)
-        }
+        QMediaPlayer(appContext)
     }
 
     private var mPlayerRenderView: QPlayerRenderView? = null
     private var mLiveStatusListeners = ArrayList<QLiveStatusListener>()
     private val mLiveContext by lazy {
         QNLiveRoomContext(this).apply {
-            roomStatusChange = { status ,msg->
+            roomStatusChange = { status, msg ->
                 if (status == QLiveStatus.ANCHOR_ONLINE) {
                     mMediaPlayer.start()
                 }
                 mLiveStatusListeners.forEach {
-                    it.onLiveStatusChanged(status,msg)
+                    it.onLiveStatusChanged(status, msg)
                 }
             }
         }
@@ -119,7 +117,6 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QLiveServiceO
 
     override fun destroy() {
         mLiveStatusListeners.clear()
-        mQPlayerEventListenerWarp.clear()
         mMediaPlayer.release()
         mLiveContext.destroy()
         mPlayerRenderView = null
@@ -143,11 +140,11 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QLiveServiceO
     }
 
     override fun addPlayerEventListener(playerEventListener: QPlayerEventListener) {
-        mQPlayerEventListenerWarp.addEventListener(playerEventListener)
+        mMediaPlayer.addEventListener(playerEventListener)
     }
 
     override fun removePlayerEventListener(playerEventListener: QPlayerEventListener) {
-        mQPlayerEventListenerWarp.removeEventListener(playerEventListener)
+        mMediaPlayer.removeEventListener(playerEventListener)
     }
 
     override fun getClientType(): QClientType {
@@ -178,5 +175,10 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QLiveServiceO
 
     override fun notifyCheckStatus(newStatus: QLiveStatus, msg: String) {
         mLiveContext.forceSetStatus(newStatus, msg)
+    }
+
+    override fun notifyLinkRoleSwitched(isLink: Boolean) {
+        mLiveContext.notifyLinkRoleSwitched(isLink)
+        mMediaPlayer.switchLinkRole(isLink)
     }
 }

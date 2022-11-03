@@ -130,6 +130,7 @@ dependencies {
         embed project(':qlive-uicomponnets:uikit-shopping')
         embed project(':qlive-uicomponnets:uikit-gift')
         embed project(':qlive-uicomponnets:uikit-like')
+        embed project(':qlive-uicomponnets:uikitktv')
         implementation depend.appcompat()
         implementation depend.cardview()
         embed ('com.github.gzu-liyujiang.AndroidPicker:WheelPicker:4.1.9'){
@@ -168,6 +169,8 @@ dependencies {
         embed project(':liveroom-libs:comp_imadapter')
         embed project(':liveroom-libs:comp_rtclive')
         embed project(':liveroom-libs:lib_log')
+
+        embed project(':liveroom-service:ktvservice')
 
         compileOnly project(':app-sdk:depends_sdk_qnim')
         compileOnly project(':app-sdk:depends_sdk_qrtc')

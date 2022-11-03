@@ -21,8 +21,22 @@ object QSenseTimeManager {
     var sAppContext: Context? = null
     var isAuthorized = false
 
+    private fun checkBeautyHookerImpl(isFromQLive: Boolean) {
+        //内置美颜插件初始化
+        BeautyHookerImpl.addSubModelFromAssetsFiles.clear()
+        BeautyHookerImpl.addSubModelFromAssetsFiles.add("M_SenseME_Face_Extra_5.23.0.model")
+        BeautyHookerImpl.addSubModelFromAssetsFiles.add("M_SenseME_Iris_2.0.0.model")
+        BeautyHookerImpl.addSubModelFromAssetsFiles.add("M_SenseME_Hand_5.4.0.model")
+        BeautyHookerImpl.addSubModelFromAssetsFiles.add("M_SenseME_Segment_4.10.8.model")
+        BeautyHookerImpl.addSubModelFromAssetsFiles.add("M_SenseAR_Segment_MouthOcclusion_FastV1_1.1.1.model")
+        BeautyHookerImpl.senseTimePlugin = sSenseTimePlugin
+    }
+
     //自动初始化 如果要修改请保留这个 BeautyHookerImpl.senseTimePlugin = sSenseTimePlugin
     fun initEffectFromLocalLicense(appContext: Context, isFromQLive: Boolean) {
+        if (isAuthorized) {
+            return
+        }
         // 此处远端拉取素材的逻辑暂不开放，如需此功能可自行实现
         sAppContext = appContext
         sSenseTimePlugin = QNSenseTimePlugin.Builder(appContext)
@@ -30,23 +44,14 @@ object QSenseTimeManager {
             .setModelActionAssetPath("M_SenseME_Face_Video_5.3.3.model")
             .setCatFaceModelAssetPath("M_SenseME_CatFace_3.0.0.model")
             .setDogFaceModelAssetPath("M_SenseME_DogFace_2.0.0.model") // 关闭在线拉取授权文件，使用离线授权文件
-           // .setOnlineLicense(false) // 关闭在线激活授权，使用离线激活授权
+            // .setOnlineLicense(false) // 关闭在线激活授权，使用离线激活授权
             //.setOnlineActivate(false)
             .build()
         isAuthorized = sSenseTimePlugin?.checkLicense() ?: false
         if (!isAuthorized) {
             Toast.makeText(appContext, "鉴权失败，请检查授权文件", Toast.LENGTH_SHORT).show()
-        } else {
-            if (isFromQLive) {
-                //内置美颜插件初始化
-                BeautyHookerImpl.addSubModelFromAssetsFiles.add("M_SenseME_Face_Extra_5.23.0.model")
-                BeautyHookerImpl.addSubModelFromAssetsFiles.add("M_SenseME_Iris_2.0.0.model")
-                BeautyHookerImpl.addSubModelFromAssetsFiles.add("M_SenseME_Hand_5.4.0.model")
-                BeautyHookerImpl.addSubModelFromAssetsFiles.add("M_SenseME_Segment_4.10.8.model")
-                BeautyHookerImpl.addSubModelFromAssetsFiles.add("M_SenseAR_Segment_MouthOcclusion_FastV1_1.1.1.model")
-                BeautyHookerImpl.senseTimePlugin = sSenseTimePlugin
-            }
         }
+        checkBeautyHookerImpl(isFromQLive)
         checkLoadResourcesTask(appContext,
             object : LoadResourcesTask.ILoadResourcesCallback {
                 override fun getContext(): Context {
@@ -66,7 +71,7 @@ object QSenseTimeManager {
         GlobalScope.launch(Dispatchers.IO) {
             try {
                 Material.updateTokenSync()
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }

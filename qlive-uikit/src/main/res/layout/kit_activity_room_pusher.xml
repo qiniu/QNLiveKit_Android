@@ -258,7 +258,6 @@
                 </com.qlive.uikitcore.view.EdgeTransparentView>
 
             </LinearLayout>
-
             <!--   pk覆盖空UI 无UI实现-->
             <com.qlive.uikitpk.PKCoverView
                 android:layout_width="match_parent"

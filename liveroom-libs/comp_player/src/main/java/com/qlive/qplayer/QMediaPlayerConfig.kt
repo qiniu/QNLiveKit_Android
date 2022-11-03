@@ -18,6 +18,7 @@ object QMediaPlayerConfig {
             setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000);
             setInteger(AVOptions.KEY_MEDIACODEC, AVOptions.MEDIA_CODEC_SW_DECODE);
             setInteger(AVOptions.KEY_LOG_LEVEL, 5)
+            setInteger(AVOptions.KEY_VIDEO_DATA_CALLBACK, 1)
         }
     }
 }

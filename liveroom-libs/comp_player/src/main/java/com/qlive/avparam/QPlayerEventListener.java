@@ -41,4 +41,6 @@ public interface QPlayerEventListener {
      * @return 是否处理
      */
     boolean onError(int errorCode);
+
+
 }

@@ -123,4 +123,12 @@ public interface QAudienceMicHandler {
      * @param beautySetting
      */
     void setDefaultBeauty(QBeautySetting beautySetting);
+
+    void enableEarMonitor(boolean isEnable);
+
+    boolean isEarMonitorEnable();
+
+    void setMicrophoneVolume(double volume);
+
+    double getMicrophoneVolume();
 }

@@ -71,7 +71,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 doWork {
 
                     val pkOutline = mPKDateSource.recevPk(mPKSessionTemp?.sessionID ?: "")
-                    val room: QRtcLiveRoom = rtcRoomGetter
+                    val room: QRtcLiveRoom =rtcRoomGetter
                     //转发
                     val sourceInfo = QNMediaRelayInfo(room.roomName, room.roomToken)
                     val configuration = QNMediaRelayConfiguration(sourceInfo)
@@ -311,7 +311,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         if (mQPKMixStreamAdapter == null) {
             return
         }
-        val mQRtcLiveRoom: QRtcLiveRoom = rtcRoomGetter
+        val mQRtcLiveRoom: QRtcLiveRoom =rtcRoomGetter
         if (mPKSession != null) {
             mQRtcLiveRoom.mMixStreamManager
                 .roomUser++
@@ -387,7 +387,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         RtmManager.addRtmChannelListener(groupListener)
 
         if (client.clientType == QClientType.PUSHER) {
-            val room: QRtcLiveRoom = rtcRoomGetter
+            val room: QRtcLiveRoom =rtcRoomGetter
             room.addExtraQNRTCEngineEventListener(defaultExtQNClientEventListener)
             pkPKInvitationHandlerImpl.attach()
         } else {
@@ -492,7 +492,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                         mPKSession
                     ).toJsonString(), receiver.imUid, false
                 )
-                val room: QRtcLiveRoom = rtcRoomGetter
+                val room: QRtcLiveRoom =rtcRoomGetter
                 //转发
                 val sourceInfo = QNMediaRelayInfo(room.roomName, room.roomToken)
                 val configuration = QNMediaRelayConfiguration(sourceInfo)
@@ -548,7 +548,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
 
     private suspend fun stopMediaRelay() =
         suspendCoroutine<Unit> { continuation ->
-            val room: QRtcLiveRoom = rtcRoomGetter
+            val room: QRtcLiveRoom =rtcRoomGetter
             room.mClient.stopMediaRelay(object : QNMediaRelayResultCallback {
                 override fun onResult(p0: MutableMap<String, QNMediaRelayState>) {
                     continuation.resume(Unit)
@@ -640,7 +640,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
      * @param view
      */
     override fun setPeerAnchorPreView(view: QPushRenderView) {
-        val room: QRtcLiveRoom = rtcRoomGetter
+        val room: QRtcLiveRoom =rtcRoomGetter
         val peer = if (mPKSession!!.initiator.userId == user?.userId) {
             mPKSession!!.receiver.userId
         } else {

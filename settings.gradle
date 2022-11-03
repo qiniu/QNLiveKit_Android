@@ -49,3 +49,5 @@ include ':qlive-uikit'
 
 include ':qlive-uicomponnets:uikit-gift'
 include ':qlive-uicomponnets:uikit-like'
+include ':liveroom-service:ktvservice'
+include ':qlive-uicomponnets:uikitktv'
