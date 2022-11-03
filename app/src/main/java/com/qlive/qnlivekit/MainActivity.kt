@@ -2,6 +2,7 @@ package com.qlive.qnlivekit
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -10,6 +11,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity

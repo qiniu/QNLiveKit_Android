@@ -65,8 +65,7 @@ class AnchorBottomMoreFuncDialog(
         }
         binding.llMirror.setOnClickListener {
             val isSelect = !it.isSelected
-            (kitContext.getPusherRenderViewCall.invoke() as RTCRenderView?)?.getQNRender()
-                ?.setMirror(isSelect)
+            (kitContext.getPusherRenderViewCall.invoke() as RTCRenderView?)?.getQNRender()?.setMirror(isSelect)
             it.isSelected = isSelect
         }
 

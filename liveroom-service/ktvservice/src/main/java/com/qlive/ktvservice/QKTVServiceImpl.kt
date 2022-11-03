@@ -1,6 +1,7 @@
 package com.qlive.ktvservice
 
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.util.Log
 import com.qiniu.droid.rtc.QNAudioMusicMixer
 import com.qiniu.droid.rtc.QNAudioMusicMixerListener
@@ -21,7 +22,7 @@ import com.qlive.rtclive.QRTCProvider
 import com.qlive.rtclive.QRtcLiveRoom
 import com.qlive.rtm.*
 import com.qlive.rtm.msg.RtmTextMsg
-import java.util.HashMap
+import java.io.File
 
 class QKTVServiceImpl : QKTVService, BaseService() {
 
@@ -233,6 +234,24 @@ class QKTVServiceImpl : QKTVService, BaseService() {
         })
     }
 
+    private fun getRingDuring(mUri: String): Long {
+        var duration: String = "0"
+        val mmr = MediaMetadataRetriever()
+        try {
+            if (mUri.startsWith("/")) {
+                mmr.setDataSource(mUri)
+            } else {
+                mmr.setDataSource(mUri, HashMap<String, String>())
+            }
+            duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION) ?: "0"
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        } finally {
+            mmr.release()
+        }
+        return duration.toLong()
+    }
+
     override fun play(
         tracks: HashMap<String, String>,
         playTrack: String,
@@ -251,7 +270,7 @@ class QKTVServiceImpl : QKTVService, BaseService() {
         }
         mQNAudioMixer?.stop()
         val path = tracks[playTrack]
-        val duration = QNAudioMusicMixer.getDuration(path)
+        val duration = getRingDuring(path ?: "")//QNAudioMusicMixer.getDuration(path)
         var isFirstMIXING = true
         val mQNAudioMixerListener = object : QNAudioMusicMixerListener {
             override fun onStateChanged(p0: QNAudioMusicMixerState) {
