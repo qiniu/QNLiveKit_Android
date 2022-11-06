@@ -415,7 +415,7 @@ fun LivePage(model: LiveRoomViewModel) {
 
 qlivekit插件化UI方案：
 
-![alt ]（http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/ui.drawio1.png)
+![alt ](http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/qliveuiplugin.drawio.png)
 
 ```  
 //安卓端案例
