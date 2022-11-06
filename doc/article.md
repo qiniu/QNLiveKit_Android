@@ -2,17 +2,58 @@
 ## qlivekit 到底是什么样的？
 ### qlivekit简介
 qlivekit是七牛云推出的一款互动直播低代码解决方案sdk，只需几行代码快速接入互动连麦pk直播
-在直播场景下，qlive具有以下特点：
-- 丰富的业务插件：房间管理，聊天室，连麦，pk ，购物车，小窗播放，美颜...
-- 扩展性：业务扩展及对接接入方的业务系统，自定义ui
-- 可靠的基础设施服务
-- 完善的插件机制
-- 简单，易用
+
+业务侧：
+
+```                  
+
+                      +--->  QChatRoomService //聊天室服务 
++----------------+    |
+|                |    +--->  QLinkMicService  //连麦业务服务
++  QLiveClient   +---+
+|                |    +--->  QPKService       //pk业务服务
++----------------+    |
+  推拉流房间客户端       +--->  QPublicChatService //公屏消息服务       
+   无UI版本sdk         |
+                      +--->  QRoomService     //房间频道业务 
+                      |    
+                      +--->  QDanmakuService  //弹幕服务 
+                      | 
+                      +--->  QShoppingService //电商购物服务 
+                      |
+                      +--->  QGiftService     //礼物服务  
+                      |
+                      +--->  QLikeService     //点赞服务                                                                                                         
+
+```    
+
+- 基于七牛云基础设施服务：音视频、直播，IM，AI 智能算法和网络实现的基础直播业务-创建房间，开播，推流，拉流，聊天室
+- 在此基础之上提供丰富的业务插件：房间管理，连麦，pk，带货，弹幕，礼物...
+- 提供业务扩展,业务流程扩展，业务事件扩展，业务数据统计
 
 
-## qlivekit 低代码到底低在哪里？
+UI侧：
 
-### 快速启动
+
+```                          
+                     +---> RoomListPage //房间列表UI实现页面
++---------------+    |  
+|               |    |
++---+QLiveUIKIT +----+
+|               |    |
++---------------+    | 
+                     +---> RoomPage    //直播间页面UI实现                            
+                      
+```   
+
+- 基础UI插件的形式提供组装好的完整的UI页面实现
+- 提供丰富的UI插件：小窗播放，美颜，UI组件等
+- 便捷的定制UI方式
+
+
+
+### qlivekit 低代码到底低在哪里？
+#### 快速启动
 
 ```kotlin
 import com.qlive.sdk.QLive
@@ -25,27 +66,22 @@ QLive.getLiveUIKit().launch(context)
 ```
 启动后选择直播间进入效果如下：
 
-![alt ](http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/origin.png)
-### 快速定制业务以及UI
+![alt ](http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/origin1.png)
+#### 快速定制业务以及UI
+
+定制业务以及UI的案例：
 
 点击进入某个直播间此刻我们已经启动了一个基础的直播间，假设我们业务有定制化要求
 
-- 要求1: 主播有家族阵营，在直播间右上方显示主播家族信息，点击进入家族页面
+- 要求1: 主播有家族阵营，在直播间左上方显示主播家族信息，点击进入家族页面
 - 要求2: 用户有vip等级，vip3以上的用户才能发公屏聊天否则点击提示充值跳转接入方的充值页面
 
-
 qilve的用户 quserinfo{ 头像，昵称，其他资料，}
-
-
 自定义：
 - 增加接入的业务：
   quserinfo{ 头像，昵称，其他资料，家族，vip }
-
 - 增加UI：家族UI 在线用户VIP等级显示
-
 - 增加充值业务流程
-
-
 
 实现步骤1 - 对接用户系统
 
@@ -63,7 +99,6 @@ QLive.setUser(QUserInfo().apply {
 ```
 
 实现步骤2 - 定制UI
-
 
 自定义家族组件 -- 在QLiveComponent的加入房间阶段取出房间的家族扩展字段显示
 
@@ -131,7 +166,7 @@ class CustomInputView : InputLinkView {
 }
 ```
 
-在UI配置文件里替换和增加新的组件
+在拷贝的UI配置文件里替换和增加新的组件
 
 ```
 <com.qlive.uikit.component.FrameLayoutSlidingCover>
@@ -158,9 +193,15 @@ class CustomInputView : InputLinkView {
         android:layout_width="wrap_content" />
 </com.qlive.uikit.component.FrameLayoutSlidingCover>
 ```
+设置新的布局
+```kotlin
+val roomPage = QLive.getLiveUIKit().getPage(RoomPage::class.java)
+//自定义房间页面观众房间的布局
+roomPage.playerCustomLayoutID = R.layout.customXXXlayout
+```
 启动后效果如下：
 
-![alt ](http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/new.png)
+![alt ](http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/new1.png)
 
 
 
@@ -170,34 +211,136 @@ class CustomInputView : InputLinkView {
 ![alt ](http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/qlive.drawio.png)
 
 - 业务底座实现基础直播功能包括：进房，退房，推流，拉流，开播，关播等
-- 业务插件层为接入用户可选需要的插件同时也能扩展插件
+- 业务插件层为接入用户可选的插件同时也能扩展插件
 - 内置的业务插件实现提供足够灵活自定义空间
 
-#### 业务扩展的案例：
-对于一个连麦麦位qlive实现的基础业务实现为：一个房间里有n个人在连麦以及他们的音视频状态(谁开关了麦克风摄像头)及连麦者的头像姓名资料
 
-> 内置连麦业务模型：连麦者 ：{音视频状态，资料}
 
-假设接入场景是相亲场景，对连麦业务的要求是上麦者身份是红娘/女嘉宾/男嘉宾，红娘可以踢人强制关男嘉宾的麦
+#### qlivekit是如何做业务扩展的？
+对于连麦qlive实现的基础业务实现为：一个房间里有n个人在连麦以及他们的音视频状态(谁开关了麦克风摄像头)及连麦者的头像姓名资料
 
-> 此时连麦业务模型：连麦者 ：{音视频状态，资料， 角色，被禁用状态} ，同时可能还需要自定义状态变化通知
+> 内置连麦业务模型：连麦者 ：{音视频状态，用户资料，扩展字段hashMap}
+
+``` java
+
+//连麦用户
+QMicLinker{
+	//麦上用户资料
+	public QLiveUser user
+	//扩展字段
+	public HashMap extension
+	//是否开麦克风
+	public boolean isOpenMicrophone
+	//是否开摄像头
+	public boolean isOpenCamera
+}
+
+//连麦服务
+QLinkMicService{
+	//获取当前房间所有连麦用户
+	List<QMicLinker> getAllLinker()
+	
+	//添加麦位监听
+	//@param-listener:麦位监听	
+   void addMicLinkerListener(QLinkMicServiceListener listener)
+	
+	//开始上麦
+	//@param-extension:麦位扩展字段	@param-cameraParams:摄像头参数 空代表不开	@param-microphoneParams:麦克参数  空代表不开	@param-callBack:上麦成功失败回调	
+	void startLink(HashMap extension,QCameraParam cameraParams,QMicrophoneParam microphoneParams,QLiveCallBack callBack)
+
+	//我是不是麦上用户
+	 boolean isLinked()
+
+	//结束连麦
+	//@param-callBack:操作回调	
+	 void stopLink(QLiveCallBack callBack)
+	
+	//跟新扩展字段
+	//@param-micLinker:麦位置	@param-QExtension:扩展字段
+	public void updateExtension(QMicLinker micLinker,QExtension QExtension)
+
+	//其他方法
+}
+
+//麦位监听
+QLinkMicServiceListener{
+	//有人上麦
+	//@param-micLinker:连麦者	
+	public void onLinkerJoin(QMicLinker micLinker)
+
+	//有人下麦
+	//@param-micLinker:连麦者	
+	public void onLinkerLeft(QMicLinker micLinker)
+
+	//有人麦克风变化
+	//@param-micLinker:连麦者	
+	public void onLinkerMicrophoneStatusChange(QMicLinker micLinker)
+
+	//有人摄像头状态变化
+	//@param-micLinker:连麦者	
+	public void onLinkerCameraStatusChange(QMicLinker micLinker)
+
+	//有人被踢
+	//@param-micLinker:连麦者	@param-msg:自定义扩展消息	
+	public void onLinkerKicked(QMicLinker micLinker,String msg)
+
+	//有人扩展字段变化
+	//@param-micLinker:连麦者	@param-QExtension:扩展信息	
+	public void onLinkerExtensionUpdate(QMicLinker micLinker,QExtension QExtension)
+}
+``` 
+
+假设接入场景是相亲场景，对连麦业务的要求是上麦者身份是红娘/女嘉宾/男嘉宾，红娘可以踢人强制关男嘉宾的麦并且显示特殊的UI状态
+
+> 此时连麦业务模型：连麦者 ：{音视频状态，资料， 角色，被红娘禁用的状态} ，同时可能还需要自定义状态变化通知-红娘强制关麦状态
 
 qlive在业务模型测提供了字段扩展扩展机制和事件扩展机制
-> qlive业务模型  mode : {内置自定义1，扩展字段hashMap<String,String> }
+此刻可实现为：
+```kotlin
+val linkerExtParams = HashMap<String, String>().apply {
+    //上麦参数-添加自定义角色-红娘
+    put("role", "matchmaker")
+}
+//以红娘身份上麦
+service.startLink(linkerExtParams, QCameraParam(), QMicrophoneParam())
+//对某个说脏话的连麦者添加一个扩展字段标记为强制关麦
+service.updateExtension(linker,QExtension().apply {
+    key = "Prohibit2Speak"
+    value = "1"
+})
+//连麦服务监听
+service.addMicLinkerListener(object : QLinkMicServiceListener {
+    //有人上麦
+    override fun onLinkerJoin(micLinker: QMicLinker) {
+        //取出连麦者的身份
+        val role = micLinker.extension["role"]
+        //todo 显示麦位UI
+    }
+
+    //扩展字段跟新监听
+    override fun onLinkerExtensionUpdate(micLinker: QMicLinker, extension: QExtension) {
+        if (extension.key == "Prohibit2Speak") {
+            //取出强制关麦状态
+            val value = extension.value
+        }
+    }
+})    
+``` 
 
 ### ui层
 
-![alt ](http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/qliveuidrawio.png)
+![alt ](http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/ui.drawio1.png)
 
 - 平台业务能快速插拔各个组件为其提供运行时管理
 - 能对内置的组件配置化删除，修改，替换
 - 能快速无侵入试增加自己的组件
 
-对UI开发通常分为命令式和声明式：
+#### qliveuikit是如何做到便捷的UI插件模式的？
+
+对标准的UI开发通常分为命令式和声明式：
 
 ``` 
-//命令试案例：
-
+//命令式案例：
 <LinearLayout 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -232,19 +375,17 @@ class TestLiveActivity  {
 
 ``` 
 
-
 ``` 
-//命令试案例：
+//声明式案例：
 class LiveRoomViewModel : ViewModel() {
-    private lateinit var client: QPlayerClient
-
+    lateinit var client: QPlayerClient
     val noticeLiveData = MutableLiveData<String>()
     val likeLiveData = MutableLiveData<String>()
 
     fun join(){
         client.joinRoom("",null)
         val room=  client.roomInfo
-        noticeLiveData.value =  room.notice
+        noticeLiveData.value = room.notice
         client.getService(QLikeService::class.java).addLikeServiceListener {
             likeLiveData.value = it.count.toString()
         }
@@ -265,14 +406,16 @@ fun LivePage(model: LiveRoomViewModel) {
 }
 
 ``` 
-在标准的UI开发模式中，业务UI组件越多逻辑越复杂，接入用户的定制难度越大
-，同时在已经实现直播UI的sdk中，动态定制UI的难度更大
+在标准的UI开发模式中，业务UI组件越多逻辑越复杂UI样式部分和UI逻辑部分越复杂，接入用户的定制难度越大。 如果作为demo级UI产品标准的UI开发模式是完全没问题的，但是作为UIkit sdk级别产品通常都有以下诉求：
+- 在sdk运行前想对UI布局编排进行调整
+- 在sdk运行前要对已存在UI删除，修改，替换
+- 在sdk运行前要在某个位置插入某个UI
+
+以插入自定义UI为例：接入用户想插入一个官方公告组件，UI逻辑为进入房间，显示房间公告切换房间切换公告，点击公告以弹窗形式显示详情。sdk运行前并不知道自定义组件要执行啥样的逻辑需要啥样的业务数据
 
 qlivekit插件化UI方案：
 
-
-![alt ](http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/qlive.drawio.png)
-
+![alt ]（http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/ui.drawio1.png)
 
 ```  
 //安卓端案例
@@ -318,4 +461,9 @@ qlivekit插件化UI方案：
 </FrameLayout>
 
 ``` 
-复用平台布局设置直接组装内置插件即可
+在 qliveuikit 中。开发者只需拿到一份原本的页面配置文件，在此之上可以
+- 调节原有的组件样式
+- 修改删除原有的组件
+- 增加组件
+
+只需要简单修改UI配置文件，即可实现定制UIsdk里的页面样式和UI逻辑。
