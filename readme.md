@@ -62,7 +62,7 @@ QLive.getLiveUIKit().launch(context)
 ```
 启动后选择直播间进入效果如下：
 
-![alt](http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/origin1.png)
+![alt](https://github.com/MJLblabla/QNLiveKit_Android-1/blob/dev/doc/img/origin1.png?raw=true)
 #### 快速定制业务以及UI
 
 定制业务以及UI的案例：
@@ -195,7 +195,7 @@ roomPage.playerCustomLayoutID = R.layout.customXXXlayout
 ```
 启动后效果如下：
 
-![alt](http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/new1.png)
+![alt](https://github.com/MJLblabla/QNLiveKit_Android-1/blob/dev/doc/img/new1.png?raw=true)
 
 
 
