@@ -322,7 +322,7 @@ service.addMicLinkerListener(object : QLinkMicServiceListener {
 
 ### ui层
 
-![alt ](http://qrnlrydxa.hn-bkt.clouddn.com/live-kit/ui.drawio1.png)
+![alt](https://github.com/MJLblabla/QNLiveKit_Android-1/blob/dev/doc/img/ui.png?raw=true)
 
 qliveuikit的能力：
 - 平台业务能快速插拔各个组件为其提供运行时管理
