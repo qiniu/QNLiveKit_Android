@@ -50,7 +50,7 @@ class PubChatAdapter : QSmartMultipleAdapter<QPublicChat>(ArrayList<QPublicChat>
             position: Int
         ) {
             Glide.with(pubChatAdapter.mContext)
-                .load(data.sendUser.avatar)
+                .load(data.sendUser?.avatar?:"")
                 .into(helper.binding.ivAvatar)
             helper.binding.tvName.text = data.sendUser.nick
             helper.binding.tvContent.text = pubChatAdapter.showHtml(data).toHtml() ?: ""

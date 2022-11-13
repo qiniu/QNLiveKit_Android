@@ -43,6 +43,9 @@ dependencies {
         api project(':qlivesdk')
     }else {
         api project(':app-sdk:qlive-sdk')
+        compileOnly project(':app-sdk:depends_sdk_qnim')
+        compileOnly project(':app-sdk:depends_sdk_qrtc')
+        compileOnly project(':app-sdk:depends_sdk_piliplayer') //七牛播放器
     }
     implementation depend.lifecycle()
     api depend.glide()

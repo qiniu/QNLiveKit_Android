@@ -23,6 +23,12 @@ import com.qlive.uikitcore.ext.permission.PermissionAnywhere
  * 用户被邀请连麦申请弹窗
  */
 class FuncCPTBeInvitedLinkMicMonitor : QLiveFuncComponent {
+
+    companion object {
+        var cameraParam = QCameraParam()
+        var microphoneParam = QMicrophoneParam()
+    }
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -108,8 +114,8 @@ class FuncCPTBeInvitedLinkMicMonitor : QLiveFuncComponent {
                     ?.audienceMicHandler
                     ?.startLink(
                         null,
-                        QCameraParam(),
-                        QMicrophoneParam(),
+                        cameraParam,
+                        microphoneParam,
                         object : QLiveCallBack<Void> {
                             override fun onError(code: Int, msg: String?) {
                                 msg?.asToast(kitContext!!.androidContext)
