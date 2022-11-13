@@ -130,7 +130,7 @@ dependencies {
         embed project(':qlive-uicomponnets:uikit-shopping')
         embed project(':qlive-uicomponnets:uikit-gift')
         embed project(':qlive-uicomponnets:uikit-like')
-        embed project(':qlive-uicomponnets:uikitktv')
+        //embed project(':qlive-uicomponnets:uikitktv')
         implementation depend.appcompat()
         implementation depend.cardview()
         embed ('com.github.gzu-liyujiang.AndroidPicker:WheelPicker:4.1.9'){

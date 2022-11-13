@@ -221,8 +221,13 @@ class RoomPushActivity : BaseFrameActivity() {
 
     private fun start() {
         roomId = intent.getStringExtra(KEY_ROOM_ID) ?: ""
-        mRoomClient.enableCamera(QCameraParam(), preTextureView)
-        mRoomClient.enableMicrophone(QMicrophoneParam())
+        mRoomClient.enableCamera(
+            QLive.getLiveUIKit().getPage(RoomPage::class.java)!!.cameraParam,
+            preTextureView
+        )
+        mRoomClient.enableMicrophone(
+            QLive.getLiveUIKit().getPage(RoomPage::class.java)!!.microphoneParam
+        )
         //房间ID不为空代表直接加入已经创建过的房间
         if (roomId.isNotEmpty()) {
             bg {
@@ -232,7 +237,7 @@ class RoomPushActivity : BaseFrameActivity() {
                     val roomInfo = suspendGetRoomInfo(roomId)
                     mInflaterFactory.onGetLiveRoomInfo(roomInfo)
 
-                    if(!roomInfo.isTrailering()){
+                    if (!roomInfo.isTrailering()) {
                         suspendJoinRoom(roomId)
                         startCallBack?.onSuccess(null)
                         startCallBack = null
