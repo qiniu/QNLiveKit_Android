@@ -2,6 +2,8 @@ package com.qlive.uikit;
 
 import android.content.Context;
 
+import com.qlive.avparam.QCameraParam;
+import com.qlive.avparam.QMicrophoneParam;
 import com.qlive.core.QLiveCallBack;
 import com.qlive.core.been.QLiveRoomInfo;
 import com.qlive.sdk.QLive;
@@ -13,6 +15,9 @@ import org.jetbrains.annotations.Nullable;
 import kotlin.jvm.internal.Intrinsics;
 
 public class RoomPage implements QPage {
+
+    public QCameraParam cameraParam = new QCameraParam();
+    public QMicrophoneParam microphoneParam = new QMicrophoneParam();
 
     public int getAnchorCustomLayoutID() {
         return RoomPushActivity.Companion.getReplaceLayoutId();
@@ -55,6 +60,7 @@ public class RoomPage implements QPage {
 
     /**
      * 根据房间信息自动跳转主播页直播间或观众直播间 并且带有自定义 Intent
+     *
      * @param context
      * @param roomInfo
      * @param extSetter
@@ -88,12 +94,13 @@ public class RoomPage implements QPage {
 
     /**
      * 跳转观众直播间 并且带有自定义 Intent
+     *
      * @param context
      * @param liveRoomId
      * @param extSetter
      * @param callBack
      */
-    public final void startPlayerRoomActivity(@NotNull Context context, @NotNull String liveRoomId,  @Nullable StartRoomActivityExtSetter extSetter, @Nullable QLiveCallBack<QLiveRoomInfo> callBack) {
+    public final void startPlayerRoomActivity(@NotNull Context context, @NotNull String liveRoomId, @Nullable StartRoomActivityExtSetter extSetter, @Nullable QLiveCallBack<QLiveRoomInfo> callBack) {
         Intrinsics.checkNotNullParameter(context, "context");
         Intrinsics.checkNotNullParameter(liveRoomId, "liveRoomId");
         RoomPlayerActivity.Companion.start(context, liveRoomId, extSetter, callBack);
@@ -112,6 +119,7 @@ public class RoomPage implements QPage {
 
     /**
      * 跳转已经存在的主播直播间 并且带有自定义 Intent
+     *
      * @param context
      * @param liveRoomId
      * @param extSetter
@@ -135,6 +143,7 @@ public class RoomPage implements QPage {
 
     /**
      * 跳转到创建直播间开播页面 并且带有自定义 Intent
+     *
      * @param context
      * @param extSetter 自定义参数
      * @param callBack

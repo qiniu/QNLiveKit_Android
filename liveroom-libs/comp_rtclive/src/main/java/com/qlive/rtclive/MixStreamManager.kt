@@ -355,14 +355,14 @@ class MixStreamManager(val mQRtcLiveRoom: RtcClientWrap) {
             QLiveLogUtil.d("MixStreamHelperImp", "updateUserVideoMergeOptions ${uid} track没找到")
         } else {
             QLiveLogUtil.d("MixStreamHelperImp", "updateUserVideoMergeOptions ${uid} track找到了")
-            if (option?.isNeed==true) {
+            if (option?.isNeed == true) {
                 // tracksMap[trackId] = option
             } else {
                 mEngine.removeTranscodingLiveStreamingTracks(
                     mQNMergeJob!!.streamID,
                     listOf(QNTranscodingLiveStreamingTrack().apply {
                         this.trackID = cTrack.trackID
-                        isSEIEnabled=true
+                        isSEIEnabled = true
                     })
                 )
             }
@@ -391,7 +391,7 @@ class MixStreamManager(val mQRtcLiveRoom: RtcClientWrap) {
                     mQNMergeJob!!.streamID,
                     listOf(QNTranscodingLiveStreamingTrack().apply {
                         this.trackID = aTrack.trackID
-                        isSEIEnabled=true
+                        isSEIEnabled = true
                     })
                 )
             }
@@ -455,7 +455,15 @@ class MixStreamManager(val mQRtcLiveRoom: RtcClientWrap) {
                         zOrder = op.z
                         width = op.width
                         height = op.height
-                        isSEIEnabled=true
+                        if (mQRtcLiveRoom.mQRTCUserStore.localVideoTrack?.trackID == key) {
+                            isSEIEnabled = true
+                            QLiveLogUtil.d(
+                                "MixStreamHelperImp",
+                                "commitOpt trackId  ${trackID} is isSEIEnabled = true"
+                            )
+                        }else{
+                            isSEIEnabled = false
+                        }
                         // renderMode = op.stretchMode
                     }
                     mMergeTrackOptions.add(trackOp)
@@ -464,7 +472,7 @@ class MixStreamManager(val mQRtcLiveRoom: RtcClientWrap) {
                 if (op is QMixStreaming.MicrophoneMergeOption) {
                     val opTrack = QNTranscodingLiveStreamingTrack().apply {
                         trackID = key
-                        isSEIEnabled=true
+                        // isSEIEnabled=true
                     }
                     mMergeTrackOptions.add(opTrack)
                     sb.append("${key} MicrophoneMergeOption" + opTrack.toJsonObject().toString())
