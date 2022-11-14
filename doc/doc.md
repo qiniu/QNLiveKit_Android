@@ -1,4 +1,5 @@
 ```java
+
 //低代码直播客户端
 QLive{
 
@@ -582,7 +583,7 @@ QPusherClient{
 
 	//获取插件服务实例
 	//@param-serviceClass:插件的类	
-	public com.qlive.core.QLiveService getService(Class serviceClass)
+	public QLiveService getService(Class serviceClass)
 
 	//设置直播状态回调
 	//@param-liveStatusListener:直播事件监听	
@@ -650,6 +651,18 @@ QPusherClient{
 	//设置默认免费版美颜参数
 	//@param-beautySetting:美颜参数	
 	public void setDefaultBeauty(QBeautySetting beautySetting)
+
+	//
+	public void enableEarMonitor()
+
+	//
+	public boolean isEarMonitorEnable()
+
+	//
+	public void setMicrophoneVolume()
+
+	//
+	public double getMicrophoneVolume()
 }
 
 //推流预览窗口  子类实现 QPushSurfaceView 和 QPushTextureView
@@ -664,7 +677,7 @@ QPlayerClient{
 
 	//获取插件服务实例
 	//@param-serviceClass:插件的类	
-	public com.qlive.core.QLiveService getService(Class serviceClass)
+	public QLiveService getService(Class serviceClass)
 
 	//设置直播状态回调
 	//@param-liveStatusListener:直播事件监听	
@@ -842,6 +855,18 @@ QAudienceMicHandler{
 	//上麦后可以设置免费的默认美颜参数
 	//@param-beautySetting:	
 	public void setDefaultBeauty(QBeautySetting beautySetting)
+
+	//
+	public void enableEarMonitor()
+
+	//
+	public boolean isEarMonitorEnable()
+
+	//
+	public void setMicrophoneVolume()
+
+	//
+	public double getMicrophoneVolume()
 }
 
 //观众连麦处理器监听  观众需要处理的事件
@@ -1136,6 +1161,10 @@ QChatRoomServiceListener{
 
 //
 RoomPage{
+	//
+	public QCameraParam cameraParam
+	//
+	public QMicrophoneParam microphoneParam
 
 	//
 	public int getAnchorCustomLayoutID()
@@ -1478,5 +1507,115 @@ QLikeServiceListener{
 	//有人点赞
 	//@param-like:	
 	public void onReceivedLikeMsg(QLike like)
+}
+
+//当前房间播放的音乐信息
+QKTVMusic{
+	//
+	public static int playStatus_pause
+	//
+	public static int playStatus_playing
+	//
+	public static int playStatus_error
+	//
+	public static int playStatus_completed
+	//
+	public static int playStatus_stop
+	//
+	public static String track_accompany
+	//
+	public static String track_originVoice
+	//
+	public static String track_lrc
+	//音乐ID
+	public String musicId
+	//混音主人ID
+	public String mixerUid
+	//开始播放的时间戳
+	public long startTimeMillis
+	//当前进度对应的时间戳
+	public long currentTimeMillis
+	//当前播放进度
+	public long currentPosition
+	//播放状态 0 暂停  1 播放  2 出错
+	public int playStatus
+	//音乐总长度
+	public long duration
+	//音轨名称
+	public String track
+	//播放的歌曲信息
+	public String musicInfo
+	//轨道信息
+	public HashMap tracks
+}
+
+//ktv服务
+QKTVService{
+
+	//开始播放音乐仅仅房主能调用
+	//@param-tracks:音乐轨道 key-轨道名字 value-轨道对映地址	@param-track:当前选中的轨道	@param-musicId:音乐ID	@param-startPosition:开始位置	@param-musicInfo:歌曲自定义详细信息如：json	
+	public boolean play(HashMap tracks,String track,String musicId,long startPosition,String musicInfo)
+
+	//切换轨道仅仅房主能调用
+	//@param-track:	
+	public void switchTrack(String track)
+
+	//调整播放位置仅仅房主能调用
+	//@param-position:	
+	public void seekTo(long position)
+
+	//暂停仅仅房主能调用
+	public void pause()
+
+	//恢复仅仅房主能调用
+	public void resume()
+
+	//设置音乐音量仅仅房主能调用
+	//@param-volume:	
+	public void setMusicVolume(float volume)
+
+	//获取当前音乐音量仅仅房主能调用
+	public float getMusicVolume()
+
+	//获取当前音乐
+	public com.qlive.ktvservice.QKTVMusic getCurrentMusic()
+
+	//音乐监听房主改变音乐状态房间所有人通过监听收到状态
+	//@param-listener:	
+	public void addKTVServiceListener(QKTVServiceListener listener)
+
+	//
+	public void removeKTVServiceListener()
+}
+
+//音乐监听  房间里所有人都能监听到当前房间的音乐信息
+QKTVServiceListener{
+
+	//播放失败
+	//@param-errorCode:	@param-msg:	
+	public void onError(int errorCode,String msg)
+
+	//开始播放
+	//@param-ktvMusic:音乐信息	
+	public void onStart(QKTVMusic ktvMusic)
+
+	//切换播放音轨
+	public void onSwitchTrack()
+
+	//暂停
+	public void onPause()
+
+	//恢复
+	public void onResume()
+
+	//
+	public void onStop()
+
+	//播放进度更新
+	//@param-position:进度	@param-duration:文件时长	
+	public void onPositionUpdate(long position,long duration)
+
+	//播放完成
+	public void onPlayCompleted()
 }
 ```

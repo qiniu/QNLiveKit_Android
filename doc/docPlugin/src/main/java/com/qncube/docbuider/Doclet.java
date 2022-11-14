@@ -99,6 +99,9 @@ public class Doclet {
         links.put("QLikeService", "https://developer.qiniu.com/lowcode/api/12283/qlikeservice");
         links.put("QLikeServiceListener", "https://developer.qiniu.com/lowcode/api/12284/qlikeservicelistener");
 
+        links.put("QKTVMusic", "https://developer.qiniu.com/lowcode/api/12345/qktvmusic");
+        links.put("QKTVService", "https://developer.qiniu.com/lowcode/api/12346/qktvservice");
+        links.put("QKTVServiceListener", "https://developer.qiniu.com/lowcode/api/12347/qktvservicelistener");
     }
 
     private static String checkLinker(String name) {

@@ -46,7 +46,7 @@ class QLrcView : LrcView, QLiveComponent {
         override fun onPause() {}
         override fun onResume() {}
         override fun onStop() {}
-        override fun updatePosition(position: Long, duration: Long) {
+        override fun onPositionUpdate(position: Long, duration: Long) {
             updateTime(position)
         }
         override fun onPlayCompleted() {}
