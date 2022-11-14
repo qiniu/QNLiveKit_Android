@@ -31,6 +31,7 @@ class QKTVServiceImpl : QKTVService, BaseService() {
     private var isPendingSwitchTrack = false
 
     private val mRtmMsgListener = object : RtmMsgListener {
+        //收到音乐进度信令
         override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
             if (toID != currentRoomInfo?.chatID) {
                 return false
@@ -46,6 +47,7 @@ class QKTVServiceImpl : QKTVService, BaseService() {
 
     private val mQPlayerSEIListener = object : QPlayerSEIListener {
 
+        //播放器sei回调
         override fun onSEI(sei: String) {
             parseMsg(sei)
         }
@@ -128,26 +130,34 @@ class QKTVServiceImpl : QKTVService, BaseService() {
 
     private fun changeMusicAttributes(isPauseLast: Boolean) {
         mKTVMusic ?: return
+
+        //判断音乐状态
         if (mKTVMusic?.mixerUid != user?.userId) {
             when (mKTVMusic!!.playStatus) {
+                //暂停
                 playStatus_pause -> {
                     mServiceListenerWrap.onPause()
                 }
+                //恢复
                 playStatus_playing -> {
                     if (isPauseLast) {
                         mServiceListenerWrap.onResume()
                     }
                 }
+                //错误
                 playStatus_error -> {
                     mServiceListenerWrap.onError(1, "主唱混音错误")
                 }
+                //停止
                 playStatus_stop -> {
                     mServiceListenerWrap.onStop()
                 }
             }
+            //播放完成
             if (mKTVMusic!!.currentPosition >= mKTVMusic!!.duration) {
                 mServiceListenerWrap.onPlayCompleted()
             }
+            //进度同步
             mServiceListenerWrap.onPositionUpdate(
                 mKTVMusic!!.currentPosition,//+ System.currentTimeMillis() - mKTVMusic!!.currentTimeMillis,
                 mKTVMusic!!.duration
@@ -157,6 +167,7 @@ class QKTVServiceImpl : QKTVService, BaseService() {
 
     fun parseMsg(msg: String): Boolean {
         val action = msg.optAction()
+        //解析消息
         if (action == key_current_music) {
             val dataStr = msg.optData()
             val musicAttribute =
@@ -169,11 +180,13 @@ class QKTVServiceImpl : QKTVService, BaseService() {
                 ||
                 mKTVMusic?.musicId != musicAttribute.musicId
             ) {
+                //播放器了新的音乐
                 mKTVMusic = musicAttribute
                 if (mKTVMusic?.mixerUid != user?.userId) {
                     mServiceListenerWrap.onStart(musicAttribute)
                 }
             } else {
+                //切换了轨道
                 if (mKTVMusic?.mixerUid != user?.userId
                     && mKTVMusic?.track != musicAttribute.track
                 ) {
@@ -199,6 +212,8 @@ class QKTVServiceImpl : QKTVService, BaseService() {
             key_current_music,
             music
         ).toJsonString()
+
+        //发im给rtc角色
         RtmManager.rtmClient.sendChannelCMDMsg(
             rtmMsg,
             currentRoomInfo?.chatID ?: "",
@@ -212,10 +227,13 @@ class QKTVServiceImpl : QKTVService, BaseService() {
                     callback.invoke(false, code, msg)
                 }
             })
+        //发sei给拉流角色
         getQRTCProvider()?.localVideoTrack?.sendSEI(rtmMsg, 1)
     }
 
     private fun saveCurrentPlayingMusicToServer(music: QKTVMusic?) {
+
+        //存储当前音乐状态到服务端
         client?.getService(QRoomService::class.java)?.updateExtension(QExtension().apply {
             key = key_current_music
             value = if (music != null) {
@@ -403,6 +421,11 @@ class QKTVServiceImpl : QKTVService, BaseService() {
         return null
     }
 
+    /**
+     * 获取播放器对象
+     *
+     * @return
+     */
     private fun getQPlayerProvider(): QIPlayer? {
         if (client is QPlayerProvider) {
             return (client as QPlayerProvider).playerGetter.invoke()
