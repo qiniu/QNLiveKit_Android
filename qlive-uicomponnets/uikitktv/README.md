@@ -1,6 +1,8 @@
 # 歌词LrcView
 主要负责歌词的显示，支持上下拖动调整进度。
 
+- com.qlive.uikitktv.QLrcView : 已经实现QLiveComponent和QKTVServiceListener的歌词业务组件，能自动同步房间歌曲和歌词进度
+- com.qlive.uikitktv.LrcView.LrcView ：无业务实现的格式UI组件
 ## xml中使用
 ```
 <com.qlive.uikitktv.QLrcView
