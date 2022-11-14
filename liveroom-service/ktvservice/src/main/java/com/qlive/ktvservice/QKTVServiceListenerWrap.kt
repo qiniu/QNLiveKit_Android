@@ -49,9 +49,9 @@ class QKTVServiceListenerWrap : QKTVServiceListener {
         }
     }
 
-    override fun updatePosition(position: Long, duration: Long) {
+    override fun onPositionUpdate(position: Long, duration: Long) {
         mServiceListener.forEach {
-            it.updatePosition(position, duration)
+            it.onPositionUpdate(position, duration)
         }
     }
 

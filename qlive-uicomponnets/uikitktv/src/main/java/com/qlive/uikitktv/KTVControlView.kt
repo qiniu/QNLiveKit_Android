@@ -88,7 +88,7 @@ class KTVControlView : QKitViewBindingFrameLayout<KitViewKtvCtrolBinding> {
         }
 
         @SuppressLint("SetTextI18n")
-        override fun updatePosition(position: Long, duration: Long) {
+        override fun onPositionUpdate(position: Long, duration: Long) {
             binding.tvPosition.text =
                 formatTime(position.toInt()/1000) + "/" + formatTime(duration.toInt()/1000)
         }

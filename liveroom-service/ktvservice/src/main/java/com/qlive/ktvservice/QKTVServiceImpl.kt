@@ -1,7 +1,6 @@
 package com.qlive.ktvservice
 
 import android.content.Context
-import android.media.MediaMetadataRetriever
 import android.util.Log
 import com.qiniu.droid.rtc.QNAudioMusicMixer
 import com.qiniu.droid.rtc.QNAudioMusicMixerListener
@@ -22,7 +21,6 @@ import com.qlive.rtclive.QRTCProvider
 import com.qlive.rtclive.QRtcLiveRoom
 import com.qlive.rtm.*
 import com.qlive.rtm.msg.RtmTextMsg
-import java.io.File
 
 class QKTVServiceImpl : QKTVService, BaseService() {
 
@@ -92,7 +90,7 @@ class QKTVServiceImpl : QKTVService, BaseService() {
                 mKTVMusic!!.currentTimeMillis = System.currentTimeMillis()
                 sendKTVMusicSignal(mKTVMusic!!) { isSuccess: Boolean, errorCode: Int, errorMsg: String ->
                 }
-                mServiceListenerWrap.updatePosition(p0, mKTVMusic!!.duration)
+                mServiceListenerWrap.onPositionUpdate(p0, mKTVMusic!!.duration)
             }
         }
 
@@ -150,7 +148,7 @@ class QKTVServiceImpl : QKTVService, BaseService() {
             if (mKTVMusic!!.currentPosition >= mKTVMusic!!.duration) {
                 mServiceListenerWrap.onPlayCompleted()
             }
-            mServiceListenerWrap.updatePosition(
+            mServiceListenerWrap.onPositionUpdate(
                 mKTVMusic!!.currentPosition,//+ System.currentTimeMillis() - mKTVMusic!!.currentTimeMillis,
                 mKTVMusic!!.duration
             )
