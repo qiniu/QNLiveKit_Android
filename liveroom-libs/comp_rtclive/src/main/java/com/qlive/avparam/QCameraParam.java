@@ -8,7 +8,7 @@ public class QCameraParam {
     /**
      * 默认码率
      */
-    public static int DEFAULT_BITRATE =2000;
+    public static int DEFAULT_BITRATE = 2000;
 
     /**
      * 分辨率宽 默认值 720
@@ -24,4 +24,6 @@ public class QCameraParam {
     public int FPS = 25;
 
     public int bitrate = DEFAULT_BITRATE;
+
+    public QVideoCaptureConfig captureConfig = QVideoCaptureConfigPreset.CAPTURE_1280x720;
 }

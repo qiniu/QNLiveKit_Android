@@ -61,8 +61,8 @@ QLive.setUser(QUserInfo("your avatar", "your nick", extraInfo), callback)
 QLive.getLiveUIKit().launch(context)
 ```
 启动后选择直播间进入效果如下：
+![alt](http://qrnlrydxa.hn-bkt.clouddn.com/doc/qk2.png)
 
-![alt](https://github.com/MJLblabla/QNLiveKit_Android-1/blob/dev/doc/img/origin1.png?raw=true)
 #### 快速定制业务以及UI
 
 定制业务以及UI的案例：
@@ -195,9 +195,7 @@ roomPage.playerCustomLayoutID = R.layout.customXXXlayout
 ```
 启动后效果如下：
 
-![alt](https://github.com/MJLblabla/QNLiveKit_Android-1/blob/dev/doc/img/new1.png?raw=true)
-
-
+![alt](http://qrnlrydxa.hn-bkt.clouddn.com/doc/qk.png)
 
 ## qlivekit架构解析
 
@@ -322,7 +320,7 @@ service.addMicLinkerListener(object : QLinkMicServiceListener {
 
 ### ui层
 
-![alt](https://github.com/MJLblabla/QNLiveKit_Android-1/blob/dev/doc/img/ui.png?raw=true)
+![alt](http://qrnlrydxa.hn-bkt.clouddn.com/doc/qui.png)
 
 qliveuikit的能力：
 - 平台业务能快速插拔各个组件为其提供运行时管理

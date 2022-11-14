@@ -7,6 +7,7 @@ import com.qlive.rtclive.rtc.SimpleQNRTCListener
 import com.qiniu.droid.rtc.*
 import com.qlive.avparam.QCameraParam
 import com.qlive.avparam.QMicrophoneParam
+import com.qlive.avparam.QVideoCaptureConfig
 import com.qlive.liblog.QLiveLogUtil
 import org.json.JSONObject
 import kotlin.coroutines.resume
@@ -42,13 +43,16 @@ open class QRtcLiveRoom(
         mInnerVideoFrameListener = QInnerVideoFrameHook.mBeautyHooker?.provideVideoFrameListener()
     }
 
-    private fun createVideoTrack(params: QNVideoEncoderConfig): QNCameraVideoTrack {
+    private fun createVideoTrack(
+        encoderConfig: QNVideoEncoderConfig,
+        captureConfig: QNVideoCaptureConfig
+    ): QNCameraVideoTrack {
         // 创建本地 Camera 视频 Track
         val cameraVideoTrackConfig = QNCameraVideoTrackConfig(TAG_CAMERA)
             .apply {
                 isMultiProfileEnabled = false
-                videoEncoderConfig = params
-                videoCaptureConfig = QNVideoCaptureConfigPreset.CAPTURE_1280x720
+                videoEncoderConfig = encoderConfig
+                videoCaptureConfig = captureConfig
             }
         return QNRTC.createCameraVideoTrack(cameraVideoTrackConfig);
     }
@@ -68,8 +72,14 @@ open class QRtcLiveRoom(
                 cameraParams.height,
                 cameraParams.FPS,
                 cameraParams.bitrate
+            ),
+            QNVideoCaptureConfig(
+                cameraParams.captureConfig.width,
+                cameraParams.captureConfig.height,
+                cameraParams.captureConfig.frameRate
             )
         )
+
         mQRTCUserStore.localVideoTrack?.setVideoFrameListener(
             BeautyVideoFrameListenerWarp(
                 mInnerVideoFrameListener,

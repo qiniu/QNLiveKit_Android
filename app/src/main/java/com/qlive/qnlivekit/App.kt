@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.qlive.avparam.QCameraParam
+import com.qlive.avparam.QVideoCaptureConfigPreset
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.QLiveClient
 import com.qlive.core.QLiveConfig
@@ -53,6 +54,14 @@ class App : Application() {
         }
         LiveRecordListView.onClickFinishedRoomCall = { context, roomInfo ->
             DemoLiveFinishedActivity.checkStart(context, roomInfo)
+        }
+
+        QLive.getLiveUIKit().getPage(RoomPage::class.java).cameraParam = QCameraParam().apply {
+            width = 640
+            height = 480
+            bitrate = 1000
+            FPS = 20
+            captureConfig = QVideoCaptureConfigPreset.CAPTURE_640x480
         }
     }
 

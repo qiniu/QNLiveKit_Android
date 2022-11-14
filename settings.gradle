@@ -1,4 +1,3 @@
-
 rootProject.name = "QNLiveKit"
 include ':app'
 include ':doc:sdkbuilder'
@@ -22,6 +21,8 @@ include ':liveroom-service:roomservice'
 include ':liveroom-service:shoppingservice'
 include ':liveroom-service:giftservice'
 include ':liveroom-service:likeservice'
+include ':liveroom-service:ktvservice'
+
 
 include ':liveroom-libs:lib_json'
 include ':liveroom-libs:comp_rtm'
@@ -42,12 +43,11 @@ include ':qlive-uicomponnets:uikit-beauty'
 include ':qlive-uicomponnets:uikit-shopping'
 include ':qlive-uicomponnets:uikit-linkmic'
 include ':qlive-uicomponnets:uikit-pk'
+include ':qlive-uicomponnets:uikit-gift'
+include ':qlive-uicomponnets:uikit-like'
+include ':qlive-uicomponnets:uikitktv'
 
 include ':qlivesdk'
 include ':qlive-uikit'
 
 
-include ':qlive-uicomponnets:uikit-gift'
-include ':qlive-uicomponnets:uikit-like'
-include ':liveroom-service:ktvservice'
-include ':qlive-uicomponnets:uikitktv'
