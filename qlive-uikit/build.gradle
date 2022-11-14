@@ -49,7 +49,9 @@ dependencies {
 
     api depend.gson() //必选 json解析
     api depend.okhttp3() //demo依赖
-
+    compileOnly project(':app-sdk:depends_sdk_qnim')
+    compileOnly project(':app-sdk:depends_sdk_qrtc')
+    compileOnly project(':app-sdk:depends_sdk_piliplayer') //七牛播放器
     implementation 'com.github.gzu-liyujiang.AndroidPicker:WheelPicker:4.1.9'
 
     testImplementation 'junit:junit:4.13.2'

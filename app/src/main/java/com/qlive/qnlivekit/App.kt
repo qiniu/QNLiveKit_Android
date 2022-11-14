@@ -5,6 +5,7 @@ import android.os.Process
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.qlive.avparam.QCameraParam
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.QLiveClient
 import com.qlive.core.QLiveConfig
@@ -13,6 +14,7 @@ import com.qlive.qnlivekit.uitil.*
 
 import com.qlive.sdk.QLive
 import com.qlive.shoppingservice.QItem
+import com.qlive.uikit.RoomPage
 import com.qlive.uikit.component.CloseRoomView
 import com.qlive.uikit.component.LiveRecordListView
 import com.qlive.uikitcore.QLiveUIKitContext
