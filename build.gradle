@@ -48,11 +48,11 @@ public class HapiDependPlugin implements Plugin<Project> {
  */
 public class DependsComp {
 
-    int compileSdkVersion = 31
+    int compileSdkVersion = 33
     String buildToolsVersion = "30.0.3"
 
     int minSdkVersion = 21
-    int targetSdkVersion = 31
+    int targetSdkVersion = 33
     String androidxVersion = "1.2.0"
     String designVersion = "1.0.0"
 

@@ -69,15 +69,15 @@ class GiftTrackView : FrameLayout, TrackView {
         val animatorSet = AnimatorSet()
         animatorSet.playTogether(inTranslation, inAlpha, outAlpha, outTranslation)
         animatorSet.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(p0: Animator?) {}
-            override fun onAnimationEnd(p0: Animator?) {
+            override fun onAnimationStart(p0: Animator) {}
+            override fun onAnimationEnd(p0: Animator) {
                 isShowAnimaing = false
                 this@GiftTrackView.translationX = -width.toFloat()
                 this@GiftTrackView.translationY = 0f
             }
 
-            override fun onAnimationCancel(p0: Animator?) {}
-            override fun onAnimationRepeat(p0: Animator?) {}
+            override fun onAnimationCancel(p0: Animator) {}
+            override fun onAnimationRepeat(p0: Animator) {}
         })
         animatorSet
     }
