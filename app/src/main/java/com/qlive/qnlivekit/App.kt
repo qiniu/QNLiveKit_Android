@@ -55,14 +55,6 @@ class App : Application() {
         LiveRecordListView.onClickFinishedRoomCall = { context, roomInfo ->
             DemoLiveFinishedActivity.checkStart(context, roomInfo)
         }
-
-        QLive.getLiveUIKit().getPage(RoomPage::class.java).cameraParam = QCameraParam().apply {
-            width = 640
-            height = 480
-            bitrate = 1000
-            FPS = 20
-            captureConfig = QVideoCaptureConfigPreset.CAPTURE_640x480
-        }
     }
 
     override fun onTrimMemory(level: Int) {
