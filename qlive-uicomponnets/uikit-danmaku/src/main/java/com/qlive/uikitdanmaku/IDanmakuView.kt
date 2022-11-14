@@ -87,17 +87,17 @@ class DanmuItemViewOnlyText : FrameLayout, IDanmuItemView {
         )
         transX.interpolator = LinearInterpolator()
         transX.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationRepeat(animation: Animator?) {
+            override fun onAnimationRepeat(animation: Animator) {
             }
 
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationEnd(animation: Animator) {
                 endCall?.invoke()
             }
 
-            override fun onAnimationCancel(animation: Animator?) {
+            override fun onAnimationCancel(animation: Animator) {
             }
 
-            override fun onAnimationStart(animation: Animator?) {
+            override fun onAnimationStart(animation: Animator) {
             }
         })
         transX.addUpdateListener { v: ValueAnimator ->

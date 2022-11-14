@@ -1,5 +1,6 @@
 package com.qlive.qnlivekit
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -67,9 +68,7 @@ class MainActivity : AppCompatActivity() {
                     //绑定用户信息
                     suspendSetUser()
                     //启动跳转到直播列表
-                    QLive.getLiveUIKit().launch(this@MainActivity)
-                    // CustomRoomListActivity.start(this@MainActivity)
-
+                    startActivity(Intent(this@MainActivity, DemoSelectActivity::class.java))
                 } catch (e: Exception) {
                     e.printStackTrace()
                 } finally {

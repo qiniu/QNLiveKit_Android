@@ -255,9 +255,9 @@ class PKAnchorPreview : QKitViewBindingFrameLayout<KitAnchorPkPreviewBinding> {
         AnimatorSet().apply {
             play(scaleX).with(scaleY).with(translationY).with(translationX)
             addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(p0: Animator?) {}
+                override fun onAnimationStart(p0: Animator) {}
 
-                override fun onAnimationEnd(p0: Animator?) {
+                override fun onAnimationEnd(p0: Animator) {
                     originPreViewParent = localRenderView!!.parent as ViewGroup
                     originIndex = originPreViewParent?.indexOfChild(localRenderView) ?: 0
                     originPreViewParent?.removeView(localRenderView)
@@ -278,11 +278,11 @@ class PKAnchorPreview : QKitViewBindingFrameLayout<KitAnchorPkPreviewBinding> {
                     localRenderView!!.translationX = 0f
                 }
 
-                override fun onAnimationCancel(p0: Animator?) {
+                override fun onAnimationCancel(p0: Animator) {
 
                 }
 
-                override fun onAnimationRepeat(p0: Animator?) {}
+                override fun onAnimationRepeat(p0: Animator) {}
             })
         }.start()
     }
