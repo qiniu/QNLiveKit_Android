@@ -155,14 +155,19 @@ internal class QLiveCoreDelegate {
         loginInner(false, callBack)
     }
 
-    fun <T> getUIKIT(): T {
+    fun <T> getUIKIT(): T? {
         if (uikitObj != null) {
             return uikitObj as T
         }
-        val classStr = "com.qlive.uikit.QLiveUIKitImpl"
-        val classImpl = Class.forName(classStr)
-        val constructor = classImpl.getConstructor(Context::class.java)
-        uikitObj = constructor.newInstance(appContext) as T
+        try {
+            val classStr = "com.qlive.uikit.QLiveUIKitImpl"
+            val classImpl = Class.forName(classStr)
+            val constructor = classImpl.getConstructor(Context::class.java)
+            uikitObj = constructor.newInstance(appContext) as T
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
         return uikitObj as T
     }
 
