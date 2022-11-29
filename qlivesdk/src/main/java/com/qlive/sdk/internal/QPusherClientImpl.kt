@@ -212,7 +212,7 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider, QLiveServiceObse
     }
 
     override fun muteMicrophone(muted: Boolean, callBack: QLiveCallBack<Boolean>?) {
-        if (mRtcRoom.muteLocalCamera(muted)) {
+        if (mRtcRoom.muteLocalMicrophone(muted)) {
             callBack?.onSuccess(true)
         } else {
             callBack?.onSuccess(false)
