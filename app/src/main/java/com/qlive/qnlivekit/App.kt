@@ -5,6 +5,7 @@ import android.os.Process
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.qiniu.droid.rtc.QNRTCSetting
 import com.qlive.avparam.QCameraParam
 import com.qlive.avparam.QVideoCaptureConfigPreset
 import com.qlive.core.QLiveCallBack
@@ -12,6 +13,7 @@ import com.qlive.core.QLiveClient
 import com.qlive.core.QLiveConfig
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.qnlivekit.uitil.*
+import com.qlive.rtclive.QRtcLiveRoomConfig
 
 import com.qlive.sdk.QLive
 import com.qlive.shoppingservice.QItem
