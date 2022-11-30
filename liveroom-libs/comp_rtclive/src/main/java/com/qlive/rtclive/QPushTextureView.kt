@@ -28,7 +28,7 @@ open class QPushTextureView : FrameLayout, RTCRenderView {
         return this
     }
 
-     override fun getQNRender(): QNRenderView {
+    override fun getQNRender(): QNTextureView {
         return renderView!!
     }
 //
