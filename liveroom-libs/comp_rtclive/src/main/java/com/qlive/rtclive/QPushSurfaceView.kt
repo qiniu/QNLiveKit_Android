@@ -27,7 +27,7 @@ class QPushSurfaceView  :FrameLayout , RTCRenderView {
         return this
     }
 
-    override fun getQNRender(): QNRenderView {
+    override fun getQNRender(): QNSurfaceView {
         return renderView!!
     }
 }
