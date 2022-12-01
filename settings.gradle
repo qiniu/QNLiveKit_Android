@@ -1,7 +1,7 @@
 rootProject.name = "QNLiveKit"
 include ':app'
 include ':doc:sdkbuilder'
-include ':doc:docPlugin'
+//include ':doc:docPlugin'
 include ':doc:docbuilder'
 
 //qlive 输出sdk

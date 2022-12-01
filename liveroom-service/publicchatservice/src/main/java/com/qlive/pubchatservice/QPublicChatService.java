@@ -8,7 +8,6 @@ import com.qlive.core.QLiveService;
  */
 public interface QPublicChatService extends QLiveService {
 
-
     /**
      * 发送 公聊
      *

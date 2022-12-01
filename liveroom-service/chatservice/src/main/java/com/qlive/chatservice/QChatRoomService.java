@@ -26,19 +26,20 @@ public interface QChatRoomService extends QLiveService {
     /**
      * 发c2c消息
      *
+     * @param isCMD    是不是信令消息
      * @param msg      消息内容
      * @param memberID 成员im ID
      * @param callBack 回调
      */
-    void sendCustomC2CMsg(String msg, String memberID, QLiveCallBack<Void> callBack);
+    void sendCustomC2CMsg(boolean isCMD, String msg, String memberID, QLiveCallBack<Void> callBack);
 
     /**
      * 发群消息
-     *
+     * @param isCMD    是不是信令消息
      * @param msg      消息内容
      * @param callBack 回调
      */
-    void sendCustomGroupMsg(String msg, QLiveCallBack<Void> callBack);
+    void sendCustomGroupMsg(boolean isCMD, String msg, QLiveCallBack<Void> callBack);
 
     /**
      * 踢人

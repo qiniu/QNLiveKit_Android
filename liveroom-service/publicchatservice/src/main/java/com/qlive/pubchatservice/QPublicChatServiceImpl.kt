@@ -10,6 +10,7 @@ import com.qlive.coreimpl.QLiveDataSource
 import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.model.LiveStatistics
 import com.qlive.jsonutil.JsonUtils
+import com.qlive.pubchatservice.QPublicChat.action_puchat
 import com.qlive.rtm.*
 import com.qlive.rtm.msg.RtmTextMsg
 import java.util.*
@@ -65,19 +66,36 @@ internal class QPublicChatServiceImpl : QPublicChatService, BaseService() {
 
     private fun sendModel(model: QPublicChat, callBack: QLiveCallBack<QPublicChat>?) {
         val msg = RtmTextMsg(model.action, model).toJsonString()
-        RtmManager.rtmClient.sendChannelCMDMsg(
-            msg,
-            currentRoomInfo?.chatID ?: "",
-            true,
-            object : RtmCallBack {
-                override fun onSuccess() {
-                    callBack?.onSuccess(model)
-                }
+        if(model.action == action_puchat){
+            RtmManager.rtmClient.sendChannelTextMsg(
+                msg,
+                currentRoomInfo?.chatID ?: "",
+                true,
+                object : RtmCallBack {
+                    override fun onSuccess() {
+                        callBack?.onSuccess(model)
+                    }
 
-                override fun onFailure(code: Int, msg: String) {
-                    callBack?.onError(code, msg)
-                }
-            })
+                    override fun onFailure(code: Int, msg: String) {
+                        callBack?.onError(code, msg)
+                    }
+                })
+        }else{
+            RtmManager.rtmClient.sendChannelCMDMsg(
+                msg,
+                currentRoomInfo?.chatID ?: "",
+                true,
+                object : RtmCallBack {
+                    override fun onSuccess() {
+                        callBack?.onSuccess(model)
+                    }
+
+                    override fun onFailure(code: Int, msg: String) {
+                        callBack?.onError(code, msg)
+                    }
+                })
+        }
+
     }
 
     /**
