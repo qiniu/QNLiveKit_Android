@@ -204,32 +204,13 @@ internal class QChatRoomServiceImpl : BaseService(),
      * @param callBack
      */
     override fun sendCustomC2CMsg(
+        isCMD: Boolean,
         msg: String,
         memberID: String,
         callBack: QLiveCallBack<Void>?
     ) {
-        RtmManager.rtmClient.sendC2cCMDMsg(msg, memberID, true, object : RtmCallBack {
-            override fun onSuccess() {
-                callBack?.onSuccess(null)
-            }
-
-            override fun onFailure(code: Int, msg: String) {
-                callBack?.onError(code, msg)
-            }
-        })
-    }
-
-    /**
-     * 发群消息
-     * @param msg
-     * @param callBack
-     */
-    override fun sendCustomGroupMsg(msg: String, callBack: QLiveCallBack<Void>?) {
-        RtmManager.rtmClient.sendChannelCMDMsg(
-            msg,
-            currentRoomInfo?.chatID ?: "",
-            true,
-            object : RtmCallBack {
+        if(isCMD){
+            RtmManager.rtmClient.sendC2cCMDMsg(msg, memberID, true, object : RtmCallBack {
                 override fun onSuccess() {
                     callBack?.onSuccess(null)
                 }
@@ -238,6 +219,56 @@ internal class QChatRoomServiceImpl : BaseService(),
                     callBack?.onError(code, msg)
                 }
             })
+        }else{
+            RtmManager.rtmClient.sendC2cTextMsg(msg, memberID, true, object : RtmCallBack {
+                override fun onSuccess() {
+                    callBack?.onSuccess(null)
+                }
+
+                override fun onFailure(code: Int, msg: String) {
+                    callBack?.onError(code, msg)
+                }
+            })
+        }
+    }
+
+    /**
+     * 发群消息
+     * @param msg
+     * @param callBack
+     */
+    override fun sendCustomGroupMsg(isCMD: Boolean, msg: String, callBack: QLiveCallBack<Void>?) {
+        if(isCMD){
+            RtmManager.rtmClient.sendChannelCMDMsg(
+                msg,
+                currentRoomInfo?.chatID ?: "",
+                true,
+                object : RtmCallBack {
+                    override fun onSuccess() {
+                        callBack?.onSuccess(null)
+                    }
+
+                    override fun onFailure(code: Int, msg: String) {
+                        callBack?.onError(code, msg)
+                    }
+                })
+
+        }else{
+            RtmManager.rtmClient.sendChannelTextMsg(
+                msg,
+                currentRoomInfo?.chatID ?: "",
+                true,
+                object : RtmCallBack {
+                    override fun onSuccess() {
+                        callBack?.onSuccess(null)
+                    }
+
+                    override fun onFailure(code: Int, msg: String) {
+                        callBack?.onError(code, msg)
+                    }
+                })
+
+        }
     }
 
     /**
