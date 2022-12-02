@@ -1,6 +1,7 @@
 package com.qlive.pubchatservice
 
 import android.content.Context
+import android.text.TextUtils
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.QLiveClient
 import com.qlive.coreimpl.QLiveServiceObserver
@@ -13,16 +14,15 @@ import com.qlive.jsonutil.JsonUtils
 import com.qlive.pubchatservice.QPublicChat.action_puchat
 import com.qlive.rtm.*
 import com.qlive.rtm.msg.RtmTextMsg
+import com.qlive.rtm.msg.TextMsg
 import java.util.*
 
 internal class QPublicChatServiceImpl : QPublicChatService, BaseService() {
 
     private val mListeners = LinkedList<QPublicChatServiceLister>()
-
     private val mRtmMsgListener = object : RtmMsgListener {
-
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
-            if (toID != currentRoomInfo?.chatID) {
+        override fun onNewMsg(msg: TextMsg): Boolean {
+            if (msg.toID != currentRoomInfo?.chatID) {
                 return false
             }
             if (
@@ -32,23 +32,24 @@ internal class QPublicChatServiceImpl : QPublicChatService, BaseService() {
                 msg.optAction() == QPublicChat.action_puchat ||
                 msg.optAction() == QPublicChat.action_pubchat_custom
             ) {
-                val mode = JsonUtils.parseObject(msg.optData(), QPublicChat::class.java)
+                val mode =
+                    JsonUtils.parseObject(msg.optData(), QPublicChat::class.java) ?: return true
+                mode.msgID = msg.msgID
                 if (msg.optAction() == QPublicChat.action_welcome
                     && client is QLiveServiceObserver
                 ) {
-                    (client as QLiveServiceObserver?)?.notifyUserJoin(mode?.sendUser?.userId ?: "")
+                    (client as QLiveServiceObserver?)?.notifyUserJoin(mode.sendUser?.userId ?: "")
                 }
                 if (msg.optAction() == QPublicChat.action_bye
                     && client is QLiveServiceObserver
                 ) {
-                    (client as QLiveServiceObserver?)?.notifyUserLeft(mode?.sendUser?.userId ?: "")
+                    (client as QLiveServiceObserver?)?.notifyUserLeft(mode.sendUser?.userId ?: "")
                 }
                 mListeners.forEach {
                     it.onReceivePublicChat(mode)
                 }
                 return true
             }
-
             return false
         }
     }
@@ -66,36 +67,20 @@ internal class QPublicChatServiceImpl : QPublicChatService, BaseService() {
 
     private fun sendModel(model: QPublicChat, callBack: QLiveCallBack<QPublicChat>?) {
         val msg = RtmTextMsg(model.action, model).toJsonString()
-        if(model.action == action_puchat){
-            RtmManager.rtmClient.sendChannelTextMsg(
-                msg,
-                currentRoomInfo?.chatID ?: "",
-                true,
-                object : RtmCallBack {
-                    override fun onSuccess() {
-                        callBack?.onSuccess(model)
-                    }
 
-                    override fun onFailure(code: Int, msg: String) {
-                        callBack?.onError(code, msg)
-                    }
-                })
-        }else{
-            RtmManager.rtmClient.sendChannelCMDMsg(
-                msg,
-                currentRoomInfo?.chatID ?: "",
-                true,
-                object : RtmCallBack {
-                    override fun onSuccess() {
-                        callBack?.onSuccess(model)
-                    }
+        RtmManager.rtmClient.sendChannelTextMsg(
+            msg,
+            currentRoomInfo?.chatID ?: "",
+            true,
+            object : RtmCallBack {
+                override fun onSuccess() {
+                    callBack?.onSuccess(model)
+                }
 
-                    override fun onFailure(code: Int, msg: String) {
-                        callBack?.onError(code, msg)
-                    }
-                })
-        }
-
+                override fun onFailure(code: Int, msg: String) {
+                    callBack?.onError(code, msg)
+                }
+            })
     }
 
     /**
@@ -119,6 +104,43 @@ internal class QPublicChatServiceImpl : QPublicChatService, BaseService() {
                 }))
             }
         }
+    }
+
+    override fun getHistoryChatMsg(
+        startMsgID: String,
+        size: Int, callBack: QLiveCallBack<MutableList<QPublicChat>>
+    ) {
+        val id = if (TextUtils.isEmpty(startMsgID)) {
+            -1
+        } else {
+            startMsgID.toLong()
+        }
+        RtmManager.rtmClient.getHistoryTextMsg(currentRoomInfo?.chatID ?: "-1", id, size,
+            object : RtmDadaCallBack<List<TextMsg>> {
+                override fun onSuccess(data: List<TextMsg>) {
+                    val list = LinkedList<QPublicChat>()
+                    data.forEach { msg ->
+                        if (
+                            msg.optAction() == QPublicChat.action_welcome ||
+                            msg.optAction() == QPublicChat.action_bye ||
+                            msg.optAction() == QPublicChat.action_like ||
+                            msg.optAction() == QPublicChat.action_puchat ||
+                            msg.optAction() == QPublicChat.action_pubchat_custom
+                        ) {
+                            val mode = JsonUtils.parseObject(msg.optData(), QPublicChat::class.java)
+                            mode?.let {
+                                it.msgID = msg.msgID
+                                list.add(it)
+                            }
+                        }
+                    }
+                    callBack.onSuccess(list)
+                }
+
+                override fun onFailure(code: Int, msg: String) {
+                    callBack.onError(code, msg)
+                }
+            })
     }
 
     /**

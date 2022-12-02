@@ -8,7 +8,7 @@ public class Invitation implements Serializable {
     private String msg;//本次操作带的自定义数据。
     private long timeStamp; //时间戳
     private String initiatorUid;//邀请方imuid
-    private String receiver;//
+    private String receiver;//接收方imuid
     private String channelId;//可为空 空代表c2c 。提供 set get
     private long timeoutThreshold = -1;
 

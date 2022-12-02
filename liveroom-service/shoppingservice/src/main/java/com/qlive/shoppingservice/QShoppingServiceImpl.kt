@@ -10,6 +10,7 @@ import com.qlive.coreimpl.model.LiveStatistics
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.rtm.*
 import com.qlive.rtm.msg.RtmTextMsg
+import com.qlive.rtm.msg.TextMsg
 
 internal class QShoppingServiceImpl : BaseService(), QShoppingService {
 
@@ -21,8 +22,8 @@ internal class QShoppingServiceImpl : BaseService(), QShoppingService {
     private val ACTION_REFRESH = "liveroom_shopping_refresh"
 
     private val mRtmMsgListener = object : RtmMsgListener {
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
-            if (toID != currentRoomInfo?.chatID) {
+        override fun onNewMsg(msg: TextMsg): Boolean {
+            if (msg.toID != currentRoomInfo?.chatID) {
                 return false
             }
             if (msg.optAction() == ACTION_EXPLAINING) {

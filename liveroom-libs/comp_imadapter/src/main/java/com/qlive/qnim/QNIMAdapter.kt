@@ -5,11 +5,15 @@ import android.util.Log
 import com.qlive.rtm.RtmCallBack
 import com.qlive.rtm.RtmAdapter
 import com.qiniu.droid.imsdk.QNIMClient
+import com.qlive.rtm.RtmDadaCallBack
+import com.qlive.rtm.msg.TextMsg
 import im.floo.BMXCallBack
+import im.floo.BMXDataCallBack
 import im.floo.floolib.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.LinkedList
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -32,20 +36,18 @@ class QNIMAdapter : RtmAdapter {
     }
 
     class MsgCallTemp(
-        val msg: String,
-        val fromID: String,
-        val peerId: String,
+        val msg: TextMsg,
         val isDispatchToLocal: Boolean,
         val callBack: RtmCallBack?,
-        val isC2c: Boolean
+        val isC2c: Boolean,
     )
 
     private val mMsgCallMap: HashMap<Long, com.qlive.qnim.QNIMAdapter.MsgCallTemp> =
         HashMap<Long, com.qlive.qnim.QNIMAdapter.MsgCallTemp>()
-    private var c2cMessageReceiver: (msg: String, fromID: String, toID: String) -> Unit =
-        { _, _, _ -> }
-    private var channelMsgReceiver: (msg: String, fromID: String, toID: String) -> Unit =
-        { _, _, _ -> }
+    private var c2cMessageReceiver: (msg: TextMsg) -> Unit =
+        { _ -> }
+    private var channelMsgReceiver: (msg: TextMsg) -> Unit =
+        { _ -> }
     private val mChatListener: BMXChatServiceListener = object : BMXChatServiceListener() {
 
         override fun onStatusChanged(msg: BMXMessage, error: BMXErrorCode) {
@@ -57,13 +59,13 @@ class QNIMAdapter : RtmAdapter {
             GlobalScope.launch(Dispatchers.Main) {
                 if (error == BMXErrorCode.NoError) {
                     if (call.isDispatchToLocal) {
+                        call.msg.msgID = msg.msgId().toString()
                         if (call.isC2c) c2cMessageReceiver(
+                            call.msg
+                        ) else channelMsgReceiver(
                             call.msg,
-                            call.fromID,
-                            call.peerId
-                        ) else channelMsgReceiver(call.msg, call.fromID, call.peerId)
+                        )
                     }
-
                     call.callBack?.onSuccess()
                 } else {
                     call.callBack?.onFailure(error.swigValue(), error.name)
@@ -93,14 +95,27 @@ class QNIMAdapter : RtmAdapter {
                     } else {
                         ""
                     }
-
                     GlobalScope.launch(Dispatchers.Main) {
                         when (message.type()) {
                             BMXMessage.MessageType.Group -> {
-                                channelMsgReceiver(msgContent, from, targetId)
+                                channelMsgReceiver(
+                                    TextMsg(
+                                        msgContent,
+                                        from,
+                                        targetId,
+                                        message.msgId().toString()
+                                    )
+                                )
                             }
                             BMXMessage.MessageType.Single -> {
-                                c2cMessageReceiver(msgContent, from, targetId)
+                                c2cMessageReceiver(
+                                    TextMsg(
+                                        msgContent,
+                                        from,
+                                        targetId,
+                                        message.msgId().toString()
+                                    )
+                                )
                             }
                             else -> {
                             }
@@ -174,7 +189,7 @@ class QNIMAdapter : RtmAdapter {
         QNIMClient.sendMessage(imMsg)
         callBack?.onSuccess()
         if (isDispatchToLocal) {
-            c2cMessageReceiver(msg, loginImUid, peerId)
+            c2cMessageReceiver(TextMsg(msg, loginImUid, peerId, imMsg.msgId().toString()))
         }
     }
 
@@ -200,7 +215,7 @@ class QNIMAdapter : RtmAdapter {
         QNIMClient.sendMessage(imMsg)
         callBack?.onSuccess()
         if (isDispatchToLocal) {
-            channelMsgReceiver(msg, loginImUid, channelId)
+            channelMsgReceiver(TextMsg(msg, loginImUid, channelId, imMsg.msgId().toString()))
         }
     }
 
@@ -226,9 +241,7 @@ class QNIMAdapter : RtmAdapter {
         mMsgCallMap.put(
             clientTime,
             com.qlive.qnim.QNIMAdapter.MsgCallTemp(
-                msg,
-                loginImUid,
-                peerId,
+                TextMsg(msg, loginImUid, peerId, ""),
                 isDispatchToLocal,
                 callBack,
                 false
@@ -260,9 +273,7 @@ class QNIMAdapter : RtmAdapter {
         mMsgCallMap.put(
             clientTime,
             com.qlive.qnim.QNIMAdapter.MsgCallTemp(
-                msg,
-                loginImUid,
-                channelId,
+                TextMsg(msg, loginImUid, channelId, ""),
                 isDispatchToLocal,
                 callBack,
                 false
@@ -282,7 +293,6 @@ class QNIMAdapter : RtmAdapter {
                 callBack?.onFailure(p0.swigValue(), p0.name)
             }
         }
-
     }
 
     override fun joinChannel(channelId: String, callBack: RtmCallBack?) {
@@ -315,6 +325,43 @@ class QNIMAdapter : RtmAdapter {
         }
     }
 
+     override fun getHistoryTextMsg(
+        channelId: String,
+        refMsgId: Long,
+        size: Int,
+        call: RtmDadaCallBack<List<TextMsg>>
+    ) {
+        QNIMClient.getChatManager().openConversation(
+            channelId.toLong(),
+            BMXConversation.Type.Group, false
+        ) { p0, p1 ->
+            if (p0 != BMXErrorCode.NoError || p1 == null) {
+                call.onFailure(p0.swigValue(),p0.name)
+                return@openConversation
+            }
+            p1.loadMessages(refMsgId, size.toLong()) { code, msgList ->
+                if (code != BMXErrorCode.NoError || msgList == null) {
+                    call.onFailure(code.swigValue(),code.name)
+                    return@loadMessages
+                }
+                val textMsgList = LinkedList<TextMsg>()
+                for (i in 0 until msgList.size()) {
+                    val message = msgList.get(i.toInt())
+                    val targetId = message.toId().toString()
+                    val from = message.fromId().toString()
+                    if (message.contentType() == BMXMessage.ContentType.Text
+                        || message.contentType() == BMXMessage.ContentType.Command
+                    ) {
+                        textMsgList.add(
+                            TextMsg(message.content(), from, targetId, message.msgId().toString())
+                        )
+                    }
+                }
+                call.onSuccess(textMsgList)
+            }
+        }
+    }
+
     override fun releaseChannel(channelId: String, callBack: RtmCallBack?) {
         //  自动销毁
     }
@@ -333,8 +380,8 @@ class QNIMAdapter : RtmAdapter {
      * @param channelMsgReceiver 群消息接收器
      */
     override fun registerOriginImListener(
-        c2cMessageReceiver: (msg: String, fromID: String, toID: String) -> Unit,
-        channelMsgReceiver: (msg: String, fromID: String, toID: String) -> Unit
+        c2cMessageReceiver: (msg: TextMsg) -> Unit,
+        channelMsgReceiver: (msg: TextMsg) -> Unit
     ) {
         this.c2cMessageReceiver = c2cMessageReceiver
         this.channelMsgReceiver = channelMsgReceiver

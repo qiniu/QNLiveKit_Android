@@ -1,5 +1,7 @@
 package com.qlive.rtm
 
+import com.qlive.rtm.msg.TextMsg
+
 /**
  * im 适配器
  */
@@ -50,11 +52,17 @@ interface RtmAdapter {
 
     fun getLoginUserIMUId():String
 
+    fun getHistoryTextMsg(
+        channelId: String,
+        refMsgId: Long,
+        size: Int,
+        call: RtmDadaCallBack<List<TextMsg>>
+    )
     /**
      * 注册监听
      * @param c2cMessageReceiver  c2c消息接收器
      * @param channelMsgReceiver 群消息接收器
      */
-    fun registerOriginImListener(c2cMessageReceiver:(msg: String, fromID: String, toID: String)->Unit , channelMsgReceiver:(msg: String, fromID: String, toID: String)->Unit)
+    fun registerOriginImListener(c2cMessageReceiver:(msg: TextMsg)->Unit, channelMsgReceiver:(msg : TextMsg)->Unit)
 
 }

@@ -1,7 +1,7 @@
 package com.qlive.pubchatservice;
 
 
-
+import com.google.gson.annotations.Expose;
 import com.qlive.core.been.QLiveUser;
 
 import java.io.Serializable;
@@ -47,4 +47,9 @@ public class QPublicChat implements Serializable {
      */
     public String senderRoomId;
 
+    /**
+     * 消息ID
+     */
+    @Expose(serialize = false, deserialize = false)
+    public String msgID = "";
 }

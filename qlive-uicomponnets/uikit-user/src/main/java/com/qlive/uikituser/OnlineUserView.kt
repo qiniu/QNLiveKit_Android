@@ -12,6 +12,7 @@ import com.qlive.core.QLiveClient
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
 import com.qlive.roomservice.QRoomService
+import com.qlive.rtm.msg.TextMsg
 import com.qlive.uikitcore.*
 import com.qlive.uikitcore.ext.bg
 import com.qlive.uikitcore.smartrecycler.IAdapter
@@ -52,13 +53,11 @@ class OnlineUserView : QKitFrameLayout {
         override fun onUserJoin(memberID: String) {
             refresh()
         }
-
         override fun onUserLeft(memberID: String) {
             refresh()
         }
-
-        override fun onReceivedC2CMsg(msg: String, fromID: String, toID: String) {}
-        override fun onReceivedGroupMsg(msg: String, fromID: String, toID: String) {}
+        override fun onReceivedC2CMsg(msg: TextMsg) {}
+        override fun onReceivedGroupMsg(msg: TextMsg) {}
         override fun onUserKicked(memberID: String) {}
         override fun onUserBeMuted(isMute: Boolean, memberID: String, duration: Long) {}
         override fun onAdminAdd(memberID: String) {}

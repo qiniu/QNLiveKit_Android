@@ -11,13 +11,14 @@ import com.qlive.core.been.QLiveStatistics
 import com.qlive.coreimpl.QLiveDataSource
 import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.model.LiveStatistics
+import com.qlive.rtm.msg.TextMsg
 
 internal class QDanmakuServiceImpl : QDanmakuService, BaseService() {
     private val roomDataSource = QLiveDataSource()
     private val mDanmakuServiceListeners = ArrayList<QDanmakuServiceListener>()
     private val rtmMsgListener = object : RtmMsgListener {
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
-            if (toID != currentRoomInfo?.chatID) {
+        override fun onNewMsg(msg: TextMsg): Boolean {
+            if (msg.toID != currentRoomInfo?.chatID) {
                 return false
             }
             if (msg.optAction() == QDanmaku.action_danmu) {
@@ -75,7 +76,6 @@ internal class QDanmakuServiceImpl : QDanmakuService, BaseService() {
                 override fun onSuccess() {
                     callBack?.onSuccess(mode)
                 }
-
                 override fun onFailure(code: Int, msg: String) {
                     callBack?.onError(code, msg)
                 }

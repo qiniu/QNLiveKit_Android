@@ -1,5 +1,7 @@
 package com.qlive.rtm
 
+import com.qlive.rtm.msg.TextMsg
+
 object RtmManager {
 
     lateinit var rtmClient: RtmAdapter
@@ -50,17 +52,17 @@ object RtmManager {
         adapter.registerOriginImListener(RtmManager::handleC2cMessage, RtmManager::handleChannelMsg)
     }
 
-    private fun handleC2cMessage(msg: String, fromID: String, toID: String) {
+    private fun handleC2cMessage(msg:TextMsg) {
         mRtmC2cListeners.forEach {
-            if (it.onNewMsg(msg, fromID, toID)) {
+            if (it.onNewMsg(msg)) {
                 return@forEach
             }
         }
     }
 
-    private fun handleChannelMsg(msg: String, fromID: String, toID: String) {
+    private fun handleChannelMsg(msg:TextMsg) {
         mRtmChannelListeners.forEach {
-            if (it.onNewMsg(msg, fromID, toID)) {
+            if (it.onNewMsg(msg)) {
                 return@forEach
             }
         }

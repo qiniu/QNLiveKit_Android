@@ -12,21 +12,19 @@ import com.qlive.likeservice.inner.InnerLike
 import com.qlive.likeservice.inner.LikeDataSource
 import com.qlive.rtm.RtmManager
 import com.qlive.rtm.RtmMsgListener
-import com.qlive.rtm.optAction
-import com.qlive.rtm.optData
+import com.qlive.rtm.msg.TextMsg
 
 class QLikeServiceImpl : QLikeService, BaseService() {
     companion object {
         private const val LIKE_ACTION = "like_notify"
     }
-
     private val liveDataSource = QLiveDataSource()
     private val likeDataSource = LikeDataSource()
     private val listeners = ArrayList<QLikeServiceListener>()
     private val mRtmMsgListener = object : RtmMsgListener {
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
+        override fun onNewMsg(msg: TextMsg): Boolean {
             val action = msg.optAction()
-            if (LIKE_ACTION == action && toID == currentRoomInfo?.chatID) {
+            if (LIKE_ACTION == action && msg.toID == currentRoomInfo?.chatID) {
                 val msgBeen =
                     JsonUtils.parseObject(msg.optData(), InnerLike::class.java) ?: return true
                 backGround {

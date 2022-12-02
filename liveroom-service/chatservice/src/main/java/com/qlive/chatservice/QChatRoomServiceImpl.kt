@@ -6,6 +6,7 @@ import com.qiniu.droid.imsdk.QNIMClient
 import com.qlive.core.*
 import com.qlive.coreimpl.BaseService
 import com.qlive.liblog.QLiveLogUtil
+import com.qlive.rtm.msg.TextMsg
 import im.floo.floolib.BMXErrorCode
 import im.floo.floolib.BMXGroup
 import im.floo.floolib.BMXGroupServiceListener
@@ -22,11 +23,11 @@ internal class QChatRoomServiceImpl : BaseService(),
          * 收到消息
          * @return 是否继续分发
          */
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
+        override fun onNewMsg(msg: TextMsg): Boolean {
             QLiveLogUtil.d("mC2CRtmMsgListener onNewMsg ${msg}")
             return if (msg.optAction() == "") {
                 mChatServiceListeners.forEach {
-                    it.onReceivedC2CMsg(msg, fromID, toID)
+                    it.onReceivedC2CMsg(msg)
                 }
                 true
             } else {
@@ -40,14 +41,14 @@ internal class QChatRoomServiceImpl : BaseService(),
          * 收到消息
          * @return 是否继续分发
          */
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
-            if (toID != currentRoomInfo?.chatID) {
+        override fun onNewMsg(msg: TextMsg): Boolean {
+            if (msg.toID != currentRoomInfo?.chatID) {
                 return false
             }
             QLiveLogUtil.d("mGroupRtmMsgListener onNewMsg ${msg}")
             return if (msg.optAction() == "") {
                 mChatServiceListeners.forEach {
-                    it.onReceivedGroupMsg(msg, fromID, toID)
+                    it.onReceivedGroupMsg(msg)
                 }
                 true
             } else {
@@ -209,7 +210,7 @@ internal class QChatRoomServiceImpl : BaseService(),
         memberID: String,
         callBack: QLiveCallBack<Void>?
     ) {
-        if(isCMD){
+        if (isCMD) {
             RtmManager.rtmClient.sendC2cCMDMsg(msg, memberID, true, object : RtmCallBack {
                 override fun onSuccess() {
                     callBack?.onSuccess(null)
@@ -219,7 +220,7 @@ internal class QChatRoomServiceImpl : BaseService(),
                     callBack?.onError(code, msg)
                 }
             })
-        }else{
+        } else {
             RtmManager.rtmClient.sendC2cTextMsg(msg, memberID, true, object : RtmCallBack {
                 override fun onSuccess() {
                     callBack?.onSuccess(null)
@@ -238,7 +239,7 @@ internal class QChatRoomServiceImpl : BaseService(),
      * @param callBack
      */
     override fun sendCustomGroupMsg(isCMD: Boolean, msg: String, callBack: QLiveCallBack<Void>?) {
-        if(isCMD){
+        if (isCMD) {
             RtmManager.rtmClient.sendChannelCMDMsg(
                 msg,
                 currentRoomInfo?.chatID ?: "",
@@ -253,7 +254,7 @@ internal class QChatRoomServiceImpl : BaseService(),
                     }
                 })
 
-        }else{
+        } else {
             RtmManager.rtmClient.sendChannelTextMsg(
                 msg,
                 currentRoomInfo?.chatID ?: "",

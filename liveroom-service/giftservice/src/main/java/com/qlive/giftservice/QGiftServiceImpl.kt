@@ -13,8 +13,7 @@ import com.qlive.giftservice.inner.InnerGiftMsg
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.rtm.RtmManager
 import com.qlive.rtm.RtmMsgListener
-import com.qlive.rtm.optAction
-import com.qlive.rtm.optData
+import com.qlive.rtm.msg.TextMsg
 
 internal class QGiftServiceImpl : QGiftService, BaseService() {
 
@@ -24,10 +23,10 @@ internal class QGiftServiceImpl : QGiftService, BaseService() {
     private val listeners = ArrayList<QGiftServiceListener>()
     private val mRtmMsgListener = object : RtmMsgListener {
 
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
+        override fun onNewMsg(msg: TextMsg): Boolean {
 
             val action = msg.optAction()
-            if (GIFT_ACTION == action && toID == currentRoomInfo?.chatID) {
+            if (GIFT_ACTION == action && msg.toID == currentRoomInfo?.chatID) {
                 val innerMsg =
                     JsonUtils.parseObject(msg.optData(), InnerGiftMsg::class.java) ?: return true
                 backGround {

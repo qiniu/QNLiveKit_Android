@@ -1,5 +1,7 @@
 package com.qlive.chatservice;
 
+import com.qlive.rtm.msg.TextMsg;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -23,21 +25,15 @@ public interface QChatRoomServiceListener {
 
     /**
      * On received c 2 c msg.
-     *
      * @param msg    the msg
-     * @param fromID the from id
-     * @param toID   the to id
      */
-    default  void onReceivedC2CMsg(@NotNull String msg,@NotNull  String fromID,@NotNull  String toID){}
+    default  void onReceivedC2CMsg(TextMsg msg){}
 
     /**
      * On received group msg.
-     *
      * @param msg    the msg
-     * @param fromID the from id
-     * @param toID   the to id
      */
-    default  void onReceivedGroupMsg(@NotNull String msg,@NotNull  String fromID, @NotNull String toID){}
+    default  void onReceivedGroupMsg(TextMsg msg){}
 
     /**
      * On user kicked.
