@@ -325,7 +325,7 @@ class QNIMAdapter : RtmAdapter {
         }
     }
 
-     override fun getHistoryTextMsg(
+    override fun getHistoryTextMsg(
         channelId: String,
         refMsgId: Long,
         size: Int,
@@ -333,18 +333,25 @@ class QNIMAdapter : RtmAdapter {
     ) {
         QNIMClient.getChatManager().openConversation(
             channelId.toLong(),
-            BMXConversation.Type.Group, false
+            BMXConversation.Type.Group, true
         ) { p0, p1 ->
             if (p0 != BMXErrorCode.NoError || p1 == null) {
-                call.onFailure(p0.swigValue(),p0.name)
+                call.onFailure(
+                    p0.swigValue(), if (p1 == null) {
+                        "Conversation == null"
+                    } else {
+                        p0.name
+                    }
+                )
                 return@openConversation
             }
-            p1.loadMessages(refMsgId, size.toLong()) { code, msgList ->
-                if (code != BMXErrorCode.NoError || msgList == null) {
-                    call.onFailure(code.swigValue(),code.name)
-                    return@loadMessages
+            QNIMClient.getChatManager().retrieveHistoryMessages(p1,refMsgId, size.toLong()) { code, msgList ->
+                if (code != BMXErrorCode.NoError) {
+                    call.onFailure(code.swigValue(), code.name)
+                    return@retrieveHistoryMessages
                 }
                 val textMsgList = LinkedList<TextMsg>()
+
                 for (i in 0 until msgList.size()) {
                     val message = msgList.get(i.toInt())
                     val targetId = message.toId().toString()

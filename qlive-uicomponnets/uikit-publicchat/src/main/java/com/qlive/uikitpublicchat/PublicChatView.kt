@@ -102,9 +102,7 @@ class PublicChatView : QKitRecyclerView {
                 override fun onSuccess(data: List<QPublicChat>) {
                     QLiveLogUtil.d("PublicChatView", " getHistoryChatMsg onSuccess ${data.size} ")
                     mAdapter.addData(0, data.filter {
-                        it.action != QPublicChat.action_welcome
-                                &&
-                                it.action != QPublicChat.action_bye
+                        it.action != QPublicChat.action_welcome && it.action != QPublicChat.action_bye
                     })
                     val position = mAdapter.data.size - 1
                     if (position > 0) {
