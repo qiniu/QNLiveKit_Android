@@ -16,6 +16,7 @@ import com.qlive.coreimpl.model.UidMode
 import com.qlive.coreimpl.model.UidMsgMode
 import com.qlive.avparam.QPushRenderView
 import com.qlive.rtclive.RTCRenderView
+import com.qlive.rtm.msg.TextMsg
 
 internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
 
@@ -44,8 +45,8 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
     private val mLinkMicInvitationHandler = QInvitationHandlerImpl("liveroom_linkmic_invitation")
 
     private val mRtmMsgListener = object : RtmMsgListener {
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
-            if (toID != currentRoomInfo?.chatID) {
+        override fun onNewMsg(msg: TextMsg): Boolean {
+            if (msg.toID != currentRoomInfo?.chatID) {
                 return false
             }
             when (msg.optAction()) {
@@ -128,7 +129,7 @@ internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
          * 收到消息
          * @return 是否继续分发
          */
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
+        override fun onNewMsg(msg: TextMsg): Boolean {
             if (liveroom_miclinker_kick == msg.optAction()) {
                 val uidMsg =
                     JsonUtils.parseObject(msg.optData(), UidMsgMode::class.java) ?: return true

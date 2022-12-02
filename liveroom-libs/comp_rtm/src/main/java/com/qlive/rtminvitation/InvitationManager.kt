@@ -3,8 +3,7 @@ package com.qlive.rtminvitation
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.rtm.RtmManager
 import com.qlive.rtm.RtmMsgListener
-import com.qlive.rtm.optAction
-import com.qlive.rtm.optData
+import com.qlive.rtm.msg.TextMsg
 import com.qlive.rtminvitation.InvitationProcessor.ACTION_HANGUP
 
 /**
@@ -15,10 +14,8 @@ object InvitationManager {
     private var mInvitationProcessor = ArrayList<InvitationProcessor>()
 
     private var mRtmMsgIntercept = object : RtmMsgListener {
-        override fun onNewMsg(msg: String, from: String, peerId: String): Boolean {
-
+        override fun onNewMsg(msg: TextMsg): Boolean {
             var isIntercept = false
-
             val action = msg.optAction()
             if (
                 (action == InvitationProcessor.ACTION_SEND
@@ -41,33 +38,33 @@ object InvitationManager {
 //                    || invitation?.initiatorUid == RtmManager.rtmClient.getLoginUserIMUId()
 //                ){
                 //ios没传
-                if(invitation.flag<=0){
-                    invitation.flag = (Math.random()*100000).toInt()
+                if (invitation.flag <= 0) {
+                    invitation.flag = (Math.random() * 100000).toInt()
                 }
                 mInvitationProcessor.forEach {
                     if (it.invitationName == invitationName) {
                         when (action) {
                             InvitationProcessor.ACTION_SEND -> {
-                                invitation.initiatorUid = from
+                                invitation.initiatorUid = msg.fromID
                                 it.addTimeOutRun(invitation)
                                 it.onReceiveInvitation(invitation)
                             }
                             InvitationProcessor.ACTION_CANCEL -> {
-                                invitation.initiatorUid = from
+                                invitation.initiatorUid = msg.fromID
                                 it.onReceiveCanceled(invitation)
                             }
                             InvitationProcessor.ACTION_ACCEPT -> {
-                                invitation.initiatorUid = from
+                                invitation.initiatorUid = msg.fromID
                                 it.reMoveTimeOutRun(invitation)
                                 it.onInviteeAccepted(invitation)
                             }
                             InvitationProcessor.ACTION_REJECT -> {
-                                invitation.initiatorUid = from
+                                invitation.initiatorUid = msg.fromID
                                 it.reMoveTimeOutRun(invitation)
                                 it.onInviteeRejected(invitation)
                             }
                             ACTION_HANGUP -> {
-                                invitation.initiatorUid = from
+                                invitation.initiatorUid = msg.fromID
                                 it.onInviteeHangUp(invitation)
                             }
                         }

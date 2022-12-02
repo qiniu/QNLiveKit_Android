@@ -20,6 +20,7 @@ import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
 import com.qlive.avparam.QPushRenderView
 import com.qlive.rtclive.RTCRenderView
+import com.qlive.rtm.msg.TextMsg
 import kotlinx.coroutines.*
 import org.json.JSONObject
 import java.util.*
@@ -130,7 +131,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
     }
 
     private val mC2cListener = object : RtmMsgListener {
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
+        override fun onNewMsg(msg: TextMsg): Boolean {
             if (msg.optAction() == liveroom_pk_start) {
                 QLiveLogUtil.d("pk 接收方收到pk holle ")
                 val pk =
@@ -151,8 +152,8 @@ internal class QPKServiceImpl : QPKService, BaseService() {
     }
 
     private val groupListener = object : RtmMsgListener {
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
-            if (toID != currentRoomInfo?.chatID) {
+        override fun onNewMsg(msg: TextMsg): Boolean {
+            if (msg.toID != currentRoomInfo?.chatID) {
                 return false
             }
             when (msg.optAction()) {

@@ -10,6 +10,7 @@ import com.qlive.core.been.QLiveUser
 import com.qlive.coreimpl.*
 import com.qlive.rtm.*
 import com.qlive.rtm.msg.RtmTextMsg
+import com.qlive.rtm.msg.TextMsg
 import java.lang.Exception
 import java.util.*
 
@@ -25,11 +26,11 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
     private val mQRoomServiceListeners = LinkedList<QRoomServiceListener>()
 
     private val mRtmListener = object : RtmMsgListener {
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
+        override fun onNewMsg(msg: TextMsg): Boolean {
             val action = msg.optAction()
             when (action) {
                 liveroom_extension_change -> {
-                    if (toID != roomInfo?.chatID) {
+                    if (msg.toID != roomInfo?.chatID) {
                         return true
                     }
                     val data = JsonUtils.parseObject(msg.optData(), LiveIdExtensionMode::class.java)
@@ -40,7 +41,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
                     return true
                 }
                 censor_notify -> {
-                    if (toID != user?.imUid) {
+                    if (msg.toID != user?.imUid) {
                         return true
                     }
                     val data = JsonUtils.parseObject(msg.optData(), Censor::class.java)
@@ -54,7 +55,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
                     return true
                 }
                 censor_stop -> {
-                    if (toID != roomInfo?.chatID) {
+                    if (msg.toID != roomInfo?.chatID) {
                         return true
                     }
                     val data = JsonUtils.parseObject(msg.optData(), Censor::class.java)

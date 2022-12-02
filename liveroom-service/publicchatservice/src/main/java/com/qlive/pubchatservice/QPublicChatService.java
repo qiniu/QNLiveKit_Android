@@ -3,6 +3,8 @@ package com.qlive.pubchatservice;
 import com.qlive.core.QLiveCallBack;
 import com.qlive.core.QLiveService;
 
+import java.util.List;
+
 /**
  * 公屏服务
  */
@@ -15,6 +17,8 @@ public interface QPublicChatService extends QLiveService {
      * @param callBack 操作回调
      */
     public void sendPublicChat(String msg, QLiveCallBack<QPublicChat> callBack);
+
+    public void getHistoryChatMsg(String startMsgID, int size, QLiveCallBack<List<QPublicChat>> callBack);
 
     /**
      * 发送 进入消息

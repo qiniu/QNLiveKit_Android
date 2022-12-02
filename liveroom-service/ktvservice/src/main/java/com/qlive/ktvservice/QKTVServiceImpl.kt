@@ -21,6 +21,7 @@ import com.qlive.rtclive.QRTCProvider
 import com.qlive.rtclive.QRtcLiveRoom
 import com.qlive.rtm.*
 import com.qlive.rtm.msg.RtmTextMsg
+import com.qlive.rtm.msg.TextMsg
 
 class QKTVServiceImpl : QKTVService, BaseService() {
 
@@ -32,8 +33,8 @@ class QKTVServiceImpl : QKTVService, BaseService() {
 
     private val mRtmMsgListener = object : RtmMsgListener {
         //收到音乐进度信令
-        override fun onNewMsg(msg: String, fromID: String, toID: String): Boolean {
-            if (toID != currentRoomInfo?.chatID) {
+        override fun onNewMsg(msg: TextMsg): Boolean {
+            if (msg.toID != currentRoomInfo?.chatID) {
                 return false
             }
             if (
@@ -49,7 +50,7 @@ class QKTVServiceImpl : QKTVService, BaseService() {
 
         //播放器sei回调
         override fun onSEI(sei: String) {
-            parseMsg(sei)
+            parseMsg(TextMsg(sei,"","",""))
         }
     }
 
@@ -165,7 +166,7 @@ class QKTVServiceImpl : QKTVService, BaseService() {
         }
     }
 
-    fun parseMsg(msg: String): Boolean {
+    fun parseMsg(msg: TextMsg): Boolean {
         val action = msg.optAction()
         //解析消息
         if (action == key_current_music) {
