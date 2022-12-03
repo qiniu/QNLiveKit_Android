@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.QLiveClient
@@ -21,6 +22,9 @@ import com.qlive.uikitcore.adapter.QRecyclerAdapter
 import com.qlive.uikitcore.adapter.QRecyclerViewBindAdapter
 import com.qlive.uikitcore.smartrecycler.IAdapter
 import com.qlive.uikitcore.smartrecycler.QSmartAdapter
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
 
 //公屏
@@ -93,25 +97,28 @@ class PublicChatView : QKitRecyclerView {
 
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
         super.onJoined(roomInfo, isResumeUIFromFloating)
-        client?.getService(QPublicChatService::class.java)?.getHistoryChatMsg("", 30,
-            object : QLiveCallBack<List<QPublicChat>> {
-                override fun onError(code: Int, msg: String?) {
-                    QLiveLogUtil.d("PublicChatView", " getHistoryChatMsg onError ${code}${msg} ")
-                }
+        kitContext?.lifecycleOwner?.lifecycleScope?.launch {
+            delay(200)
+            client?.getService(QPublicChatService::class.java)?.getHistoryChatMsg("", 30,
+                object : QLiveCallBack<List<QPublicChat>> {
+                    override fun onError(code: Int, msg: String?) {
+                        QLiveLogUtil.d("PublicChatView", " getHistoryChatMsg onError ${code}${msg} ")
+                    }
 
-                override fun onSuccess(data: List<QPublicChat>) {
-                    QLiveLogUtil.d("PublicChatView", " getHistoryChatMsg onSuccess ${data.size} ")
-                    mAdapter.addData(0, data.filter {
-                        it.action != QPublicChat.action_welcome && it.action != QPublicChat.action_bye
-                    })
-                    val position = mAdapter.data.size - 1
-                    if (position > 0) {
-                        this@PublicChatView.post {
-                            this@PublicChatView.smoothScrollToPosition(position)
+                    override fun onSuccess(data: List<QPublicChat>) {
+                        QLiveLogUtil.d("PublicChatView", " getHistoryChatMsg onSuccess ${data.size} ")
+                        mAdapter.addData(0, data.filter {
+                            it.action != QPublicChat.action_welcome && it.action != QPublicChat.action_bye
+                        })
+                        val position = mAdapter.data.size - 1
+                        if (position > 0) {
+                            this@PublicChatView.post {
+                                this@PublicChatView.smoothScrollToPosition(position)
+                            }
                         }
                     }
-                }
-            })
+                })
+        }
     }
 
     override fun onDestroyed() {
