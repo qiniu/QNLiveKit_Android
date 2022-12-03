@@ -5,6 +5,7 @@ import android.util.Log
 import com.qlive.rtm.RtmCallBack
 import com.qlive.rtm.RtmAdapter
 import com.qiniu.droid.imsdk.QNIMClient
+import com.qlive.liblog.QLiveLogUtil
 import com.qlive.rtm.RtmDadaCallBack
 import com.qlive.rtm.msg.TextMsg
 import im.floo.BMXCallBack
@@ -345,13 +346,20 @@ class QNIMAdapter : RtmAdapter {
                 )
                 return@openConversation
             }
-            QNIMClient.getChatManager().retrieveHistoryMessages(p1,refMsgId, size.toLong()) { code, msgList ->
+            val lastId = if(refMsgId==-1L){
+               // p1.lastMsg().msgId()
+                refMsgId
+            }else{
+                refMsgId
+            }
+            QLiveLogUtil.d("getHistoryTextMsg", "  p1.lastMsg().msgId() $lastId")
+            QNIMClient.getChatManager().retrieveHistoryMessages(p1,lastId, size.toLong()) { code, msgList ->
                 if (code != BMXErrorCode.NoError) {
                     call.onFailure(code.swigValue(), code.name)
                     return@retrieveHistoryMessages
                 }
                 val textMsgList = LinkedList<TextMsg>()
-
+                QLiveLogUtil.d("getHistoryTextMsg", " msgList.size()() ${msgList.size()}")
                 for (i in 0 until msgList.size()) {
                     val message = msgList.get(i.toInt())
                     val targetId = message.toId().toString()
