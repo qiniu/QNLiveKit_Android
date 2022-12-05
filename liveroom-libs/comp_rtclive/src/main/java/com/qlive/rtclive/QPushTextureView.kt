@@ -2,26 +2,21 @@ package com.qlive.rtclive
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import com.qiniu.droid.rtc.QNRenderView
 import com.qiniu.droid.rtc.QNTextureView
 
 open class QPushTextureView : FrameLayout, RTCRenderView {
     private var renderView: QNTextureView? = null
 
     constructor(context: Context) : this(context, null)
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        renderView = QNTextureView(context)
-        addView(
-            renderView,
-            ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        )
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ){
     }
 
     override fun getView(): View {
@@ -29,6 +24,16 @@ open class QPushTextureView : FrameLayout, RTCRenderView {
     }
 
     override fun getQNRender(): QNTextureView {
+        if(renderView==null){
+            renderView = QNTextureView(context)
+            addView(
+                renderView,
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            )
+        }
         return renderView!!
     }
 //
