@@ -49,7 +49,10 @@
             <com.qlive.rtclive.QPushTextureView
                 android:id="@+id/preTextureView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                tools:ignore="UselessParent"
+                />
+
             <!--    pk预览-->
             <com.qlive.uikitpk.PKAnchorPreview
                 android:layout_width="match_parent"
@@ -70,7 +73,7 @@
                 android:orientation="vertical"
                 android:padding="10dp"
                 android:src="@mipmap/kit_ic_close_white"
-                tools:ignore="MissingDefaultResource"
+                tools:ignore="MissingDefaultResource,SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck"
                 tools:visibility="visible" />
 
         </com.qlive.uikit.component.FrameLayoutBgCover>

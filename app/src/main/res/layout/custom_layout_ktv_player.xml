@@ -5,20 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
-    tools:context=".RoomPushActivity">
+    tools:context=".DemoSelectActivity">
 
     <!--  被邀请监听  功能组件-->
     <com.qlive.uikitlinkmic.FuncCPTBeInvitedLinkMicMonitor
         android:layout_width="0dp"
-        android:layout_height="0dp" />
+        android:layout_height="0dp"
+        android:visibility="gone"
+        />
     <!--  房间状态变化监听  功能组件-->
     <com.qlive.uikit.component.FuncCPTRoomStatusMonitor
         android:layout_width="0dp"
-        android:layout_height="0dp" />
+        android:layout_height="0dp"
+        android:visibility="gone"
+        />
     <!--    activity默认事件虚拟拦截 功能组件-->
     <com.qlive.uikit.component.FuncCPTDefaultKeyDownMonitor
         android:layout_width="0dp"
-        android:layout_height="0dp" />
+        android:layout_height="0dp"
+        android:visibility="gone"
+        />
 
     <com.qlive.uikit.component.TouchEventBusViewPager
         android:layout_width="match_parent"

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
-    tools:context=".RoomPushActivity">
+    tools:context=".DemoSelectActivity">
 
     <!--  用户申请连麦监听  功能组件-->
     <com.qlive.uikitlinkmic.FuncCPTLinkMicApplyMonitor
@@ -50,6 +50,7 @@
                 android:id="@+id/preTextureView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+
             <!--    pk预览-->
             <com.qlive.uikitpk.PKAnchorPreview
                 android:layout_width="match_parent"
