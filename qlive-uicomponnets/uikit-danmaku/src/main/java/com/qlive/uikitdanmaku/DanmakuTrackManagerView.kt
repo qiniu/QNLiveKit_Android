@@ -67,6 +67,7 @@ class DanmakuTrackManagerView : QKitLinearLayout {
 
     override fun onFinishInflate() {
         super.onFinishInflate()
+        kitContext?:return
         for (i in 0 until mDanmukeViewSlot.getIDanmakuViewCount()) {
             val itemView = mDanmukeViewSlot.createView(
                 kitContext!!.lifecycleOwner,
