@@ -132,9 +132,8 @@ public class QLiveRoomInfo implements Serializable, Cloneable {
     /**
      * 主播在线状态
      */
-    @SerializedName(value = "AnchorStatus")
+    @SerializedName(value = "anchor_status")
     public int anchorStatus;
-
 
     @Override
     public QLiveRoomInfo clone() {
