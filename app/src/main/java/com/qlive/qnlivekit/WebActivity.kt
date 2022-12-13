@@ -10,9 +10,10 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.webkit.*
-import kotlinx.android.synthetic.main.activity_web.*
+import com.qlive.qnlivekit.databinding.ActivityWebBinding
+import com.qlive.uikitcore.activity.BaseBindingActivity
 
-class WebActivity : Activity() {
+class WebActivity : BaseBindingActivity<ActivityWebBinding>() {
 
     companion object {
         fun start(url: String, context: Context) {
@@ -23,31 +24,26 @@ class WebActivity : Activity() {
     }
     private var url = ""
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView( R.layout.activity_web)
-        init()
-    }
 
     @SuppressLint("SetJavaScriptEnabled")
-     fun init() {
+    override fun init() {
         url = intent.getStringExtra("url") ?: ""
-        webView.addJavascriptInterface(this, "android") //添加js监听 这样html就能调用客户端
-        webView.webChromeClient = webChromeClient
-        webView.webViewClient = webViewClient
-        val webSettings: WebSettings = webView.settings
+      binding.  webView.addJavascriptInterface(this, "android") //添加js监听 这样html就能调用客户端
+        binding.      webView.webChromeClient = webChromeClient
+        binding.     webView.webViewClient = webViewClient
+        val webSettings: WebSettings =   binding.  webView.settings
         webSettings.javaScriptEnabled = true //允许使用js
         //支持屏幕缩放
         webSettings.setSupportZoom(true);
         webSettings.builtInZoomControls = true;
-        webView.loadUrl(url)
+        binding.     webView.loadUrl(url)
 
     }
 
     //WebViewClient主要帮助WebView处理各种通知、请求事件
     private val webViewClient: WebViewClient = object : WebViewClient() {
         override fun onPageFinished(view: WebView, url: String) { //页面加载完成
-            progressBar.visibility = View.GONE
+            binding.   progressBar.visibility = View.GONE
         }
 
         override fun onPageStarted(
@@ -55,7 +51,7 @@ class WebActivity : Activity() {
             url: String?,
             favicon: Bitmap?
         ) { //页面开始加载
-            progressBar.visibility = View.VISIBLE
+            binding.      progressBar.visibility = View.VISIBLE
         }
 
         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
@@ -84,14 +80,14 @@ class WebActivity : Activity() {
 
         //加载进度回调
         override fun onProgressChanged(view: WebView, newProgress: Int) {
-            progressBar.progress = newProgress
+            binding.    progressBar.progress = newProgress
         }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        Log.i("ansen", "是否有上一个页面:" + webView.canGoBack())
-        if (webView.canGoBack() && keyCode == KeyEvent.KEYCODE_BACK) { //点击返回按钮的时候判断有没有上一页
-            webView.goBack() // goBack()表示返回webView的上一页面
+        Log.i("ansen", "是否有上一个页面:" +   binding.  webView.canGoBack())
+        if (  binding.  webView.canGoBack() && keyCode == KeyEvent.KEYCODE_BACK) { //点击返回按钮的时候判断有没有上一页
+            binding.    webView.goBack() // goBack()表示返回webView的上一页面
             return true
         }
         return super.onKeyDown(keyCode, event)
@@ -110,7 +106,7 @@ class WebActivity : Activity() {
     override fun onDestroy() {
         super.onDestroy()
         //释放资源
-        webView.destroy()
+        binding.   webView.destroy()
     }
 
 }

@@ -3,7 +3,6 @@ package com.qlive.qnlivekit
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
-import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextUtils
@@ -13,15 +12,15 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.qlive.sdk.QLive
 import com.qlive.sdk.QUserInfo
 import com.qlive.core.QLiveCallBack
 import com.qlive.qnlivekit.App.Companion.demo_url
+import com.qlive.qnlivekit.databinding.ActivityMainBinding
 import com.qlive.qnlivekit.uitil.*
+import com.qlive.uikitcore.activity.BaseBindingActivity
 import com.qlive.uikitcore.dialog.LoadingDialog
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,17 +31,14 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseBindingActivity<ActivityMainBinding>() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    override fun init() {
         //登陆按钮
-        bt_login_login.setOnClickListener {
+        binding.btLoginLogin.setOnClickListener {
 
-            val phone = et_login_phone.text.toString() ?: ""
-            val code = et_login_verification_code.text.toString() ?: ""
+            val phone = binding.etLoginPhone.text.toString() ?: ""
+            val code = binding.etLoginVerificationCode.text.toString() ?: ""
             if (phone.isEmpty()) {
                 Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -52,7 +48,7 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (!cbAgreement.isSelected) {
+            if (!binding.cbAgreement.isSelected) {
                 Toast.makeText(this, "请同意 七牛云服务用户协议 和 隐私权政策", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -79,8 +75,8 @@ class MainActivity : AppCompatActivity() {
         initOtherView()
         val lastPhone = SpUtil.get("login").readString("phone", "")
         if (!TextUtils.isEmpty(lastPhone)) {
-            et_login_phone.setText(lastPhone)
-            et_login_verification_code.setText("8888")
+            binding.etLoginPhone.setText(lastPhone)
+            binding.etLoginVerificationCode.setText("8888")
         }
     }
 
@@ -158,13 +154,13 @@ class MainActivity : AppCompatActivity() {
     private fun timeJob() {
         lifecycleScope.launch(Dispatchers.Main) {
             try {
-                tvSmsTime.isClickable = false
+                binding.tvSmsTime.isClickable = false
                 repeat(60) {
-                    tvSmsTime.text = (60 - it).toString()
+                    binding.tvSmsTime.text = (60 - it).toString()
                     delay(1000)
                 }
-                tvSmsTime.text = "获取验证码"
-                tvSmsTime.isClickable = true
+                binding.tvSmsTime.text = "获取验证码"
+                binding.tvSmsTime.isClickable = true
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -172,8 +168,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initOtherView() {
-        tvSmsTime.setOnClickListener {
-            val phone = et_login_phone.text.toString() ?: ""
+        binding.tvSmsTime.setOnClickListener {
+            val phone = binding.etLoginPhone.text.toString() ?: ""
             if (phone.isEmpty()) {
                 return@setOnClickListener
             }
@@ -199,8 +195,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        cbAgreement.setOnClickListener {
-            cbAgreement.isSelected = !cbAgreement.isSelected
+        binding.cbAgreement.setOnClickListener {
+            binding.cbAgreement.isSelected = !binding.cbAgreement.isSelected
         }
         val tips = "我已阅读并同意 七牛云服务用户协议 和 隐私权政策"
         val spannableString = SpannableString(tips)
@@ -238,7 +234,7 @@ class MainActivity : AppCompatActivity() {
             tips.length - 7,
             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-        cbAgreement.setMovementMethod(LinkMovementMethod.getInstance());//设置可点击状态
-        cbAgreement.text = spannableString
+        binding.cbAgreement.movementMethod = LinkMovementMethod.getInstance();//设置可点击状态
+        binding.cbAgreement.text = spannableString
     }
 }
