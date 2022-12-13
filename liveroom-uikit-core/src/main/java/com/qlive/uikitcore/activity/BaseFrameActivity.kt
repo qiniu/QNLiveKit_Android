@@ -10,23 +10,27 @@ import com.qlive.uikitcore.dialog.LoadingDialog
  * activity 基础类  封装toolbar
  *
  */
-abstract class BaseFrameActivity : AppCompatActivity(){
+abstract class BaseFrameActivity : AppCompatActivity() {
 
-    open fun isCustomCreate():Boolean{
+    open fun isCustomCreate(): Boolean {
         return false
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(isCustomCreate()){
+        if (isCustomCreate()) {
             return
         }
         val startTime = System.currentTimeMillis()
-        setContentView(getLayoutId())
+        setContentView()
         QLiveLogUtil.d(
-            "ActivityonCreate",
-            "onCreate cost ${System.currentTimeMillis() - startTime}"
+            "ActivityonCreate", "onCreate cost ${System.currentTimeMillis() - startTime}"
         )
         init()
+    }
+
+    open fun setContentView() {
+        setContentView(getLayoutId())
     }
 
     abstract fun init()
