@@ -39,10 +39,13 @@ dependencies {
     def isKitDever = properties.getProperty('isKitDever')
     System.out.println("  isKitDever"+isKitDever)
     // 项目开发者源码依赖
-    if(isKitDever=="1"){
-        api project(':qlivesdk')
-    }else {
+    if(isKitDever!="1"){
+        api project(':app-sdk:depends_sdk_qnim')
+        api project(':app-sdk:depends_sdk_qrtc')
+        api project(':app-sdk:depends_sdk_piliplayer')
         api project(':app-sdk:qlive-sdk')
+    }else {
+        api project(':qlivesdk')
     }
     implementation depend.lifecycle()
     api depend.glide()
