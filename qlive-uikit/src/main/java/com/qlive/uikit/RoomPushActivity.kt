@@ -239,12 +239,12 @@ class RoomPushActivity : BaseFrameActivity() {
 
                     if (!roomInfo.isTrailering()) {
                         suspendJoinRoom(roomId)
-                        startCallBack?.onSuccess(null)
+                        startCallBack?.onSuccess(roomInfo)
                         startCallBack = null
                     }
                 }
                 catchError {
-                    startCallBack?.onError(it.getCode(), "")
+                    startCallBack?.onError(it.getCode(), it.message)
                     startCallBack = null
                     Toast.makeText(this@RoomPushActivity, it.message, Toast.LENGTH_SHORT).show()
                     finish()
@@ -260,7 +260,7 @@ class RoomPushActivity : BaseFrameActivity() {
         super.onDestroy()
         mInflaterFactory.onDestroyed()
         mRoomClient.destroy()
-        startCallBack?.onError(-1, "")
+        startCallBack?.onError(-1, "join room canceled")
         startCallBack = null
     }
 
