@@ -78,9 +78,9 @@ open class LivePreView : QKitViewBindingFrameMergeLayout<KitLivePreviewBinding> 
                 //开始创建并且加入房间
                 kitContext?.startPusherRoomActionCall?.invoke(
                     makeCreateRoomParamCall(kitContext!!, client!!, titleStr, noticeStr, 0),
-                    object : QLiveCallBack<Void> {
+                    object : QLiveCallBack<QLiveRoomInfo> {
                         override fun onError(code: Int, msg: String?) {}
-                        override fun onSuccess(data: Void?) {}
+                        override fun onSuccess(data: QLiveRoomInfo?) {}
                     })
             } else {
                 if (reserveTime == 0L) {
