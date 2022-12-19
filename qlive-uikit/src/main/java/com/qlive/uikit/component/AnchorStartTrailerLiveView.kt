@@ -85,9 +85,9 @@ class AnchorStartTrailerLiveView :
         binding.tvStartReserve.setDoubleCheckClickListener {
             kitContext?.startPusherRoomActionCall?.invoke(
                 null,
-                object : QLiveCallBack<Void> {
+                object : QLiveCallBack<QLiveRoomInfo> {
                     override fun onError(code: Int, msg: String?) {}
-                    override fun onSuccess(data: Void?) {}
+                    override fun onSuccess(data: QLiveRoomInfo?) {}
                 })
         }
     }

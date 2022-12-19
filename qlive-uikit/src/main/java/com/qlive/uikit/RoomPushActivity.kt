@@ -124,12 +124,12 @@ class RoomPushActivity : BaseFrameActivity() {
         }
 
     //创建并且加入函数
-    private val createAndJoinRoomActionCall: (param: QCreateRoomParam?, resultCall: QLiveCallBack<Void>) -> Unit =
+    private val createAndJoinRoomActionCall: (param: QCreateRoomParam?, resultCall: QLiveCallBack<QLiveRoomInfo>) -> Unit =
         { p, c ->
             bg {
                 LoadingDialog.showLoading(supportFragmentManager)
                 doWork {
-                    if (p == null) {
+                   val roomInfo= if (p == null) {
                         val roomId = intent.getStringExtra(KEY_ROOM_ID) ?: ""
                         suspendJoinRoom(roomId)
                     } else {
@@ -138,7 +138,7 @@ class RoomPushActivity : BaseFrameActivity() {
                         mInflaterFactory.onGetLiveRoomInfo(room)
                         suspendJoinRoom(room.liveID)
                     }
-                    startCallBack?.onSuccess(null)
+                    startCallBack?.onSuccess(roomInfo)
                     startCallBack = null
                     c.onSuccess(null)
                 }
@@ -260,7 +260,7 @@ class RoomPushActivity : BaseFrameActivity() {
         super.onDestroy()
         mInflaterFactory.onDestroyed()
         mRoomClient.destroy()
-        startCallBack?.onError(-1, "join room canceled")
+        startCallBack?.onError(-1, "cancel the join room")
         startCallBack = null
     }
 

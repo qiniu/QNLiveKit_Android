@@ -127,7 +127,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
         }
 
     //加入房间函数
-    private val createAndJoinRoomActionCall: (param: QCreateRoomParam?, resultCall: QLiveCallBack<Void>) -> Unit =
+    private val createAndJoinRoomActionCall: (param: QCreateRoomParam?, resultCall: QLiveCallBack<QLiveRoomInfo>) -> Unit =
         { p, c ->
             Toast.makeText(this, "player activity can not create", Toast.LENGTH_SHORT).show()
         }
@@ -355,7 +355,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
         }
         FuncCPTPlayerFloatingHandler.currentFloatingPlayerView?.activityRef?.clear()
         mRoomClient = null
-        startCallBack?.onError(-1, "join room canceled")
+        startCallBack?.onError(-1, "cancel the join room")
         startCallBack = null
     }
 

@@ -9,6 +9,7 @@ import com.qlive.avparam.QPlayerRenderView
 import com.qlive.avparam.QPushRenderView
 import com.qlive.core.*
 import com.qlive.core.been.QCreateRoomParam
+import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.liblog.QLiveLogUtil
 import com.qlive.uikitcore.ext.asToast
 import java.util.*
@@ -111,7 +112,7 @@ class QLiveUIKitContext(
      * 创建并且加入房间操作 在任意UI组件中可创建并且加入房间
      * @param param 创建房间参数，非空则是创建并开始，空则代表 开始已经存在的房间
      */
-    val startPusherRoomActionCall: (param: QCreateRoomParam?, resultCall: QLiveCallBack<Void>) -> Unit,//创建并加入操作
+    val startPusherRoomActionCall: (param: QCreateRoomParam?, resultCall: QLiveCallBack<QLiveRoomInfo>) -> Unit,//创建并加入操作
     /**
      * 获取当前播放器预览窗口 在任意UI组件中如果要对预览窗口变化可直接获取
      * 比如连麦pk组件需要改变预览窗口
