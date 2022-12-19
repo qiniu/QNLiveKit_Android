@@ -355,7 +355,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
         }
         FuncCPTPlayerFloatingHandler.currentFloatingPlayerView?.activityRef?.clear()
         mRoomClient = null
-        startCallBack?.onError(-1, "")
+        startCallBack?.onError(-1, "join room canceled")
         startCallBack = null
     }
 
