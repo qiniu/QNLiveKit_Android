@@ -4,12 +4,10 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.*
 
 
-class AutoVoiceWaveView : VoiceWaveView, LifecycleEventObserver {
+class AutoVoiceWaveView : VoiceWaveView, LifecycleObserver {
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -44,17 +42,17 @@ class AutoVoiceWaveView : VoiceWaveView, LifecycleEventObserver {
             stop()
         }
     }
-
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        if (event == Lifecycle.Event.ON_PAUSE) {
-            if (isAutoPlay) {
-                stop()
-            }
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onResume() {
+        if (isAutoPlay) {
+            start()
         }
-        if (event == Lifecycle.Event.ON_RESUME) {
-            if (isAutoPlay) {
-                start()
-            }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun onPause() {
+        if (isAutoPlay) {
+            stop()
         }
     }
 }
