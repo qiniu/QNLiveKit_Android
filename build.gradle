@@ -68,14 +68,6 @@ public class DependsComp {
         return "androidx.appcompat:appcompat:${version}"
     }
 
-    def corektx() {
-        return corektx('1.3.2')
-    }
-
-    def corektx(String version) {
-        return "androidx.core:core-ktx:${version}"
-    }
-
     def cardview() {
         return cardview(designVersion)
     }
@@ -130,15 +122,6 @@ public class DependsComp {
 
     def coroutines(String version) {
         return "org.jetbrains.kotlinx:kotlinx-coroutines-android:${version}"
-    }
-
-    //jitpack
-    def lifecycle() {
-        return lifecycle("2.2.0")
-    }
-
-    def lifecycle(String version) {
-        return "androidx.lifecycle:lifecycle-extensions:${version}"
     }
 
     def runtime_ktx() {

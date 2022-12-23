@@ -1,25 +1,51 @@
 package com.qlive.uikitcore
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import com.qlive.core.QClientLifeCycleListener
+import androidx.lifecycle.*
 import com.qlive.core.QLiveClient
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
+import com.qlive.liblog.QLiveLogUtil
 
 
-interface BaseComponent<T : BaseContext> : LifecycleEventObserver {
+interface BaseComponent<T : BaseContext> {
     var kitContext: T?
     fun attachKitContext(context: T) {
         this.kitContext = context
-        context.lifecycleOwner.lifecycle.addObserver(this)
+        val owner = context.lifecycleOwner
+        owner.lifecycle.addObserver(object : LifecycleObserver {
+            //使用这种方式的原因 个别客户不愿意用Lifecycle 2.1.0 以上
+            @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+            fun onCreated() {
+                onStateChanged(owner, Lifecycle.Event.ON_CREATE)
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_START)
+            fun onStart() {
+                onStateChanged(owner, Lifecycle.Event.ON_START)
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+            fun onResume() {
+                onStateChanged(owner, Lifecycle.Event.ON_RESUME)
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+            fun onPause() {
+                onStateChanged(owner, Lifecycle.Event.ON_PAUSE)
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+            fun onStop() {
+                onStateChanged(owner, Lifecycle.Event.ON_STOP)
+            }
+        })
     }
 
     /**
      * activity 生命周期
      */
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+    open fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+       // QLiveLogUtil.d("onStateChanged onStateChangedonStateChangedonStateChanged ${event.name}")
         if (event == Lifecycle.Event.ON_DESTROY) {
             kitContext = null
         }
@@ -121,7 +147,8 @@ interface QRoomComponent : BaseComponent<QLiveUIKitContext> {
 
     var roomInfo: QLiveRoomInfo?
     var user: QLiveUser?
-    var client:QLiveClient?
+    var client: QLiveClient?
+
     /**
      * 绑定房间客户端回调
      * @param client 组件拿到client 就能拿到所有访问业务服务的能力 如发消息 设置监听
@@ -138,7 +165,7 @@ interface QRoomComponent : BaseComponent<QLiveUIKitContext> {
      */
     fun onEntering(roomInfo: QLiveRoomInfo, user: QLiveUser) {
         this.roomInfo = roomInfo
-        this.user  = user
+        this.user = user
     }
 }
 

@@ -114,8 +114,7 @@ open class MicLinkersView : QKitViewBindingFrameMergeLayout<KitViewLinkersBindin
     //观众端连麦监听
     private val mQAudienceMicHandler = object :
         QAudienceMicHandler.LinkMicHandlerListener {
-        override fun onConnectionStateChanged(state: QRoomConnectionState?) {
-        }
+        override fun onConnectionStateChanged(state: QRoomConnectionState?) {}
 
         /**
          * 本地角色变化
@@ -129,6 +128,21 @@ open class MicLinkersView : QKitViewBindingFrameMergeLayout<KitViewLinkersBindin
             } else {
                 removeAnchorPreview()
             }
+        }
+    }
+
+    //观众如若要主播离线了还要保持连麦
+    private val mQLiveStatusListener = QLiveStatusListener { liveStatus, msg ->
+        if (liveStatus == QLiveStatus.ANCHOR_OFFLINE
+            && client!!.getService(QLinkMicService::class.java)!!.audienceMicHandler.isLinked
+        ) {
+            removeAnchorPreview()
+        }
+
+        if (liveStatus == QLiveStatus.ANCHOR_ONLINE
+            && client!!.getService(QLinkMicService::class.java)!!.audienceMicHandler.isLinked
+        ) {
+            addAnchorPreview()
         }
     }
 
@@ -172,6 +186,7 @@ open class MicLinkersView : QKitViewBindingFrameMergeLayout<KitViewLinkersBindin
             client!!.getService(QLinkMicService::class.java).audienceMicHandler.addLinkMicListener(
                 mQAudienceMicHandler
             )
+            client!!.addLiveStatusListener(mQLiveStatusListener)
         }
         //添加连麦麦位监听
         client!!.getService(QLinkMicService::class.java)

@@ -33,10 +33,10 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
 
     init {
         micLinkContext.hostLeftCall = {
-            if (isLinked()) {
-                QLiveLogUtil.d("房主下麦")
-                stopLink(null)
-            }
+//            if (isLinked()) {
+//                QLiveLogUtil.d("房主下麦")
+//                stopLink(null)
+//            }
         }
     }
 

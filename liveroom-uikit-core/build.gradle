@@ -47,7 +47,7 @@ dependencies {
     }else {
         api project(':qlivesdk')
     }
-    implementation depend.lifecycle()
+
     api depend.glide()
     api depend.runtime_ktx()
     api depend.recyclerview()
