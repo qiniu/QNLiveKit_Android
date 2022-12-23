@@ -3,10 +3,9 @@ package com.qlive.uikitpublicchat
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import androidx.lifecycle.lifecycleScope
 import com.qlive.core.been.QLiveRoomInfo
-import com.qlive.uikitcore.QKitFrameLayout
 import com.qlive.uikitcore.QKitTextView
+import com.qlive.uikitcore.tryBackGroundWithLifecycle
 import com.qlive.uikitcore.ext.toHtml
 import kotlinx.coroutines.*
 
@@ -42,7 +41,7 @@ class RoomNoticeView : QKitTextView {
             return
         }
         visibility = View.VISIBLE
-        goneJob = kitContext?.lifecycleOwner?.lifecycleScope?.launch(Dispatchers.Main) {
+        goneJob = kitContext?.lifecycleOwner?.tryBackGroundWithLifecycle(Dispatchers.Main) {
             try {
                 delay(1000 * 60)
                 visibility = View.GONE
@@ -50,5 +49,10 @@ class RoomNoticeView : QKitTextView {
                 e.printStackTrace()
             }
         }
+    }
+
+    override fun onLeft() {
+        super.onLeft()
+        goneJob?.cancel()
     }
 }

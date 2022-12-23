@@ -25,7 +25,6 @@ import com.qlive.qplayer.QPlayerTextureRenderView
 import com.qlive.roomservice.QRoomService
 import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.activity.BaseFrameActivity
-import com.qlive.uikitcore.ext.bg
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -34,6 +33,7 @@ import com.qlive.uikit.component.FuncCPTBeautyDialogShower
 import com.qlive.uikit.component.FuncCPTPlayerFloatingHandler
 import com.qlive.uikit.component.OnKeyDownMonitor
 import com.qlive.uikitcore.KITLiveInflaterFactory
+import com.qlive.uikitcore.backGround
 import com.qlive.uikitcore.getCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -260,7 +260,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
             mInflaterFactory.onEntering(mRoomId, QLive.getLoginUser())
 
             Handler(Looper.myLooper()!!).post {
-                bg {
+                backGround {
                     showLoading(true)
                     doWork {
                         //加入房间

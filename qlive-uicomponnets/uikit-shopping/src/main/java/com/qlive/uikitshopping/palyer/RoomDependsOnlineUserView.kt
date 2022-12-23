@@ -18,14 +18,9 @@ import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
 import com.qlive.roomservice.QRoomService
 import com.qlive.rtm.msg.TextMsg
-import com.qlive.uikitcore.QLiveClientClone
-import com.qlive.uikitcore.QLiveUIKitContext
-import com.qlive.uikitcore.QRoomComponent
-import com.qlive.uikitcore.Scheduler
+import com.qlive.uikitcore.*
 import com.qlive.uikitcore.adapter.QRecyclerAdapter
 import com.qlive.uikitcore.adapter.QRecyclerViewBindHolder
-import com.qlive.uikitcore.ext.bg
-import com.qlive.uikitcore.smartrecycler.QSmartAdapter
 import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
 import com.qlive.uikitshopping.R
 import com.qlive.uikitshopping.databinding.KitItemOnlineUserWathExpainingBinding
@@ -119,7 +114,7 @@ class RoomDependsOnlineUserView : FrameLayout, QRoomComponent {
             return
         }
         lastRefreshedTime = System.currentTimeMillis()
-        kitContext?.lifecycleOwner?.bg {
+        kitContext?.lifecycleOwner?.backGround {
             doWork {
                 isRefreshing = true
                 val users = getOnlineUser().filter {

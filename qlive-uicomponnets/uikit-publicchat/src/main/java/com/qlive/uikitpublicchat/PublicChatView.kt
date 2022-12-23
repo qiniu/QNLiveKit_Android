@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.QLiveClient
@@ -19,13 +18,7 @@ import com.qlive.pubchatservice.QPublicChatService
 import com.qlive.pubchatservice.QPublicChatServiceLister
 import com.qlive.uikitcore.*
 import com.qlive.uikitcore.adapter.QRecyclerAdapter
-import com.qlive.uikitcore.adapter.QRecyclerViewBindAdapter
-import com.qlive.uikitcore.smartrecycler.IAdapter
-import com.qlive.uikitcore.smartrecycler.QSmartAdapter
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.util.*
 
 //公屏
 class PublicChatView : QKitRecyclerView {
@@ -97,7 +90,7 @@ class PublicChatView : QKitRecyclerView {
 
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
         super.onJoined(roomInfo, isResumeUIFromFloating)
-        kitContext?.lifecycleOwner?.lifecycleScope?.launch {
+        kitContext?.lifecycleOwner?.tryBackGroundWithLifecycle {
             delay(200)
             client?.getService(QPublicChatService::class.java)?.getHistoryChatMsg("", 30,
                 object : QLiveCallBack<List<QPublicChat>> {

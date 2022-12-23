@@ -56,7 +56,7 @@ public class DependsComp {
     String androidxVersion = "1.2.0"
     String designVersion = "1.0.0"
 
-    def lifecycle_version = "2.3.0"
+    def lifecycle_version = "2.2.0"
 
     boolean latest = true
 

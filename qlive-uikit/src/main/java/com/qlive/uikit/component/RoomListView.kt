@@ -3,7 +3,6 @@ package com.qlive.uikit.component
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -25,9 +24,9 @@ import com.qlive.uikit.databinding.KitItemRoomBinding
 import com.qlive.uikitcore.QComponent
 import com.qlive.uikitcore.QUIKitContext
 import com.qlive.uikitcore.adapter.QRecyclerViewBindHolder
+import com.qlive.uikitcore.backGround
 import com.qlive.uikitcore.ext.ViewUtil
 import com.qlive.uikitcore.ext.asToast
-import com.qlive.uikitcore.ext.bg
 import com.qlive.uikitcore.ext.isTrailering
 import com.qlive.uikitcore.smartrecycler.IAdapter
 import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
@@ -144,7 +143,7 @@ open class RoomListView : SmartRecyclerView, QComponent {
         }
 
     open fun load(page: Int) {
-        kitContext?.lifecycleOwner?.bg {
+        kitContext?.lifecycleOwner?.backGround {
             doWork {
                 val list = suspendLoad(page)
                 onFetchDataFinish(list, false)

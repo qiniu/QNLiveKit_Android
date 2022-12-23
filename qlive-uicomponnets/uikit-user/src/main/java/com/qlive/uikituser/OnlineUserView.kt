@@ -14,7 +14,6 @@ import com.qlive.core.been.QLiveUser
 import com.qlive.roomservice.QRoomService
 import com.qlive.rtm.msg.TextMsg
 import com.qlive.uikitcore.*
-import com.qlive.uikitcore.ext.bg
 import com.qlive.uikitcore.smartrecycler.IAdapter
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -108,7 +107,7 @@ class OnlineUserView : QKitFrameLayout {
             return
         }
         lastRefreshedTime = System.currentTimeMillis()
-        kitContext?.lifecycleOwner?.bg {
+        kitContext?.lifecycleOwner?.backGround {
             doWork {
                 isRefreshing = true
                 val users = getOnlineUser().filter {

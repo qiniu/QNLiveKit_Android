@@ -3,7 +3,6 @@ package com.qlive.uikitshopping
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.qlive.core.QLiveClient
 import com.qlive.core.been.QExtension
@@ -12,11 +11,11 @@ import com.qlive.shoppingservice.QShoppingService
 import com.qlive.shoppingservice.QShoppingServiceListener
 import com.qlive.uikitcore.QKitViewBindingCardView
 import com.qlive.uikitcore.QLiveUIKitContext
+import com.qlive.uikitcore.tryBackGroundWithLifecycle
 import com.qlive.uikitshopping.databinding.KitViewExplainingQitemBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
  * 主播正在讲解的商品卡片
@@ -53,7 +52,7 @@ class ExplainingQItemCardView : QKitViewBindingCardView<KitViewExplainingQitemBi
     private var job: Job? = null
 
     private fun startShowJob() {
-        job = kitContext?.lifecycleOwner?.lifecycleScope?.launch(Dispatchers.Main) {
+        job = kitContext?.lifecycleOwner?.tryBackGroundWithLifecycle(Dispatchers.Main) {
             try {
                 delay(displayTime)
                 visibility = View.GONE
@@ -97,7 +96,7 @@ class ExplainingQItemCardView : QKitViewBindingCardView<KitViewExplainingQitemBi
                 )
             }
         }
-        binding. ivClose.setOnClickListener {
+        binding.ivClose.setOnClickListener {
             job?.cancel()
             visibility = View.GONE
         }
