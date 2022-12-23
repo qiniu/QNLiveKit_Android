@@ -8,11 +8,10 @@ import com.qlive.core.QLiveCallBack
 import com.qlive.core.been.QLiveUser
 import com.qlive.roomservice.QRoomService
 import com.qlive.sdk.QLive
-import com.qlive.uikitcore.adapter.QRecyclerViewBindAdapter
 import com.qlive.uikitcore.adapter.QRecyclerViewBindHolder
+import com.qlive.uikitcore.backGround
 import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
 import com.qlive.uikitcore.ext.ViewUtil
-import com.qlive.uikitcore.ext.bg
 import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
 import com.qlive.uikitcore.view.SimpleDividerDecoration
 import com.qlive.uikitlinkmic.databinding.KitItemLinkableBinding
@@ -47,7 +46,7 @@ class OnlineLinkableUserDialog(private val roomService: QRoomService) :
     }
 
     private fun load(page: Int) {
-        bg {
+        backGround {
             //后台运行
             doWork {
                 val data = suspendLoad(page).filter {

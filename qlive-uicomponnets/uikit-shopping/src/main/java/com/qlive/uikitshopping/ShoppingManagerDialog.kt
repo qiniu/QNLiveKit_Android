@@ -30,7 +30,6 @@ import com.qlive.uikitcore.dialog.CommonTipDialog
 import com.qlive.uikitcore.dialog.LoadingDialog
 import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
 import com.qlive.uikitcore.ext.asToast
-import com.qlive.uikitcore.ext.bg
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
 import com.qlive.uikitcore.smartrecycler.QSmartViewBindAdapter
 import com.qlive.uikitcore.smartrecycler.SmartRecyclerView
@@ -261,7 +260,7 @@ class ShoppingManagerDialog(
             return
         }
         showTip(tip) {
-            bg {
+            backGround {
                 LoadingDialog.showLoading(childFragmentManager)
                 doWork {
                     if (optionId == binding.llMove) {
@@ -371,7 +370,7 @@ class ShoppingManagerDialog(
                 super.clearView(recyclerView, viewHolder)
 
                 if (start != null && end != null) {
-                    bg {
+                    backGround {
                         LoadingDialog.showLoading(childFragmentManager)
                         doWork {
                             moveItem(QSingleOrderParam().apply {

@@ -17,16 +17,12 @@ import com.qlive.rtclive.QPushTextureView
 import com.qlive.sdk.QLive
 import com.qlive.uikit.component.FuncCPTBeautyDialogShower
 import com.qlive.uikit.component.OnKeyDownMonitor
-import com.qlive.uikitcore.KITLiveInflaterFactory
-import com.qlive.uikitcore.KitException
-import com.qlive.uikitcore.QLiveUIKitContext
+import com.qlive.uikitcore.*
 import com.qlive.uikitcore.activity.BaseFrameActivity
 import com.qlive.uikitcore.dialog.LoadingDialog
-import com.qlive.uikitcore.ext.bg
 import com.qlive.uikitcore.ext.isTrailering
 import com.qlive.uikitcore.ext.permission.PermissionAnywhere
 import kotlin.coroutines.resume
-import com.qlive.uikitcore.getCode
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
@@ -126,7 +122,7 @@ class RoomPushActivity : BaseFrameActivity() {
     //创建并且加入函数
     private val createAndJoinRoomActionCall: (param: QCreateRoomParam?, resultCall: QLiveCallBack<QLiveRoomInfo>) -> Unit =
         { p, c ->
-            bg {
+            backGround {
                 LoadingDialog.showLoading(supportFragmentManager)
                 doWork {
                    val roomInfo= if (p == null) {
@@ -230,7 +226,7 @@ class RoomPushActivity : BaseFrameActivity() {
         )
         //房间ID不为空代表直接加入已经创建过的房间
         if (roomId.isNotEmpty()) {
-            bg {
+            backGround {
                 LoadingDialog.showLoading(supportFragmentManager)
                 doWork {
                     mInflaterFactory.onEntering(roomId, QLive.getLoginUser())

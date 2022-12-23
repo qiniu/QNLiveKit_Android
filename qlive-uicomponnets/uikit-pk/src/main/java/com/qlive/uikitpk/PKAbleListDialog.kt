@@ -6,10 +6,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.sdk.QLive
-import com.qlive.uikitcore.dialog.FinalDialogFragment
+import com.qlive.uikitcore.backGround
 import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
 import com.qlive.uikitcore.ext.ViewUtil
-import com.qlive.uikitcore.ext.bg
 import com.qlive.uikitcore.view.SimpleDividerDecoration
 import com.qlive.uikitpk.databinding.KitDialogPklistBinding
 import kotlin.coroutines.resume
@@ -44,7 +43,7 @@ class PKAbleListDialog() : ViewBindingDialogFragment<KitDialogPklistBinding>() {
     }
 
     private fun load(page: Int) {
-        bg {
+        backGround {
             doWork {
                 val data = suspendLoad(page).filter {
                     it.anchorStatus == 1 && it.anchor.userId != QLive.getLoginUser().userId
