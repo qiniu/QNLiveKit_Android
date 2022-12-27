@@ -276,6 +276,7 @@ class CustomView :FrameLayout, com.qlive.uikit.QLiveComponent {
 
 #### 自定义房间列表页面
 如果需要将房间列表页面添加到你想要的页面比如app首页的viewpager切换，否则直接替换修改内在roomList布局就可以了
+
 方式1 使用RoomListView
 
 在想要添加的布局xml里面添加RoomListView
