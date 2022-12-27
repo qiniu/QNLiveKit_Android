@@ -246,7 +246,7 @@ class CustomNoticeView :FrameLayout, com.qlive.uikit.QLiveComponent {
 > 提示不需要修改activity
 
 #### 删除内置UI组件
-直接在拷贝的布局文件或或者源码布局里里删除
+直接在拷贝的布局文件或者源码布局里里删除
 
 案列：去掉pk功能
 在xml里直接删除开始pk按钮
@@ -276,9 +276,10 @@ class CustomView :FrameLayout, com.qlive.uikit.QLiveComponent {
 
 #### 自定义房间列表页面
 如果需要将房间列表页面添加到你想要的页面比如app首页的viewpager切换，否则直接替换修改内在roomList布局就可以了
-方式1 使用RoomListView
-在想要添加的布局xml里面添加RoomListView
 
+方式1 使用RoomListView
+
+在想要添加的布局xml里面添加RoomListView
 ```xml
 <!--  empty_placeholder_tips   没有数据的占位提示-->
 <!--  empty_placeholder_no_net_icon     没有网络的占位图片-->
@@ -299,14 +300,13 @@ roomListView.setRoomAdapter(CustomAdapter())
 roomListView.attachKitContext(QUIKitContext(this,supportFragmentManager,this,this))
 ```
 
-方式2
+方式2 使用 qlive数据api
 ```kotlin
 //使用 qlive数据api 获取房间等数据自定义UI
 QLive.getRooms().listRoom(..）
 QLive.getRooms().createRoom(..）
 ```
-方式3
-修改UIkit源码
+方式3 修改UIkit源码
 
 ### UI插件通信事件
 如选择不修改源码的形式接入uikit，如何在不同模块间UI插件实现通信
@@ -561,7 +561,7 @@ client.getService(QPKService::class.java)?.start(20 * 1000, receiverRoomID, rece
 
 [多人连麦demo](https://github.com/qiniu/QNLiveKit_Android/blob/main/qlive-uicomponnets/uikit-linkmic/src/main/java/com/qlive/uikitlinkmic/MicLinkersView.kt)
 
-[分屏连麦demo](https://github.com/qiniu/QNLiveKit_Android/blob/main/qive-uicomponnets/uikit-linkmic/src/main/java/com/qlive/uikitlinkmic/MicLinkerSplitScreenPreview.java)
+[分屏连麦demo](https://github.com/qiniu/QNLiveKit_Android/blob/main/qlive-uicomponnets/uikit-linkmic/src/main/java/com/qlive/uikitlinkmic/MicLinkerSplitScreenPreview.java)
 
 
 ```kotlin
