@@ -81,6 +81,15 @@ public interface QPlayerClient extends QLiveClient {
     void play(@NotNull QPlayerRenderView renderView);                            //绑定播放器渲染视图
 
     /**
+     * 设置播放器音量
+     * 若参数为 0f，则会将视频静音；若参数大于 1f，播放音量会大于视频原来的音量
+     *
+     * @param leftVolume  左声道音量
+     * @param rightVolume 右声道音量
+     */
+    void setVolume(float leftVolume, float rightVolume);
+
+    /**
      * 暂停
      */
     void pause();

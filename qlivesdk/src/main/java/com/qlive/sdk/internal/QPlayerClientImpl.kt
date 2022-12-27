@@ -131,6 +131,10 @@ internal class QPlayerClientImpl : QPlayerClient,
         }
     }
 
+    override fun setVolume(leftVolume: Float, rightVolume: Float) {
+        mMediaPlayer.setVolume(leftVolume, rightVolume)
+    }
+
     override fun pause() {
         mMediaPlayer.pause()
     }
