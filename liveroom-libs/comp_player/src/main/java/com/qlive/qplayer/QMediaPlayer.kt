@@ -5,7 +5,8 @@ import android.util.Log
 import android.view.Surface
 import com.pili.pldroid.player.*
 import com.pili.pldroid.player.PLOnErrorListener.ERROR_CODE_OPEN_FAILED
-import com.pili.pldroid.player.PLOnInfoListener.*
+import com.pili.pldroid.player.PLOnInfoListener.MEDIA_INFO_AUDIO_FRAME_RENDERING
+import com.pili.pldroid.player.PLOnInfoListener.MEDIA_INFO_VIDEO_FRAME_RENDERING
 import com.qlive.avparam.*
 import com.qlive.liblog.QLiveLogUtil
 
@@ -123,6 +124,10 @@ class QMediaPlayer(val context: Context) : QIPlayer {
             return
         }
         mIMediaPlayer?.start()
+    }
+
+    fun setVolume(leftVolume: Float, rightVolume: Float){
+        mIMediaPlayer?.setVolume(leftVolume, rightVolume)
     }
 
     override fun addEventListener(listener: QPlayerEventListener) {
