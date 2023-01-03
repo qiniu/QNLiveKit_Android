@@ -37,11 +37,22 @@ android {
 def userAARSDK = true
 
 dependencies {
+    Properties properties = new Properties()
+    InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream();
+    properties.load(inputStream)
+    def isKitDever = properties.getProperty('isKitDever')
+    System.out.println("  isKitDever" + isKitDever)
 
     implementation project(':app-sdk:depends_sdk_qnim')  //七牛imsdk 必选
     implementation project(':app-sdk:depends_sdk_qrtc')  //七牛rtc 主播推流必选  观众要连麦必选连麦
     implementation project(':app-sdk:depends_sdk_piliplayer') //七牛播放器 观众拉流端必选
-   // implementation project(":qlive-uicomponnets:uikit-beauty")//七牛美颜模块 可选
+
+    // 项目开发者
+    if (isKitDever == "1") {
+        System.out.println("implementation uikit-beauty" )
+        implementation project(":qlive-uicomponnets:uikit-beauty")//七牛美颜模块 可选
+    }
+
     if (userAARSDK) {
         //  使用 sdk方式依赖
         // 无UIsdk
@@ -57,7 +68,7 @@ dependencies {
         //UIkit依赖两个知名的开源库
         implementation depend.glide()
         //如果没有开启 viewbinding 选项 务必依赖这个库
-       // implementation "androidx.databinding:viewbinding:7.1.2"
+        // implementation "androidx.databinding:viewbinding:7.1.2"
     } else {
         //用源码模块的依赖方式 可以修改源码
         implementation project(':qlive-uikit')
