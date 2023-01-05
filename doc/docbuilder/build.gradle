@@ -3,6 +3,90 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.qncube.docbuider'
 }
+docSrcFiles{
+    HashMap<String, String> links = new LinkedHashMap<>()
+    links.put("QLive", "https://developer.qiniu.com/lowcode/api/12045/QLive");
+    links.put("QLiveUIKit", "https://developer.qiniu.com/lowcode/api/12046/QLiveUIKit");
+    links.put("QUserInfo", "https://developer.qiniu.com/lowcode/api/12047/QUserInfo");
+    links.put("QTokenGetter", "https://developer.qiniu.com/lowcode/api/12048/QTokenGetter");
+    links.put("QLiveConfig", "https://developer.qiniu.com/lowcode/api/12049/QLiveConfig");
+    links.put("QRooms", "https://developer.qiniu.com/lowcode/api/12050/QRooms");
+    links.put("QLiveStatus", "https://developer.qiniu.com/lowcode/api/12051/QLiveStatus");
+    links.put("QLiveCallBack", "https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack");
+    links.put("QClientType", "https://developer.qiniu.com/lowcode/api/12053/QClientType");
+    links.put("QClientLifeCycleListener", "https://developer.qiniu.com/lowcode/api/12054/QClientLifeCycleListener");
+    links.put("QInvitationHandler", "https://developer.qiniu.com/lowcode/api/12055/QInvitationHandler");
+    links.put("QInvitationHandlerListener", "https://developer.qiniu.com/lowcode/api/12056/QInvitationHandlerListener");
+    links.put("QCreateRoomParam", "https://developer.qiniu.com/lowcode/api/12057/QCreateRoomParam");
+    links.put("QDanmaku", "https://developer.qiniu.com/lowcode/api/12058/QDanmaku");
+    links.put("QExtension", "https://developer.qiniu.com/lowcode/api/12059/QExtension");
+    links.put("QInvitation", "https://developer.qiniu.com/lowcode/api/12060/QInvitation");
+    links.put("QLiveRoomInfo", "https://developer.qiniu.com/lowcode/api/12061/QLiveRoomInfo");
+    links.put("QLiveUser", "https://developer.qiniu.com/lowcode/api/12062/QLiveUser");
+    links.put("QMicLinker", "https://developer.qiniu.com/lowcode/api/12063/QMicLinker");
+    links.put("QPKSession", "https://developer.qiniu.com/lowcode/api/12064/QPKSession");
+    links.put("QPublicChat", "https://developer.qiniu.com/lowcode/api/12065/QPublicChat");
+    links.put("QPlayerEventListener", "https://developer.qiniu.com/lowcode/api/12066/QPlayerEventListener");
+    links.put("QBeautySetting", "https://developer.qiniu.com/lowcode/api/12067/QBeautySetting");
+    links.put("QConnectionStatusLister", "https://developer.qiniu.com/lowcode/api/12068/QConnectionStatusLister");
+    links.put("QPlayerRenderView", "https://developer.qiniu.com/lowcode/api/12069/QPlayerRenderView");
+    links.put("QMicrophoneParam", "https://developer.qiniu.com/lowcode/api/12073/QMicrophoneParam");
+    links.put("QCameraParam", "https://developer.qiniu.com/lowcode/api/12074/QCameraParam");
+    links.put("QMixStreaming.MixStreamParams", "https://developer.qiniu.com/lowcode/api/12075/QMixStreaming_MixStreamParams");
+    links.put("QMixStreaming.TranscodingLiveStreamingImage", "https://developer.qiniu.com/lowcode/api/12076/QMixStreaming_TranscodingLiveStreamingImage");
+    links.put("QMixStreaming.CameraMergeOption", "https://developer.qiniu.com/lowcode/api/12078/QMixStreaming_CameraMergeOption");
+    links.put("QMixStreaming.MergeOption", "https://developer.qiniu.com/lowcode/api/12079/QMixStreaming_MergeOption");
+    links.put("QMixStreaming.MicrophoneMergeOption", "https://developer.qiniu.com/lowcode/api/12080/QMixStreaming_MicrophoneMergeOption");
+    links.put("QPusherClient", "https://developer.qiniu.com/lowcode/api/12081/QPusherClient");
+    links.put("QPushRenderView", "https://developer.qiniu.com/lowcode/api/12082/QPushRenderView");
+    links.put("QPlayerClient", "https://developer.qiniu.com/lowcode/api/12083/QPlayerClient");
+    links.put("QLiveStatusListener", "https://developer.qiniu.com/lowcode/api/12084/QLiveStatusListener");
+    links.put("QLinkMicService", "https://developer.qiniu.com/lowcode/api/12085/QLinkMicService");
+    links.put("QLinkMicServiceListener", "https://developer.qiniu.com/lowcode/api/12086/QLinkMicServiceListener");
+    links.put("QAnchorHostMicHandler", "https://developer.qiniu.com/lowcode/api/12087/QAnchorHostMicHandler");
+    links.put("QLinkMicMixStreamAdapter", "https://developer.qiniu.com/lowcode/api/12088/QLinkMicMixStreamAdapter");
+    links.put("QAudienceMicHandler", "https://developer.qiniu.com/lowcode/api/12089/QAudienceMicHandler");
+    links.put("QAudienceMicHandler.LinkMicHandlerListener", "https://developer.qiniu.com/lowcode/api/12090/QAudienceMicHandler_LinkMicHandlerListener");
+    links.put("QAudioFrameListener", "https://developer.qiniu.com/lowcode/api/12091/QAudioFrameListener");
+    links.put("QVideoFrameListener", "https://developer.qiniu.com/lowcode/api/12092/QVideoFrameListener");
+    links.put("QPKService", "https://developer.qiniu.com/lowcode/api/12093/QPKService");
+    links.put("QPKServiceListener", "https://developer.qiniu.com/lowcode/api/12094/QPKServiceListener");
+    links.put("QPKMixStreamAdapter", "https://developer.qiniu.com/lowcode/api/12095/QPKMixStreamAdapter");
+    links.put("QPublicChatService", "https://developer.qiniu.com/lowcode/api/12096/QPublicChatService");
+    links.put("QPublicChatServiceLister", "https://developer.qiniu.com/lowcode/api/12097/QPublicChatServiceLister");
+    links.put("QRoomService", "https://developer.qiniu.com/lowcode/api/12098/QRoomService");
+    links.put("QRoomServiceListener", "https://developer.qiniu.com/lowcode/api/12099/QRoomServiceListener");
+    links.put("QDanmakuService", "https://developer.qiniu.com/lowcode/api/12100/QDanmakuService");
+    links.put("QDanmakuServiceListener", "https://developer.qiniu.com/lowcode/api/12101/QDanmakuServiceListener");
+    links.put("QChatRoomService", "https://developer.qiniu.com/lowcode/api/12102/QChatRoomService");
+    links.put("QChatRoomServiceListener", "https://developer.qiniu.com/lowcode/api/12103/QChatRoomServiceListener");
+    links.put("RoomPage", "https://developer.qiniu.com/lowcode/api/12105/RoomPage");
+    links.put("RoomListPage", "https://developer.qiniu.com/lowcode/api/12106/RoomListPage");
+    links.put("QLiveFuncComponent", "https://developer.qiniu.com/lowcode/api/12107/QLiveFuncComponent");
+    links.put("QLiveComponent", "https://developer.qiniu.com/lowcode/api/12108/QLiveComponent");
+    links.put("QLiveUIKitContext", "https://developer.qiniu.com/lowcode/api/12109/QLiveUIKitContext");
+    links.put("QItem", "https://developer.qiniu.com/lowcode/api/12128/QItem");
+    links.put("QItem.RecordInfo", "https://developer.qiniu.com/lowcode/api/12186/QItem_RecordInfo");
+    links.put("QItemStatus", "https://developer.qiniu.com/lowcode/api/12129/QItemStatus");
+    links.put("QOrderParam", "https://developer.qiniu.com/lowcode/api/12130/QOrderParam");
+    links.put("QSingleOrderParam", "https://developer.qiniu.com/lowcode/api/12131/QSingleOrderParam");
+    links.put("QShoppingService", "https://developer.qiniu.com/lowcode/api/12132/QShoppingService");
+    links.put("QShoppingServiceListener", "https://developer.qiniu.com/lowcode/api/12133/QShoppingServiceListener");
+    links.put("QGift", "https://developer.qiniu.com/lowcode/api/12277/qgift");
+    links.put("QGiftMsg", "https://developer.qiniu.com/lowcode/api/12278/qgiftmsg");
+    links.put("QGiftService", "https://developer.qiniu.com/lowcode/api/12279/qgiftservice");
+    links.put("QGiftServiceListener", "https://developer.qiniu.com/lowcode/api/12280/qgiftservicelistener");
+    links.put("QLike", "https://developer.qiniu.com/lowcode/api/12281/qlike");
+    links.put("QLikeResponse", "https://developer.qiniu.com/lowcode/api/12282/qlikeresponse");
+    links.put("QLikeService", "https://developer.qiniu.com/lowcode/api/12283/qlikeservice");
+    links.put("QLikeServiceListener", "https://developer.qiniu.com/lowcode/api/12284/qlikeservicelistener");
+
+    links.put("QKTVMusic", "https://developer.qiniu.com/lowcode/api/12345/qktvmusic");
+    links.put("QKTVService", "https://developer.qiniu.com/lowcode/api/12346/qktvservice");
+    links.put("QKTVServiceListener", "https://developer.qiniu.com/lowcode/api/12347/qktvservicelistener");
+    files.clear()
+    files.putAll(links)
+}
 
 android {
     namespace 'com.qlive.uikit'
