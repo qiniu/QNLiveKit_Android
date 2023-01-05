@@ -124,7 +124,9 @@ public class DependsComp {
     def runtime_ktx() {
         return "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     }
-
+    def lifecycle_ext(){
+        return "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    }
     def lifecycleCompiler() {
         return "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
     }
