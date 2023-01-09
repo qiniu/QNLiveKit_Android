@@ -43,6 +43,7 @@ class QMediaPlayer(val context: Context) : QIPlayer {
             (mRenderView as QPlayerTextureRenderView).stopPlayback()
         }
         mSurface = null
+        mIMediaPlayer = null
     }
 
     //切换rtc模式为了下麦快速恢复保持链接
@@ -64,6 +65,9 @@ class QMediaPlayer(val context: Context) : QIPlayer {
     }
 
     override fun start() {
+        if (mIMediaPlayer == null) {
+            return
+        }
         QLiveLogUtil.d(
             "mIMediaPlayer",
             "start ${mIMediaPlayer?.isPlaying}   ${mIMediaPlayer?.dataSource == currentUrl}  ${mIMediaPlayer?.playerState?.name}"
@@ -73,9 +77,7 @@ class QMediaPlayer(val context: Context) : QIPlayer {
         ) {
             return
         }
-        if (mIMediaPlayer == null) {
-            return
-        }
+
         if (mIMediaPlayer?.playerState == PlayerState.ERROR) {
             mIMediaPlayer?.release()
             resetPlayer()
@@ -126,7 +128,7 @@ class QMediaPlayer(val context: Context) : QIPlayer {
         mIMediaPlayer?.start()
     }
 
-    fun setVolume(leftVolume: Float, rightVolume: Float){
+    fun setVolume(leftVolume: Float, rightVolume: Float) {
         mIMediaPlayer?.setVolume(leftVolume, rightVolume)
     }
 
@@ -209,8 +211,8 @@ class QMediaPlayer(val context: Context) : QIPlayer {
 
     private val mPLOnVideoFrameListener = PLOnVideoFrameListener { bytes, size, w, h, format, ts ->
         val sei = SEIUtil.parseSEI(bytes, size, w, h, format)
-        if(sei.isNotEmpty()){
-           mQPlayerSEIListener.onSEI(sei)
+        if (sei.isNotEmpty()) {
+            mQPlayerSEIListener.onSEI(sei)
         }
     }
 

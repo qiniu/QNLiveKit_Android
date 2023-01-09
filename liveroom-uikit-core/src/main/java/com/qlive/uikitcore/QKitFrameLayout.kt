@@ -22,7 +22,6 @@ import com.qlive.uikitcore.view.CircleImageView
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.ParameterizedType
 
-
 abstract class QKitFrameLayout : FrameLayout, QLiveComponent {
     override var client: QLiveClient? = null
     override var roomInfo: QLiveRoomInfo? = null

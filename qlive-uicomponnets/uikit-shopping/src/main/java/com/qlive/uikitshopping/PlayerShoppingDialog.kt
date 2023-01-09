@@ -149,6 +149,7 @@ class PlayerShoppingDialog(
             helper: QRecyclerViewBindHolder<KitItemPlayerGoodsBinding>,
             item: QItem
         ) {
+
             Glide.with(mContext)
                 .load(item.thumbnail)
                 .into(helper.binding.ivCover)
