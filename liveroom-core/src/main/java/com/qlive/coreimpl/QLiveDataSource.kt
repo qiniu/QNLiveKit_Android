@@ -89,19 +89,11 @@ class QLiveDataSource {
     }
 
     suspend fun unPubRoom(liveId: String): QLiveRoomInfo {
-        return HttpClient.httpClient.delete(
-            "/client/live/room/${liveId}",
-            "{}",
-            QLiveRoomInfo::class.java
-        )
+        return HttpClient.httpClient.delete("/client/live/room/${liveId}", "{}", QLiveRoomInfo::class.java)
     }
 
     suspend fun joinRoom(liveId: String): QLiveRoomInfo {
-        return HttpClient.httpClient.post(
-            "/client/live/room/user/${liveId}",
-            "{}",
-            QLiveRoomInfo::class.java
-        )
+        return HttpClient.httpClient.post("/client/live/room/user/${liveId}", "{}", QLiveRoomInfo::class.java)
     }
 
     suspend fun leaveRoom(liveId: String) {

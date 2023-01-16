@@ -201,13 +201,13 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
                     ).toJsonString(),
                     currentRoomInfo!!.chatID, false
                 )
+                micLinkContext.mQRtcLiveRoom.joinRtc(token.rtc_token, JsonUtils.toJson(linker))
                 cameraParams?.let {
                     micLinkContext.mQRtcLiveRoom.enableCamera(it)
                 }
                 microphoneParams?.let {
                     micLinkContext.mQRtcLiveRoom.enableMicrophone(it)
                 }
-                micLinkContext.mQRtcLiveRoom.joinRtc(token.rtc_token, JsonUtils.toJson(linker))
 //                val users = ArrayList<QNMicLinker>()
 //                context.mRtcLiveRoom.mClient.remoteUsers.forEach {
 //                    if (it.userID != roomInfo?.anchor?.userId) {
@@ -365,14 +365,9 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
         backGround {
             doWork {
                 if (micLinkContext.mQRtcLiveRoom.muteLocalCamera(muted)) {
-                    mLinkDateSource.switch(
-                        mMeLinker!!, false, !muted
-                    )
+                    mLinkDateSource.switch(mMeLinker!!, false, !muted)
                     RtmManager.rtmClient.sendChannelCMDMsg(
-                        RtmTextMsg<MuteMode>(
-                            liveroom_miclinker_camera_mute,
-                            mode
-                        ).toJsonString(),
+                        RtmTextMsg<MuteMode>(liveroom_miclinker_camera_mute, mode).toJsonString(),
                         currentRoomInfo!!.chatID, true
                     )
                     mMeLinker?.isOpenCamera = !muted
