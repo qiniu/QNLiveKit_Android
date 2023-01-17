@@ -19,6 +19,7 @@ import okhttp3.Request
 
 class App : Application() {
     companion object {
+        //模拟接入方的登录获取token地址 - （不是低代码的服务地址）
         val demo_url = "https://niucube-api.qiniu.com"
         //  val demo_url="http://10.200.20.28:5080"
     }

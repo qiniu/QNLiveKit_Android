@@ -34,7 +34,7 @@ android {
     }
 }
 
-def userAARSDK = false
+def userAARSDK = true
 
 dependencies {
     Properties properties = new Properties()
@@ -50,7 +50,7 @@ dependencies {
     // 项目开发者
     if (isKitDever == "1") {
         System.out.println("implementation uikit-beauty" )
-      //  implementation project(":qlive-uicomponnets:uikit-beauty")//七牛美颜模块 可选
+        implementation project(":qlive-uicomponnets:uikit-beauty")//七牛美颜模块 可选
     }
 
     if (userAARSDK) {
