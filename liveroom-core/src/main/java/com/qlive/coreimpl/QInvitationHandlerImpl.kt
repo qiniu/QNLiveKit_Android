@@ -5,6 +5,7 @@ import com.qlive.rtminvitation.*
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.core.QClientLifeCycleListener
 import com.qlive.core.*
+import com.qlive.core.QLiveErrorCode.NOT_A_ROOM_MEMBER
 import com.qlive.core.been.QInvitation
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
@@ -88,7 +89,7 @@ open class QInvitationHandlerImpl(private val ivName: String) : QInvitationHandl
         callBack: QLiveCallBack<QInvitation>?
     ) {
         if (currentRoomInfo == null) {
-            callBack?.onError(-1, "roomInfo==null")
+            callBack?.onError(NOT_A_ROOM_MEMBER, "roomInfo==null")
             return
         }
         backGround {
