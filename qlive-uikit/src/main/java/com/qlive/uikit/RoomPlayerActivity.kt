@@ -29,6 +29,8 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import com.qlive.sdk.QLive
+import com.qlive.core.QLiveErrorCode
+import com.qlive.core.QLiveErrorCode.CANCELED_JOIN
 import com.qlive.uikit.component.FuncCPTBeautyDialogShower
 import com.qlive.uikit.component.FuncCPTPlayerFloatingHandler
 import com.qlive.uikit.component.OnKeyDownMonitor
@@ -54,7 +56,10 @@ class RoomPlayerActivity : BaseFrameActivity() {
             extSetter: StartRoomActivityExtSetter?,
             callBack: QLiveCallBack<QLiveRoomInfo>?
         ) {
-
+            if(QLive.getLoginUser()==null){
+                callBack?.onError(QLiveErrorCode.NOT_LOGGED_IN,"QLive.getLoginUser()==null")
+                return
+            }
             val goRoom = {
                 startCallBack = callBack
                 val i = Intent(context, RoomPlayerActivity::class.java)
@@ -355,7 +360,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
         }
         FuncCPTPlayerFloatingHandler.currentFloatingPlayerView?.activityRef?.clear()
         mRoomClient = null
-        startCallBack?.onError(-1, "cancel the join room")
+        startCallBack?.onError(CANCELED_JOIN, "cancel the join room")
         startCallBack = null
     }
 

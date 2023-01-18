@@ -7,14 +7,14 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.core.view.LayoutInflaterCompat
-import com.qlive.avparam.QCameraParam
-import com.qlive.avparam.QMicrophoneParam
 import com.qlive.core.*
 import com.qlive.core.been.QCreateRoomParam
 import com.qlive.core.been.QLiveRoomInfo
-import com.qlive.roomservice.QRoomService
 import com.qlive.rtclive.QPushTextureView
 import com.qlive.sdk.QLive
+import com.qlive.core.QLiveErrorCode
+import com.qlive.core.QLiveErrorCode.NOT_LOGGED_IN
+import com.qlive.core.QLiveErrorCode.NO_PERMISSION
 import com.qlive.uikit.component.FuncCPTBeautyDialogShower
 import com.qlive.uikit.component.OnKeyDownMonitor
 import com.qlive.uikitcore.*
@@ -42,6 +42,10 @@ class RoomPushActivity : BaseFrameActivity() {
             extSetter: StartRoomActivityExtSetter?,
             callBack: QLiveCallBack<QLiveRoomInfo>?
         ) {
+            if(QLive.getLoginUser()==null){
+                callBack?.onError(NOT_LOGGED_IN,"QLive.getLoginUser()==null")
+                return
+            }
             startCallBack = callBack
             val i = Intent(context, RoomPushActivity::class.java)
             extSetter?.setExtParams(i)
@@ -54,6 +58,10 @@ class RoomPushActivity : BaseFrameActivity() {
             extSetter: StartRoomActivityExtSetter?,
             callBack: QLiveCallBack<QLiveRoomInfo>?
         ) {
+            if(QLive.getLoginUser()==null){
+                callBack?.onError(NOT_LOGGED_IN,"QLive.getLoginUser()==null")
+                return
+            }
             startCallBack = callBack
             val i = Intent(context, RoomPushActivity::class.java)
             i.putExtra(KEY_ROOM_ID, roomId)
@@ -256,7 +264,7 @@ class RoomPushActivity : BaseFrameActivity() {
         super.onDestroy()
         mInflaterFactory.onDestroyed()
         mRoomClient.destroy()
-        startCallBack?.onError(-1, "cancel the join room")
+        startCallBack?.onError(QLiveErrorCode.CANCELED_JOIN, "cancel the join room")
         startCallBack = null
     }
 
@@ -273,7 +281,7 @@ class RoomPushActivity : BaseFrameActivity() {
                 start()
             } else {
                 Toast.makeText(this, R.string.live_permission_check_tip, Toast.LENGTH_SHORT).show()
-                startCallBack?.onError(-1, "no permission")
+                startCallBack?.onError(NO_PERMISSION, "no permission")
                 startCallBack = null
                 finish()
             }

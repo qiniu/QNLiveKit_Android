@@ -29,10 +29,8 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider, QLiveServiceObse
     private val mRoomSource = QLiveDataSource()
     private var mLiveStatusListeners = ArrayList<QLiveStatusListener>()
     private var mLocalPreView: QPushRenderView? = null
-    private var mCameraParams: QCameraParam =
-        QCameraParam()
-    private var mQMicrophoneParam: QMicrophoneParam =
-        QMicrophoneParam()
+    private var mCameraParams: QCameraParam = QCameraParam()
+    private var mQMicrophoneParam: QMicrophoneParam = QMicrophoneParam()
     private var mConnectionStatusLister: QConnectionStatusLister? = null
     private val mRtcRoom by lazy {
         QRtcLiveRoom(appContext).apply {
@@ -77,7 +75,6 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider, QLiveServiceObse
     override fun removeLiveStatusListener(liveStatusListener: QLiveStatusListener?) {
         mLiveStatusListeners.remove(liveStatusListener)
     }
-
 
     /**
      * 加入房间

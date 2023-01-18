@@ -27,10 +27,11 @@
     <com.qlive.uikit.component.FuncCPTDefaultKeyDownMonitor
         android:layout_width="0dp"
         android:layout_height="0dp" />
-
+    <!--    直播违规警告 功能组件-->
     <com.qlive.uikit.component.FuncCPTRoomWarnMonitor
         android:layout_width="0dp"
         android:layout_height="0dp" />
+
     <!--   自定义viewpager让底层图层在viewpager下面同样能被分发到点击事件-->
     <com.qlive.uikit.component.TouchEventBusViewPager
         android:layout_width="match_parent"
@@ -89,7 +90,6 @@
             android:layout_height="match_parent"
             tools:translationX="-411dp">
 
-
             <!--             里层-->
             <LinearLayout
                 android:id="@+id/llTopBar"
@@ -106,7 +106,7 @@
 
                 <View
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="1dp"
                     android:layout_weight="1"
                     tools:background="#2234ff" />
 

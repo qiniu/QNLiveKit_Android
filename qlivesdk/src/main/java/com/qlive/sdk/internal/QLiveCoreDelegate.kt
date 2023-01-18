@@ -45,8 +45,10 @@ internal class QLiveCoreDelegate {
         config: QLiveConfig?,
         tokenGetter: QTokenGetter
     ) {
+        QLiveLogUtil.d("QLiveCoreDelegate.init")
         httpClient = OKConnectionHttpClient(context)
         setContext(context)
+        QNIMManager.setRtmAdapter()
         val sdkConfig = config ?: QLiveConfig()
         httpClient.baseUrl = sdkConfig.serverURL
         this.tokenGetter = tokenGetter
@@ -86,12 +88,15 @@ internal class QLiveCoreDelegate {
     }
 
     private suspend fun getToken() = suspendCoroutine<String> { coroutine ->
+        QLiveLogUtil.d("QLiveCoreDelegate.getToken")
         tokenGetter!!.getTokenInfo(object : QLiveCallBack<String> {
             override fun onError(code: Int, msg: String?) {
+                QLiveLogUtil.d("QLiveCoreDelegate.getToken.onError ${code} $msg")
                 coroutine.resumeWithException(NetBzException(code, msg))
             }
 
             override fun onSuccess(data: String) {
+                QLiveLogUtil.d("QLiveCoreDelegate.getToken.onSuccess")
                 httpClient.token = data
                 coroutine.resume(data)
             }
@@ -121,6 +126,7 @@ internal class QLiveCoreDelegate {
     private fun loginInner(reGetToken: Boolean, callBack: QLiveCallBack<Void>) {
         backGround {
             doWork {
+                QLiveLogUtil.d("QLiveCoreDelegate.loginInner")
                 getToken()
                 if (reGetToken) {
                     if (loginUser != null) {
@@ -128,7 +134,9 @@ internal class QLiveCoreDelegate {
                         return@doWork
                     }
                 }
+                QLiveLogUtil.d(" 获取token - QLiveCoreDelegate.dataSource.profile()")
                 val user = dataSource.profile()
+                QLiveLogUtil.d("QLiveCoreDelegate. dataSource.appConfig()")
                 val appConfig = dataSource.appConfig()
                 SpUtil.get("qlive").saveData("appConfig", JsonUtils.toJson(appConfig))
                 QNIMManager.init(appConfig.im_app_id, appContext)

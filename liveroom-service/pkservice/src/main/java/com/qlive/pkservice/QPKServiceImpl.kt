@@ -462,7 +462,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         callBack: QLiveCallBack<QPKSession>?
     ) {
         if (currentRoomInfo == null) {
-            callBack?.onError(0, " roomInfo==null")
+            callBack?.onError(QLiveErrorCode.NOT_A_ROOM_MEMBER, " roomInfo==null")
             return
         }
         backGround {
@@ -564,7 +564,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
 
     override fun stop(callBack: QLiveCallBack<Void>?) {
         if (currentRoomInfo == null || mPKSession?.status != PK_STATUS_OK) {
-            callBack?.onError(0, " roomInfo==null")
+            callBack?.onError(QLiveErrorCode.NOT_A_ROOM_MEMBER, " roomInfo==null")
             return
         }
         backGround {

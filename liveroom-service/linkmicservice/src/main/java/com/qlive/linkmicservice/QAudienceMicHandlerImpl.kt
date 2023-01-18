@@ -16,6 +16,8 @@ import com.qlive.linkmicservice.QLinkMicServiceImpl.Companion.liveroom_miclinker
 import com.qlive.linkmicservice.QLinkMicServiceImpl.Companion.liveroom_miclinker_microphone_mute
 import com.qlive.coreimpl.*
 import com.qlive.core.*
+import com.qlive.core.QLiveErrorCode.NOT_A_LINKER_MEMBER
+import com.qlive.core.QLiveErrorCode.NOT_A_ROOM_MEMBER
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.coreimpl.model.MuteMode
 import com.qlive.coreimpl.model.UidMode
@@ -181,7 +183,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
     ) {
         mMicListJob.cancel()
         if (currentRoomInfo == null) {
-            callBack?.onError(-1, "roomInfo==null")
+            callBack?.onError(NOT_A_ROOM_MEMBER, "roomInfo==null")
             mMicListJob.start(true)
             return
         }
@@ -201,13 +203,13 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
                     ).toJsonString(),
                     currentRoomInfo!!.chatID, false
                 )
+                micLinkContext.mQRtcLiveRoom.joinRtc(token.rtc_token, JsonUtils.toJson(linker))
                 cameraParams?.let {
                     micLinkContext.mQRtcLiveRoom.enableCamera(it)
                 }
                 microphoneParams?.let {
                     micLinkContext.mQRtcLiveRoom.enableMicrophone(it)
                 }
-                micLinkContext.mQRtcLiveRoom.joinRtc(token.rtc_token, JsonUtils.toJson(linker))
 //                val users = ArrayList<QNMicLinker>()
 //                context.mRtcLiveRoom.mClient.remoteUsers.forEach {
 //                    if (it.userID != roomInfo?.anchor?.userId) {
@@ -248,7 +250,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
         isPositive: Boolean = true, isKick: Boolean = false, kick: UidMsgMode? = null
     ) {
         if (mMeLinker == null) {
-            callBack?.onError(-1, "user is not on mic")
+            callBack?.onError(NOT_A_LINKER_MEMBER, "user is not on mic")
             return
         }
         backGround {
@@ -335,7 +337,7 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
 
     override fun switchCamera(callBack: QLiveCallBack<QCameraFace>?) {
         if (mMeLinker == null) {
-            callBack?.onError(-1, "not in seat")
+            callBack?.onError(NOT_A_LINKER_MEMBER, "not in seat")
             return
         }
         micLinkContext.mQRtcLiveRoom.switchCamera() { it, msg ->
@@ -365,14 +367,9 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
         backGround {
             doWork {
                 if (micLinkContext.mQRtcLiveRoom.muteLocalCamera(muted)) {
-                    mLinkDateSource.switch(
-                        mMeLinker!!, false, !muted
-                    )
+                    mLinkDateSource.switch(mMeLinker!!, false, !muted)
                     RtmManager.rtmClient.sendChannelCMDMsg(
-                        RtmTextMsg<MuteMode>(
-                            liveroom_miclinker_camera_mute,
-                            mode
-                        ).toJsonString(),
+                        RtmTextMsg<MuteMode>(liveroom_miclinker_camera_mute, mode).toJsonString(),
                         currentRoomInfo!!.chatID, true
                     )
                     mMeLinker?.isOpenCamera = !muted
