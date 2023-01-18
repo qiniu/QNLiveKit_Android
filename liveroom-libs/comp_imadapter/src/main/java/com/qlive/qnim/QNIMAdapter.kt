@@ -143,11 +143,13 @@ class QNIMAdapter : RtmAdapter {
     fun init(config: BMXSDKConfig, context: Context) {
         if (QNIMClient.isInit()) {
             QNIMClient.getUserManager()?.removeUserListener(mBMXUserServiceListener)
+            QNIMClient.getChatManager()?.removeChatListener(mChatListener)
         }
         QNIMClient.init(config)
         mContext = context
         isInit = true
         QNIMClient.getUserManager().addUserListener(mBMXUserServiceListener)
+        QNIMClient.getChatManager().addChatListener(mChatListener)
     }
 
     fun loginOut(callBack: BMXCallBack) {
@@ -400,6 +402,5 @@ class QNIMAdapter : RtmAdapter {
     ) {
         this.c2cMessageReceiver = c2cMessageReceiver
         this.channelMsgReceiver = channelMsgReceiver
-        QNIMClient.getChatManager().addChatListener(mChatListener)
     }
 }

@@ -47,6 +47,7 @@ internal class QLiveCoreDelegate {
     ) {
         httpClient = OKConnectionHttpClient(context)
         setContext(context)
+        QNIMManager.setRtmAdapter()
         val sdkConfig = config ?: QLiveConfig()
         httpClient.baseUrl = sdkConfig.serverURL
         this.tokenGetter = tokenGetter
