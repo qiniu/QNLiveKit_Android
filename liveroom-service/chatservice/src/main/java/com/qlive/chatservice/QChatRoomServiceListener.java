@@ -65,4 +65,16 @@ public interface QChatRoomServiceListener {
      * @param reason   the reason
      */
     default void onAdminRemoved(@NotNull String memberID,@NotNull  String reason){}
+
+    /**
+     * 添加黑名单
+     * @param memberID
+     */
+    default void onBlockAdd(@NotNull String memberID){}
+
+    /**
+     * 移除黑名单
+     * @param memberID
+     */
+    default void onBlockRemoved(@NotNull String memberID){}
 }

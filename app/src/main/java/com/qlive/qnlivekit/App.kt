@@ -3,10 +3,13 @@ package com.qlive.qnlivekit
 import android.app.Application
 import android.util.Log
 import android.view.View
+import com.qlive.chatservice.QChatRoomService
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.QLiveClient
 import com.qlive.core.QLiveConfig
 import com.qlive.core.been.QLiveRoomInfo
+import com.qlive.core.been.QLiveUser
+import com.qlive.pubchatservice.QPublicChat
 import com.qlive.qnlivekit.uitil.*
 import com.qlive.sdk.QLive
 import com.qlive.shoppingservice.QItem
@@ -14,7 +17,9 @@ import com.qlive.uikit.component.CloseRoomView
 import com.qlive.uikit.component.LiveRecordListView
 import com.qlive.uikitcore.CoroutineExtSetting.canUseLifecycleScope
 import com.qlive.uikitcore.QLiveUIKitContext
+import com.qlive.uikitpublicchat.PublicChatView
 import com.qlive.uikitshopping.PlayerShoppingDialog
+import com.qlive.uikituser.OnlineUserView
 import okhttp3.Request
 
 class App : Application() {

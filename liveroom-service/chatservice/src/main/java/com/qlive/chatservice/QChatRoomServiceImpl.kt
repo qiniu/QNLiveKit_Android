@@ -1,22 +1,24 @@
 package com.qlive.chatservice
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.qlive.rtm.*
 import com.qiniu.droid.imsdk.QNIMClient
 import com.qlive.core.*
+import com.qlive.core.been.QLiveUser
 import com.qlive.coreimpl.BaseService
+import com.qlive.coreimpl.QLiveDataSource
+import com.qlive.coreimpl.backGround
+import com.qlive.coreimpl.getCode
 import com.qlive.liblog.QLiveLogUtil
 import com.qlive.rtm.msg.TextMsg
-import im.floo.floolib.BMXErrorCode
-import im.floo.floolib.BMXGroup
-import im.floo.floolib.BMXGroupServiceListener
-import im.floo.floolib.ListOfLongLong
+import im.floo.BMXDataCallBack
+import im.floo.floolib.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-internal class QChatRoomServiceImpl : BaseService(),
-    QChatRoomService {
+internal class QChatRoomServiceImpl : BaseService(), QChatRoomService {
 
     private val mC2CRtmMsgListener = object : RtmMsgListener {
         /**
@@ -108,6 +110,50 @@ internal class QChatRoomServiceImpl : BaseService(),
                 mChatServiceListeners.forEach {
                     try {
                         it.onUserLeft(memberID.toString())
+                    } catch (e: AbstractMethodError) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
+
+        override fun onBlockListAdded(group: BMXGroup, members: ListOfLongLong) {
+            super.onBlockListAdded(group, members)
+            if (group.groupId().toString() != currentRoomInfo?.chatID) {
+                return
+            }
+            val memberIDs = ArrayList<String>()
+            for (i in 0 until members.size().toInt()) {
+                memberIDs.add(members.get(i).toString())
+            }
+            GlobalScope.launch(Dispatchers.Main) {
+                mChatServiceListeners.forEach { list ->
+                    try {
+                        memberIDs.forEach {
+                            list.onBlockAdd(it)
+                        }
+                    } catch (e: AbstractMethodError) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
+
+        override fun onBlockListRemoved(group: BMXGroup, members: ListOfLongLong) {
+            super.onBlockListRemoved(group, members)
+            if (group.groupId().toString() != currentRoomInfo?.chatID) {
+                return
+            }
+            val memberIDs = ArrayList<String>()
+            for (i in 0 until members.size().toInt()) {
+                memberIDs.add(members.get(i).toString())
+            }
+            GlobalScope.launch(Dispatchers.Main) {
+                mChatServiceListeners.forEach { list ->
+                    try {
+                        memberIDs.forEach {
+                            list.onBlockRemoved(it)
+                        }
                     } catch (e: AbstractMethodError) {
                         e.printStackTrace()
                     }
@@ -345,6 +391,101 @@ internal class QChatRoomServiceImpl : BaseService(),
                         }
                 }
 
+            } else {
+                callBack?.onError(code.swigValue(), code.name)
+            }
+        }
+    }
+
+    override fun getBannedMembers(callBack: QLiveCallBack<List<QLiveUser>>?) {
+        QNIMClient.getGroupManager().getGroupInfo(
+            currentRoomInfo?.chatID?.toLong() ?: 0L, true
+        ) { code, data ->
+            if (code == BMXErrorCode.NoError) {
+                QNIMClient.getGroupManager().getBannedMembers(data) { p0, p1 ->
+                    if (p0 == BMXErrorCode.NoError) {
+                        callBack?.onError(p0.swigValue(), p0.name)
+                    } else {
+                        val ids = ArrayList<String>()
+                        for (i in 0..p1.size().toInt() - 1) {
+                            val member = p1.get(i)
+                            ids.add(member.mUid.toString())
+                        }
+                        backGround {
+                            doWork {
+                                val users = QLiveDataSource().searchUsersByIMUid(ids)
+                                callBack?.onSuccess(users)
+                            }
+                            catchError {
+                                callBack?.onError(it.getCode(), it.message)
+                            }
+                        }
+                    }
+                }
+            } else {
+                callBack?.onError(code.swigValue(), code.name)
+            }
+        }
+    }
+
+    override fun blockUser(isBlock: Boolean, memberID: String, callBack: QLiveCallBack<Void>?) {
+        QNIMClient.getGroupManager().getGroupInfo(
+            currentRoomInfo?.chatID?.toLong() ?: 0L, true
+        ) { code, data ->
+            if (code == BMXErrorCode.NoError) {
+                if (isBlock) {
+                    QNIMClient.getGroupManager()
+                        .blockMembers(data, ListOfLongLong().apply { add(memberID.toLong()) }) {
+                            if (it == BMXErrorCode.NoError) {
+                                callBack?.onSuccess(null)
+                            } else {
+                                callBack?.onError(it.swigValue(), it.name)
+                            }
+                        }
+                } else {
+                    QNIMClient.getGroupManager()
+                        .unblockMembers(data, ListOfLongLong().apply { add(memberID.toLong()) }) {
+                            if (it == BMXErrorCode.NoError) {
+                                callBack?.onSuccess(null)
+                            } else {
+                                callBack?.onError(it.swigValue(), it.name)
+                            }
+                        }
+                }
+            } else {
+                callBack?.onError(code.swigValue(), code.name)
+            }
+        }
+    }
+
+    @SuppressLint("SuspiciousIndentation")
+    override fun getBlockList(forceRefresh: Boolean, callBack: QLiveCallBack<List<QLiveUser>>?) {
+        QNIMClient.getGroupManager().getGroupInfo(
+            currentRoomInfo?.chatID?.toLong() ?: 0L, true
+        ) { code, data ->
+            if (code == BMXErrorCode.NoError) {
+                QNIMClient.getGroupManager().getBlockList(
+                    data, forceRefresh
+                ) { p0, p1 ->
+                    if (p0 != BMXErrorCode.NoError) {
+                        callBack?.onError(p0.swigValue(), p0.name)
+                    } else {
+                        val ids = ArrayList<String>()
+                        for (i in 0 until p1.size().toInt()) {
+                            val member = p1.get(i)
+                            ids.add(member.mUid.toString())
+                        }
+                        backGround {
+                            doWork {
+                                val users = QLiveDataSource().searchUsersByIMUid(ids)
+                                callBack?.onSuccess(users)
+                            }
+                            catchError {
+                                callBack?.onError(it.getCode(), it.message)
+                            }
+                        }
+                    }
+                }
             } else {
                 callBack?.onError(code.swigValue(), code.name)
             }

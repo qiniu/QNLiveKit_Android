@@ -21,12 +21,12 @@ import com.qlive.rtm.msg.TextMsg
 internal class QLinkMicServiceImpl : QLinkMicService, BaseService() {
 
     companion object {
-        val liveroom_miclinker_join = "liveroom_miclinker_join"
-        val liveroom_miclinker_left = "liveroom_miclinker_left"
-        val liveroom_miclinker_kick = "liveroom_miclinker_kick"
-        val liveroom_miclinker_microphone_mute = "liveroom_miclinker_microphone_mute"
-        val liveroom_miclinker_camera_mute = "liveroom_miclinker_camera_mute"
-        val liveroom_miclinker_extension_change = "liveroom_miclinker_extension_change"
+        const val liveroom_miclinker_join = "liveroom_miclinker_join"
+        const val liveroom_miclinker_left = "liveroom_miclinker_left"
+        const val liveroom_miclinker_kick = "liveroom_miclinker_kick"
+        const val liveroom_miclinker_microphone_mute = "liveroom_miclinker_microphone_mute"
+        const val liveroom_miclinker_camera_mute = "liveroom_miclinker_camera_mute"
+        const val liveroom_miclinker_extension_change = "liveroom_miclinker_extension_change"
     }
 
     private val mLinkDateSource = LinkDataSource()

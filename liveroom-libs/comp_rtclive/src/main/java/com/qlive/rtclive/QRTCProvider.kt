@@ -1,7 +1,7 @@
 package com.qlive.rtclive
 
 /**
- * 依赖rtc 的插件
+ * rtc 提供者
  */
 interface QRTCProvider {
     /**

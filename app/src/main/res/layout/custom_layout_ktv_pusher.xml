@@ -136,6 +136,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="80dp">
 
+                <!--  开播统计-->
                 <com.qlive.uikit.component.LiveStatisticsView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -192,7 +193,7 @@
                     android:src="@mipmap/kit_ic_go_danmaku"
                     tools:ignore="MissingDefaultResource" />
 
-                <!--                开始pk按钮-->
+                <!-- 开始pk-->
                 <com.qlive.uikitpk.StartPKView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -284,6 +285,7 @@
                 app:lrcTextGravity="center"
                 app:lrcTextSize="26sp" />
 
+            <!--  点歌-->
             <com.qlive.uikitktv.KTVControlView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

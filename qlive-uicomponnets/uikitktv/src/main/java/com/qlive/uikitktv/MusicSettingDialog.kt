@@ -45,5 +45,13 @@ class MusicSettingDialog(val client: QPusherClient, val ktvService: QKTVService)
                 ktvService.switchTrack(track_accompany)
             }
         }
+
+        binding.switchEar2.setOnCheckedChangeListener { _, b ->
+            if (b) {
+                client.enableEarMonitor(true)
+            } else {
+                client.enableEarMonitor(false)
+            }
+        }
     }
 }

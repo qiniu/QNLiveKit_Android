@@ -21,6 +21,7 @@ open class QRecyclerViewHolder(view: View) : ViewHolder(view) {
     private val childClickViewIds = LinkedHashSet<Int>()
     private val itemChildLongClickViewIds = LinkedHashSet<Int>()
     private var adapter: QRecyclerAdapter<*>? = null
+
     fun getItemChildLongClickViewIds(): HashSet<Int> {
         return itemChildLongClickViewIds
     }
