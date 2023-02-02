@@ -15,10 +15,7 @@ import com.qlive.rtm.leaveChannel
 import com.qlive.sdk.QLive
 import com.qlive.sdk.internal.AppCache.Companion.appContext
 
-internal class QPlayerClientImpl : QPlayerClient,
-    QPlayerProvider,
-    QLiveServiceObserver,
-    LinkRoleObserver {
+internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QLiveServiceObserver, LinkRoleObserver {
     companion object {
         fun create(): QPlayerClient {
             return QPlayerClientImpl()

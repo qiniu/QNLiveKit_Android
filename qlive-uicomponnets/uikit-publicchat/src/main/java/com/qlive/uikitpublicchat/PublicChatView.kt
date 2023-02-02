@@ -82,10 +82,10 @@ class PublicChatView : QKitRecyclerView {
             .addServiceLister(mPublicChatServiceLister)
         client.getService(QGiftService::class.java)
             .addGiftServiceListener(mGiftServiceLister)
-        this.adapter = mAdapter
-        mAdapter.setOnItemChildClickListener { adapter, view, position ->
+        mAdapter.setOnItemClickListener { adapter, view, position ->
             onItemMsgClickListener.invoke(kitContext!!, client, view, mAdapter.data[position])
         }
+        this.adapter = mAdapter
     }
 
     override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {

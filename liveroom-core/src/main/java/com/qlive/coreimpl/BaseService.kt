@@ -7,12 +7,24 @@ import com.qlive.core.QLiveService
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
 
+/**
+ * Base service
+ * 业务插件抽象 主要定义插件的规范和能获取到的基础数据
+ * @constructor Create empty Base service
+ */
 open class BaseService : QLiveService ,QClientLifeCycleListener{
 
     protected var user: QLiveUser? = null
     protected var currentRoomInfo: QLiveRoomInfo? = null
     protected var client: QLiveClient? = null
     protected var isLinker = false
+
+    /**
+     * Attach room client
+     * 绑定当前client
+     * @param client
+     * @param appContext
+     */
     open fun attachRoomClient(client: QLiveClient, appContext: Context) {
         this.client = client
     }
@@ -20,7 +32,8 @@ open class BaseService : QLiveService ,QClientLifeCycleListener{
     /**
      * 进入回调
      *
-     * @param user
+     * @param user 用户
+     * @param liveId 房间
      */
     override fun onEntering(liveId: String, user: QLiveUser) {
         this.user = user
@@ -29,10 +42,17 @@ open class BaseService : QLiveService ,QClientLifeCycleListener{
     /**
      * 加入回调
      *
-     * @param roomInfo
+     * @param roomInfo 加入了哪个房间
      */
     override fun onJoined(roomInfo: QLiveRoomInfo) {
         this.currentRoomInfo = roomInfo
+    }
+
+    /**
+     * 离开之前
+     * 如需要提前清理工作
+     */
+    open suspend fun checkLeave() {
     }
 
     /**
@@ -47,9 +67,12 @@ open class BaseService : QLiveService ,QClientLifeCycleListener{
      */
     override fun onDestroyed() {
     }
-    open suspend fun checkLeave() {
-    }
 
+    /**
+     * 角色变更
+     *
+     * @param isLink
+     */
     open fun onLinkRoleSwitched(isLink: Boolean) {
         isLinker = isLink
     }

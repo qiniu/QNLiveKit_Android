@@ -57,10 +57,15 @@ class QLiveDataSource {
             PageData::class.java
         )
         val date: PageData<QLiveRoomInfo> =
-            HttpClient.httpClient.get("/client/live/room/list/anchor", HashMap<String, String>().apply {
-                put("page_num", pageNumber.toString())
-                put("page_size", pageSize.toString())
-            }, null, p)
+            HttpClient.httpClient.get(
+                "/client/live/room/list/anchor",
+                HashMap<String, String>().apply {
+                    put("page_num", pageNumber.toString())
+                    put("page_size", pageSize.toString())
+                },
+                null,
+                p
+            )
         return date
     }
 
@@ -89,11 +94,19 @@ class QLiveDataSource {
     }
 
     suspend fun unPubRoom(liveId: String): QLiveRoomInfo {
-        return HttpClient.httpClient.delete("/client/live/room/${liveId}", "{}", QLiveRoomInfo::class.java)
+        return HttpClient.httpClient.delete(
+            "/client/live/room/${liveId}",
+            "{}",
+            QLiveRoomInfo::class.java
+        )
     }
 
     suspend fun joinRoom(liveId: String): QLiveRoomInfo {
-        return HttpClient.httpClient.post("/client/live/room/user/${liveId}", "{}", QLiveRoomInfo::class.java)
+        return HttpClient.httpClient.post(
+            "/client/live/room/user/${liveId}",
+            "{}",
+            QLiveRoomInfo::class.java
+        )
     }
 
     suspend fun leaveRoom(liveId: String) {
@@ -210,26 +223,31 @@ class QLiveDataSource {
      * @param callBack
      */
     suspend fun searchUserByIMUid(imUid: String): QLiveUser {
+        return searchUsersByIMUid(listOf(imUid))[0]
+    }
+
+    suspend fun searchUsersByIMUid(imUids: List<String>): List<QLiveUser> {
         val p = ParameterizedTypeImpl(
             arrayOf(QLiveUser::class.java),
             List::class.java,
             List::class.java
         )
+        var parms = "?"
+        imUids.forEachIndexed { index, s ->
+            parms += "im_user_ids=$s"
+            if (index != imUids.size - 1) {
+                parms += "&"
+            }
+        }
+
         val list = HttpClient.httpClient.get<List<QLiveUser>>(
-            "/client/user/imusers",
-            HashMap<String, String>().apply {
-                put("im_user_ids", imUid)
-            },
+            "/client/user/imusers$parms",
+            null,
             null,
             p
         )
-        return if (list.isEmpty()) {
-            throw NetBzException(-1, "targetUser is null")
-        } else {
-            list[0]
-        }
+        return list
     }
-
 
     suspend fun updateUser(
         avatar: String,
