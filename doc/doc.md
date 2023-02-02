@@ -1,5 +1,4 @@
 ```java
-
 //低代码直播客户端
 QLive{
 
@@ -408,6 +407,8 @@ QPublicChat{
 	public String content
 	//发送方所在房间ID
 	public String senderRoomId
+	//消息ID
+	public String msgID
 }
 
 //拉流事件回调
@@ -514,6 +515,8 @@ QCameraParam{
 	public int FPS
 	//
 	public int bitrate
+	//
+	public QVideoCaptureConfig captureConfig
 }
 
 //混流画布参数
@@ -703,6 +706,10 @@ QPlayerClient{
 	//设置预览窗口内置QPlayerTextureRenderView(推荐)/QSurfaceRenderView
 	//@param-renderView:预览窗口	
 	public void play(QPlayerRenderView renderView)
+
+	//设置播放器音量若参数为0f，则会将视频静音；若参数大于1f，播放音量会大于视频原来的音量
+	//@param-leftVolume:左声道音量	@param-rightVolume:右声道音量	
+	public void setVolume(float leftVolume,float rightVolume)
 
 	//暂停
 	public void pause()
@@ -976,6 +983,9 @@ QPublicChatService{
 	//@param-msg:公屏消息内容	@param-callBack:操作回调	
 	public void sendPublicChat(String msg,QLiveCallBack callBack)
 
+	//
+	public void getHistoryChatMsg()
+
 	//发送进入消息
 	//@param-msg:消息内容	@param-callBack:操作回调	
 	public void sendWelCome(String msg,QLiveCallBack callBack)
@@ -1099,12 +1109,12 @@ QChatRoomService{
 	public void removeServiceListener(QChatRoomServiceListener chatServiceListener)
 
 	//发c2c消息
-	//@param-msg:消息内容	@param-memberID:成员im ID	@param-callBack:回调	
-	public void sendCustomC2CMsg(String msg,String memberID,QLiveCallBack callBack)
+	//@param-isCMD:是不是信令消息	@param-msg:消息内容	@param-memberID:成员im ID	@param-callBack:回调	
+	public void sendCustomC2CMsg(boolean isCMD,String msg,String memberID,QLiveCallBack callBack)
 
 	//发群消息
-	//@param-msg:消息内容	@param-callBack:回调	
-	public void sendCustomGroupMsg(String msg,QLiveCallBack callBack)
+	//@param-isCMD:是不是信令消息	@param-msg:消息内容	@param-callBack:回调	
+	public void sendCustomGroupMsg(boolean isCMD,String msg,QLiveCallBack callBack)
 
 	//踢人
 	//@param-msg:消息内容	@param-memberID:成员im ID	@param-callBack:回调	
@@ -1113,6 +1123,17 @@ QChatRoomService{
 	//禁言
 	//@param-isMute:是否禁言	@param-msg:消息内容	@param-memberID:成员im ID	@param-duration:禁言时常	@param-callBack:回调	
 	public void muteUser(boolean isMute,String msg,String memberID,long duration,QLiveCallBack callBack)
+
+	//禁言列表
+	public void getBannedMembers()
+
+	//拉黑
+	//@param-isBlock:是否拉黑	@param-memberID:成员im ID	@param-callBack:回调	
+	public void blockUser(boolean isBlock,String memberID,QLiveCallBack callBack)
+
+	//黑名单列表
+	//@param-forceRefresh:是否强制拉服务端数据否则缓存	@param-callBack:	
+	public void getBlockList(boolean forceRefresh,QLiveCallBack callBack)
 
 	//添加管理员
 	//@param-memberID:成员im ID	@param-callBack:回调	
@@ -1135,12 +1156,12 @@ QChatRoomServiceListener{
 	public void onUserLeft(String memberID)
 
 	//Onreceivedc2cmsg.
-	//@param-msg:the msg	@param-fromID:the from id	@param-toID:the to id	
-	public void onReceivedC2CMsg(String msg,String fromID,String toID)
+	//@param-msg:the msg	
+	public void onReceivedC2CMsg(TextMsg msg)
 
 	//Onreceivedgroupmsg.
-	//@param-msg:the msg	@param-fromID:the from id	@param-toID:the to id	
-	public void onReceivedGroupMsg(String msg,String fromID,String toID)
+	//@param-msg:the msg	
+	public void onReceivedGroupMsg(TextMsg msg)
 
 	//Onuserkicked.
 	//@param-memberID:the member id	
@@ -1157,6 +1178,14 @@ QChatRoomServiceListener{
 	//Onadminremoved.
 	//@param-memberID:the member id	@param-reason:the reason	
 	public void onAdminRemoved(String memberID,String reason)
+
+	//添加黑名单
+	//@param-memberID:	
+	public void onBlockAdd(String memberID)
+
+	//移除黑名单
+	//@param-memberID:	
+	public void onBlockRemoved(String memberID)
 }
 
 //
@@ -1618,4 +1647,5 @@ QKTVServiceListener{
 	//播放完成
 	public void onPlayCompleted()
 }
+
 ```
