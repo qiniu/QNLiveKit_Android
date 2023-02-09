@@ -1,6 +1,8 @@
 package com.qlive.qnlivekit
 
 import android.app.Application
+import android.content.Intent
+import android.os.Process
 import android.util.Log
 import android.view.View
 import com.qlive.chatservice.QChatRoomService
@@ -12,14 +14,20 @@ import com.qlive.core.been.QLiveUser
 import com.qlive.pubchatservice.QPublicChat
 import com.qlive.qnlivekit.uitil.*
 import com.qlive.sdk.QLive
+import com.qlive.sdk.QLiveListener
 import com.qlive.shoppingservice.QItem
 import com.qlive.uikit.component.CloseRoomView
 import com.qlive.uikit.component.LiveRecordListView
 import com.qlive.uikitcore.CoroutineExtSetting.canUseLifecycleScope
 import com.qlive.uikitcore.QLiveUIKitContext
+import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitpublicchat.PublicChatView
 import com.qlive.uikitshopping.PlayerShoppingDialog
 import com.qlive.uikituser.OnlineUserView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import okhttp3.Request
 
 class App : Application() {
@@ -39,6 +47,21 @@ class App : Application() {
             Log.d("QTokenGetter", "QTokenGetter ${UserManager.user?.data?.loginToken}")
             getLoginToken(callback)
         }
+        QLive.setQLiveListener(object : QLiveListener {
+            override fun onLoginConnectStatusChanged(isConnected: Boolean) {}
+
+            override fun onOtherDeviceSingIn(deviceSN: Int) {
+                GlobalScope.launch(Dispatchers.Main) {
+                    "你的账号在其他设备登陆".asToast(this@App.applicationContext)
+                    delay(1000)
+
+                    val i: Intent? = packageManager.getLaunchIntentForPackage(packageName)
+                    i?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    startActivity(i)
+                    Process.killProcess(Process.myPid())
+                }
+            }
+        })
         //自定义事件
         PlayerShoppingDialog.onItemClickCall =
             { context: QLiveUIKitContext, client: QLiveClient, view: View, item: QItem ->

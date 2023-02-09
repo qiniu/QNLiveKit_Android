@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class QLive {
 
     private static final QLiveCoreDelegate delegate = new QLiveCoreDelegate();
+
     /**
      * 初始化
      *
@@ -26,7 +27,7 @@ public class QLive {
      * @param tokenGetter token获取
      */
     public static void init(Context context, QLiveConfig config, QTokenGetter tokenGetter) {
-       delegate.init(context, config, tokenGetter);
+        delegate.init(context, config, tokenGetter);
         getLiveUIKit();
     }
 
@@ -37,7 +38,7 @@ public class QLive {
      * @apiNote 认证成功后才能使用qlive的功能
      */
     public static void auth(@NotNull QLiveCallBack<Void> callBack) {
-       delegate.login(callBack);
+        delegate.login(callBack);
     }
 
     /**
@@ -51,7 +52,7 @@ public class QLive {
         user.avatar = userInfo.avatar;
         user.nick = userInfo.nick;
         user.extensions = userInfo.extension;
-       delegate.setUser(user, callBack);
+        delegate.setUser(user, callBack);
     }
 
     /**
@@ -97,5 +98,14 @@ public class QLive {
      */
     public static QLiveUIKit getLiveUIKit() {
         return delegate.getUIKIT();
+    }
+
+    /**
+     * 设置 qlivesdk 监听
+     *
+     * @param listener
+     */
+    public static void setQLiveListener(QLiveListener listener) {
+        delegate.setQLiveListener(listener);
     }
 }
