@@ -34,7 +34,7 @@ android {
     }
 }
 
-def userAARSDK = true
+def userAARSDK = false
 
 dependencies {
     Properties properties = new Properties()

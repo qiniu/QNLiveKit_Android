@@ -7,6 +7,7 @@ import com.qlive.rtm.RtmAdapter
 import com.qiniu.droid.imsdk.QNIMClient
 import com.qlive.liblog.QLiveLogUtil
 import com.qlive.rtm.RtmDadaCallBack
+import com.qlive.rtm.RtmUserListener
 import com.qlive.rtm.msg.TextMsg
 import im.floo.BMXCallBack
 import im.floo.BMXDataCallBack
@@ -30,8 +31,8 @@ class QNIMAdapter : RtmAdapter {
     private var loginUid = ""
     private var loginImUid = ""
     private var mContext: Context? = null
-    var onKickCall: () -> Unit = {}
 
+    private var rtmUserListener: RtmUserListener?=null
     init {
         System.loadLibrary("floo")
     }
@@ -129,11 +130,12 @@ class QNIMAdapter : RtmAdapter {
     private val mBMXUserServiceListener = object : BMXUserServiceListener() {
         override fun onConnectStatusChanged(status: BMXConnectStatus) {
             super.onConnectStatusChanged(status)
+            rtmUserListener?.onLoginConnectStatusChanged(status==BMXConnectStatus.Connected)
         }
 
         override fun onOtherDeviceSingIn(deviceSN: Int) {
             super.onOtherDeviceSingIn(deviceSN)
-            onKickCall.invoke()
+            rtmUserListener?.onOtherDeviceSingIn(deviceSN)
         }
     }
 
@@ -403,4 +405,9 @@ class QNIMAdapter : RtmAdapter {
         this.c2cMessageReceiver = c2cMessageReceiver
         this.channelMsgReceiver = channelMsgReceiver
     }
+
+    override fun setRtmUserListener(rtmUserListener: RtmUserListener) {
+       this.rtmUserListener=rtmUserListener
+    }
+
 }

@@ -18,9 +18,13 @@ import com.qlive.liblog.QLiveLogUtil
 import com.qlive.playerclient.QPlayerClient
 import com.qlive.pushclient.QPusherClient
 import com.qlive.qnim.QNIMManager
+import com.qlive.rtm.RtmManager
+import com.qlive.rtm.RtmUserListener
+import com.qlive.sdk.QLiveListener
 import com.qlive.sdk.internal.AppCache.Companion.appContext
 import com.qlive.sdk.internal.AppCache.Companion.setContext
 import im.floo.floolib.BMXErrorCode
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -36,6 +40,7 @@ internal class QLiveCoreDelegate {
     private var uikitObj: Any? = null
     private val dataSource = QLiveDataSource()
     private var tokenGetter: QTokenGetter? = null
+
     fun getLiveUser(): QLiveUser? {
         return loginUser
     }
@@ -60,6 +65,7 @@ internal class QLiveCoreDelegate {
         val appConfigStr = SpUtil.get("qlive").readString("appConfig", "")
         val appConfig = JsonUtils.parseObject(appConfigStr, AppConfig::class.java) ?: return
         QNIMManager.init(appConfig.im_app_id, appContext)
+
     }
 
     fun setUser(userInfo: QLiveUser, callBack: QLiveCallBack<Void>) {
@@ -192,4 +198,20 @@ internal class QLiveCoreDelegate {
         return QPlayerClientImpl.create()
     }
 
+    fun setQLiveListener(listener: QLiveListener) {
+        QNIMManager.setRtmUserListener(object : RtmUserListener {
+            override fun onLoginConnectStatusChanged(isConnected: Boolean) {
+                QLiveLogUtil.d("QLiveListener", " onLoginConnectStatusChanged $isConnected")
+                GlobalScope.launch(Dispatchers.Main) {
+                    listener.onLoginConnectStatusChanged(isConnected)
+                }
+            }
+            override fun onOtherDeviceSingIn(deviceSN: Int) {
+                QLiveLogUtil.d("QLiveListener", " onOtherDeviceSingIn $deviceSN")
+                GlobalScope.launch(Dispatchers.Main) {
+                    listener.onOtherDeviceSingIn(deviceSN)
+                }
+            }
+        })
+    }
 }
