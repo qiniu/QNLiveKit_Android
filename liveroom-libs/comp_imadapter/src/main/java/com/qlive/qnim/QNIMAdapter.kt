@@ -147,6 +147,7 @@ class QNIMAdapter : RtmAdapter {
             QNIMClient.getUserManager()?.removeUserListener(mBMXUserServiceListener)
             QNIMClient.getChatManager()?.removeChatListener(mChatListener)
         }
+        QNIMClient.delete()
         QNIMClient.init(config)
         mContext = context
         isInit = true
@@ -154,10 +155,19 @@ class QNIMAdapter : RtmAdapter {
         QNIMClient.getChatManager().addChatListener(mChatListener)
     }
 
-    fun loginOut(callBack: BMXCallBack) {
-        QNIMClient.getUserManager().signOut {
-            isLogin = false
-            callBack.onResult(it)
+    private fun loginOut(callBack: BMXCallBack) {
+        if(loginImUid.isNotEmpty()){
+            QNIMClient.getUserManager().signOut(loginImUid.toLong()){
+                QNIMClient.getUserManager().signOut {
+                    isLogin = false
+                    callBack.onResult(it)
+                }
+            }
+        }else{
+            QNIMClient.getUserManager().signOut {
+                isLogin = false
+                callBack.onResult(it)
+            }
         }
     }
 

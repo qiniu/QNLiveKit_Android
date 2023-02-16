@@ -1,5 +1,6 @@
 package com.qlive.qnlivekit
 
+import android.Manifest
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
@@ -21,6 +22,8 @@ import com.qlive.qnlivekit.databinding.ActivityMainBinding
 import com.qlive.qnlivekit.uitil.*
 import com.qlive.uikitcore.activity.BaseBindingActivity
 import com.qlive.uikitcore.dialog.LoadingDialog
+import com.qlive.uikitcore.ext.permission.PermissionAnywhere
+import com.qlive.uikitcore.ext.permission.PermissionCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -34,6 +37,12 @@ import kotlin.coroutines.suspendCoroutine
 class MainActivity : BaseBindingActivity<ActivityMainBinding>() {
 
     override fun init() {
+        PermissionAnywhere.requestPermission(this, arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        ) { _, _, _ -> }
+
         //登陆按钮
         binding.btLoginLogin.setOnClickListener {
 
