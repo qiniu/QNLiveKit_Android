@@ -78,6 +78,7 @@ class App : Application() {
         LiveRecordListView.onClickFinishedRoomCall = { context, roomInfo ->
             DemoLiveFinishedActivity.checkStart(context, roomInfo)
         }
+
     }
 
     override fun onTrimMemory(level: Int) {
