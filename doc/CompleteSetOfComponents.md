@@ -60,19 +60,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="end"
         tools:layout_width="100dp" />
-
-    <!--  关闭房间按钮-->
-    <com.qlive.uikit.component.CloseRoomView
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_gravity="top|end"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="vertical"
-        android:padding="10dp"
-        android:src="@mipmap/kit_ic_close_white"
-        tools:ignore="MissingDefaultResource"
-        tools:visibility="visible" />
 ```
 
 ##### 房间信息展示类
@@ -249,8 +236,20 @@
    <com.qlive.uikit.component.ShowBeautyView
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"/>
-```
 
+    <!--  关闭房间按钮-->
+    <com.qlive.uikit.component.CloseRoomView
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:src="@mipmap/kit_ic_close_white"
+        tools:ignore="MissingDefaultResource"
+        tools:visibility="visible" />
+```
 ##### ktv
     
 ```xml    
