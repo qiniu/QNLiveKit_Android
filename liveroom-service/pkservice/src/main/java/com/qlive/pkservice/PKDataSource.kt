@@ -1,5 +1,6 @@
 package com.qlive.pkservice
 
+import com.qlive.core.been.QExtension
 import com.qlive.coreimpl.http.HttpClient.Companion.httpClient
 import org.json.JSONObject
 
@@ -31,5 +32,13 @@ internal class PKDataSource {
 
     suspend fun getPkInfo(relay_id: String): PKInfo {
         return httpClient.get("/client/relay/${relay_id}", null, PKInfo::class.java)
+    }
+
+    suspend fun updatePKExt(relay_id: String, ext: QExtension) {
+        val json = JSONObject()
+        val jsonObjectExt = JSONObject()
+        jsonObjectExt.put(ext.key,ext.value)
+        json.put("extends", jsonObjectExt)
+        httpClient.post("/client/relay/${relay_id}/extends", json.toString(), Any::class.java)
     }
 }

@@ -119,6 +119,11 @@ public interface QPusherClient extends QLiveClient {
     void muteCamera(boolean muted, QLiveCallBack<Boolean> callBack);
 
     /**
+     * 当前摄像头状态
+     * @return
+     */
+    boolean isCameraMute();
+    /**
      * 禁用麦克风推流
      *
      * @param muted    是否禁用
@@ -126,6 +131,11 @@ public interface QPusherClient extends QLiveClient {
      */
     void muteMicrophone(boolean muted, QLiveCallBack<Boolean> callBack);
 
+    /**
+     * 当前摄像头状态
+     * @return
+     */
+    boolean isMicrophoneMute();
     /**
      * 设置视频帧回调
      *

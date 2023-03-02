@@ -3,6 +3,7 @@ package com.qlive.uikit.component
 import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -80,7 +81,9 @@ open class LivePreView : QKitViewBindingFrameMergeLayout<KitLivePreviewBinding> 
                     makeCreateRoomParamCall(kitContext!!, client!!, titleStr, noticeStr, 0),
                     object : QLiveCallBack<QLiveRoomInfo> {
                         override fun onError(code: Int, msg: String?) {}
-                        override fun onSuccess(data: QLiveRoomInfo?) {}
+                        override fun onSuccess(data: QLiveRoomInfo?) {
+                            Log.d("mjl"," startPusherRoomActionCall"+data.toString())
+                        }
                     })
             } else {
                 if (reserveTime == 0L) {

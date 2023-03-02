@@ -208,12 +208,20 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider, QLiveServiceObse
         }
     }
 
+    override fun isCameraMute(): Boolean {
+        return mRtcRoom.localVideoTrack?.isMuted ?: true
+    }
+
     override fun muteMicrophone(muted: Boolean, callBack: QLiveCallBack<Boolean>?) {
         if (mRtcRoom.muteLocalMicrophone(muted)) {
             callBack?.onSuccess(true)
         } else {
             callBack?.onSuccess(false)
         }
+    }
+
+    override fun isMicrophoneMute(): Boolean {
+        return mRtcRoom.localAudioTrack?.isMuted ?: true
     }
 
     override fun setVideoFrameListener(frameListener: QVideoFrameListener?) {

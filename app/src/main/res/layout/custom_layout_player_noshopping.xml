@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:keepScreenOn="true"
-    >
+    android:keepScreenOn="true">
 
     <!--  被邀请监听  功能组件-->
     <com.qlive.uikitlinkmic.FuncCPTBeInvitedLinkMicMonitor
@@ -66,10 +65,10 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="top|end"
-                android:padding="10dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginEnd="8dp"
                 android:orientation="vertical"
+                android:padding="10dp"
                 android:src="@mipmap/kit_ic_close_white"
                 tools:ignore="MissingDefaultResource"
                 tools:visibility="visible" />
@@ -191,7 +190,6 @@
                 <com.qlive.uikitdanmaku.SendDanmakuView
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-
                     android:layout_marginEnd="4dp"
                     android:orientation="vertical"
                     android:src="@mipmap/kit_ic_go_danmaku"
@@ -212,7 +210,6 @@
                     android:src="@mipmap/kit_ic_more" />
 
             </LinearLayout>
-
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -258,7 +255,6 @@
 
             </LinearLayout>
 
-
             <!--            pk覆盖空UI 无UI实现-->
             <com.qlive.uikitpk.PKCoverView
                 android:layout_width="match_parent"
@@ -268,6 +264,7 @@
             <com.qlive.uikitdanmaku.DanmakuTrackManagerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+
             <!-- 礼物轨道-->
             <com.qlive.uikitgift.GiftTrackManagerView
                 android:layout_width="match_parent"

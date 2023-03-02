@@ -19,6 +19,8 @@ import com.qlive.coreimpl.*
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
 import com.qlive.avparam.QPushRenderView
+import com.qlive.core.QLiveErrorCode.PK_STATUS_ERROR
+import com.qlive.core.been.QExtension
 import com.qlive.rtclive.RTCRenderView
 import com.qlive.rtm.msg.TextMsg
 import kotlinx.coroutines.*
@@ -32,8 +34,9 @@ import kotlin.coroutines.suspendCoroutine
 internal class QPKServiceImpl : QPKService, BaseService() {
 
     companion object {
-        val liveroom_pk_start = "liveroom_pk_start"
-        val liveroom_pk_stop = "liveroom_pk_stop"
+        const val LIVE_ROOM_PK_START = "liveroom_pk_start"
+        const val LIVE_ROOM_PK_STOP = "liveroom_pk_stop"
+        const val PK_EXTENDS_NOTIFY = "pk_extends_notify"
         val PK_STATUS_OK = PKStatus.RelaySessionStatusSuccess.intValue
     }
 
@@ -57,7 +60,6 @@ internal class QPKServiceImpl : QPKService, BaseService() {
             "startMediaRelay",
             "checkReceivePk pk checkReceivePk ${(pkTemp) == null} $uidTem "
         )
-
         if (pkTemp != null) {
             mPKSessionTemp = pkTemp
         }
@@ -72,7 +74,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 doWork {
 
                     val pkOutline = mPKDateSource.recevPk(mPKSessionTemp?.sessionID ?: "")
-                    val room: QRtcLiveRoom =rtcRoomGetter
+                    val room: QRtcLiveRoom = rtcRoomGetter
                     //转发
                     val sourceInfo = QNMediaRelayInfo(room.roomName, room.roomToken)
                     val configuration = QNMediaRelayConfiguration(sourceInfo)
@@ -98,7 +100,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                         //群信号
                         RtmManager.rtmClient.sendChannelCMDMsg(
                             RtmTextMsg<QPKSession>(
-                                liveroom_pk_start,
+                                LIVE_ROOM_PK_START,
                                 mPKSession
                             ).toJsonString(), currentRoomInfo!!.chatID, false
                         )
@@ -132,14 +134,14 @@ internal class QPKServiceImpl : QPKService, BaseService() {
 
     private val mC2cListener = object : RtmMsgListener {
         override fun onNewMsg(msg: TextMsg): Boolean {
-            if (msg.optAction() == liveroom_pk_start) {
+            if (msg.optAction() == LIVE_ROOM_PK_START) {
                 QLiveLogUtil.d("pk 接收方收到pk holle ")
                 val pk =
                     JsonUtils.parseObject(msg.optData(), QPKSession::class.java) ?: return true
                 checkReceivePk(pk, "")
             }
 
-            if (msg.optAction() == liveroom_pk_stop) {
+            if (msg.optAction() == LIVE_ROOM_PK_STOP) {
                 val pk =
                     JsonUtils.parseObject(msg.optData(), QPKSession::class.java) ?: return true
                 if (mPKSession?.sessionID == pk.sessionID) {
@@ -157,20 +159,37 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 return false
             }
             when (msg.optAction()) {
-                liveroom_pk_start -> {
-                    val pk =
-                        JsonUtils.parseObject(msg.optData(), QPKSession::class.java) ?: return true
+                LIVE_ROOM_PK_START -> {
+                    val pk = JsonUtils.parseObject(msg.optData(), QPKSession::class.java)
+                        ?: return true
                     mServiceListeners.forEach {
                         it.onStart(pk)
                     }
+                    return true
                 }
-                liveroom_pk_stop -> {
-                    val pk =
-                        JsonUtils.parseObject(msg.optData(), QPKSession::class.java) ?: return true
+                LIVE_ROOM_PK_STOP -> {
+                    val pk = JsonUtils.parseObject(msg.optData(), QPKSession::class.java)
+                        ?: return true
                     mServiceListeners.forEach {
                         it.onStop(pk, 1, "")
                     }
-
+                    return true
+                }
+                PK_EXTENDS_NOTIFY -> {
+                    val pkExt = JsonUtils.parseObject(msg.optData(), PKExtendsNotify::class.java)
+                        ?: return true
+                    if (pkExt.sid != mPKSession?.sessionID) {
+                        return true
+                    }
+                    pkExt.extendsX.forEach { ext ->
+                        mServiceListeners.forEach {
+                            it.onPKExtensionChange(QExtension().apply {
+                                key = ext.key
+                                value = ext.value
+                            })
+                        }
+                    }
+                    return true
                 }
             }
             return false
@@ -219,7 +238,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                             //群信号
                             RtmManager.rtmClient.sendChannelCMDMsg(
                                 RtmTextMsg<QPKSession>(
-                                    liveroom_pk_start,
+                                    LIVE_ROOM_PK_START,
                                     mPKSession
                                 ).toJsonString(), currentRoomInfo!!.chatID, false
                             )
@@ -279,7 +298,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 try {
                     RtmManager.rtmClient.sendChannelCMDMsg(
                         RtmTextMsg<QPKSession>(
-                            liveroom_pk_stop,
+                            LIVE_ROOM_PK_STOP,
                             mPKSession
                         ).toJsonString(), currentRoomInfo!!.chatID, false
                     )
@@ -312,7 +331,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         if (mQPKMixStreamAdapter == null) {
             return
         }
-        val mQRtcLiveRoom: QRtcLiveRoom =rtcRoomGetter
+        val mQRtcLiveRoom: QRtcLiveRoom = rtcRoomGetter
         if (mPKSession != null) {
             mQRtcLiveRoom.mMixStreamManager
                 .roomUser++
@@ -388,7 +407,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         RtmManager.addRtmChannelListener(groupListener)
 
         if (client.clientType == QClientType.PUSHER) {
-            val room: QRtcLiveRoom =rtcRoomGetter
+            val room: QRtcLiveRoom = rtcRoomGetter
             room.addExtraQNRTCEngineEventListener(defaultExtQNClientEventListener)
             pkPKInvitationHandlerImpl.attach()
         } else {
@@ -489,11 +508,11 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 //发c2c消息
                 RtmManager.rtmClient.sendC2cCMDMsg(
                     RtmTextMsg<QPKSession>(
-                        liveroom_pk_start,
+                        LIVE_ROOM_PK_START,
                         mPKSession
                     ).toJsonString(), receiver.imUid, false
                 )
-                val room: QRtcLiveRoom =rtcRoomGetter
+                val room: QRtcLiveRoom = rtcRoomGetter
                 //转发
                 val sourceInfo = QNMediaRelayInfo(room.roomName, room.roomToken)
                 val configuration = QNMediaRelayConfiguration(sourceInfo)
@@ -549,7 +568,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
 
     private suspend fun stopMediaRelay() =
         suspendCoroutine<Unit> { continuation ->
-            val room: QRtcLiveRoom =rtcRoomGetter
+            val room: QRtcLiveRoom = rtcRoomGetter
             room.mClient.stopMediaRelay(object : QNMediaRelayResultCallback {
                 override fun onResult(p0: MutableMap<String, QNMediaRelayState>) {
                     continuation.resume(Unit)
@@ -579,7 +598,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 try {
                     RtmManager.rtmClient.sendC2cCMDMsg(
                         RtmTextMsg<QPKSession>(
-                            liveroom_pk_stop,
+                            LIVE_ROOM_PK_STOP,
                             mPKSession
                         ).toJsonString(), peer.imUid, false
                     )
@@ -591,7 +610,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 try {
                     RtmManager.rtmClient.sendChannelCMDMsg(
                         RtmTextMsg<QPKSession>(
-                            liveroom_pk_stop,
+                            LIVE_ROOM_PK_STOP,
                             mPKSession
                         ).toJsonString(), currentRoomInfo!!.chatID, false
                     )
@@ -607,6 +626,22 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 callBack?.onSuccess(null)
                 resetMixStream(peer.userId)
 
+            }
+            catchError {
+                callBack?.onError(it.getCode(), it.message)
+            }
+        }
+    }
+
+    override fun updateExtension(extension: QExtension, callBack: QLiveCallBack<Void>?) {
+        if (mPKSession == null) {
+            callBack?.onError(PK_STATUS_ERROR, "mPKSession==null")
+            return
+        }
+        backGround {
+            doWork {
+                mPKDateSource.updatePKExt(mPKSession!!.sessionID, extension)
+                callBack?.onSuccess(null)
             }
             catchError {
                 callBack?.onError(it.getCode(), it.message)
@@ -641,7 +676,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
      * @param view
      */
     override fun setPeerAnchorPreView(view: QPushRenderView) {
-        val room: QRtcLiveRoom =rtcRoomGetter
+        val room: QRtcLiveRoom = rtcRoomGetter
         val peer = if (mPKSession!!.initiator.userId == user?.userId) {
             mPKSession!!.receiver.userId
         } else {

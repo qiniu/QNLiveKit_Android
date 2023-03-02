@@ -1,6 +1,8 @@
 package com.qlive.pkservice;
 
 
+import com.qlive.core.been.QExtension;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -29,5 +31,10 @@ public interface QPKServiceListener {
      */
     void onStartTimeOut(@NotNull QPKSession pkSession);
 
+    /**
+     * 有pk扩展字段变化
+     * @param extension 某个自定义字段
+     */
+    default void onPKExtensionChange(QExtension extension){};
 
 }

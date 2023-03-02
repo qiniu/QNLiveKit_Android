@@ -151,8 +151,7 @@ internal class QRoomServiceImpl : BaseService(), QRoomService {
     ) {
         backGround {
             doWork {
-                val users =
-                    roomDataSource.getOnlineUser(currentRoomInfo?.liveID ?: "", page_num, page_size)
+                val users = roomDataSource.getOnlineUser(currentRoomInfo?.liveID ?: "", page_num, page_size)
                 callBack?.onSuccess(users.list)
             }
             catchError {
