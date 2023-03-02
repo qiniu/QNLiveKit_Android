@@ -9,7 +9,7 @@
 
 #### 对接步骤
 
-![uikit-pk](http://qrnlrydxa.hn-bkt.clouddn.com/doc/pk.drawio.png)
+![uikit-pk](http://qrnlrydxa.hn-bkt.clouddn.com/doc/pk.png)
 
 ##### 实现服务pk开始回调
 配置低代码服务端的pk开始回调接口
