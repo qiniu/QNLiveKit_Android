@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.been.QLiveRoomInfo
+import com.qlive.uikit.RoomPushActivity
 import com.qlive.uikit.databinding.KitViewAnchorStartReserveLiveBinding
 import com.qlive.uikitcore.QKitViewBindingFrameMergeLayout
 import com.qlive.uikitcore.Scheduler
@@ -51,7 +52,8 @@ class AnchorStartTrailerLiveView :
 
     override fun onGetLiveRoomInfo(roomInfo: QLiveRoomInfo) {
         super.onGetLiveRoomInfo(roomInfo)
-        if (roomInfo.isTrailering()) {
+        val roomId = kitContext!!.currentActivity.intent.getStringExtra(RoomPushActivity.KEY_ROOM_ID) ?: ""
+        if (roomInfo.isTrailering()&&roomId.isNotEmpty()) {
             binding.tvStartReserve.visibility = VISIBLE
             binding.tvTime.visibility = GONE
         }

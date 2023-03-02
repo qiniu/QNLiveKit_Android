@@ -18,6 +18,12 @@ public interface QPublicChatService extends QLiveService {
      */
     public void sendPublicChat(String msg, QLiveCallBack<QPublicChat> callBack);
 
+    /**
+     * 获取历史公聊消息
+     * @param startMsgID 起始消息ID 空字符串代表最新
+     * @param size       大小
+     * @param callBack   回调
+     */
     public void getHistoryChatMsg(String startMsgID, int size, QLiveCallBack<List<QPublicChat>> callBack);
 
     /**

@@ -30,4 +30,9 @@ public class QLiveErrorCode {
      * 不是连麦成员
      */
     public static int NOT_A_LINKER_MEMBER = -6;
+
+    /**
+     * pk状态错误
+     */
+    public static int PK_STATUS_ERROR = -7;
 }

@@ -45,23 +45,36 @@ class AnchorBottomMoreFuncDialog(
                 override fun onSuccess(data: QCameraFace?) {}
             })
         }
+
+        val llMuteSelect = (client as QPusherClient).isMicrophoneMute
+        binding.llMute.isSelected = llMuteSelect
+        if (llMuteSelect) {
+            binding.tvMute.text =
+                requireActivity().getText(R.string.live_dialog_morefunc_micphone_off)
+        } else {
+            binding.tvMute.text =
+                requireActivity().getText(R.string.live_dialog_morefunc_micphone_on)
+        }
         binding.llMute.setOnClickListener {
-            val isSelect = !it.isSelected
+            val isSelect = !(client as QPusherClient).isMicrophoneMute
             (client as QPusherClient).muteMicrophone(isSelect, object : QLiveCallBack<Boolean> {
                 override fun onError(code: Int, msg: String?) {
                 }
 
-                override fun onSuccess(data: Boolean?) {
+                override fun onSuccess(b: Boolean) {
+                    if (!b) {
+                        return
+                    }
+                    it.isSelected = isSelect
+                    if (isSelect) {
+                        binding.tvMute.text =
+                            requireActivity().getText(R.string.live_dialog_morefunc_micphone_off)
+                    } else {
+                        binding.tvMute.text =
+                            requireActivity().getText(R.string.live_dialog_morefunc_micphone_on)
+                    }
                 }
             })
-            it.isSelected = isSelect
-            if (isSelect) {
-                binding.tvMute.text =
-                    requireActivity().getText(R.string.live_dialog_morefunc_micphone_off)
-            } else {
-                binding.tvMute.text =
-                    requireActivity().getText(R.string.live_dialog_morefunc_micphone_on)
-            }
         }
         binding.llMirror.setOnClickListener {
             val isSelect = !it.isSelected

@@ -37,6 +37,7 @@ class RoomMemberCountView : QKitTextView {
         setOnClickListener {
             onClickListener.invoke(kitContext, client, this)
         }
+        text = "1"
     }
 
     //  private val mRoomDaraSource = RoomDataSource()
@@ -58,14 +59,11 @@ class RoomMemberCountView : QKitTextView {
 
     private fun refresh(add: Boolean?) {
 
-        var count = -1
+        var count = 1
         try {
             count = (text.toString().toInt())
         } catch (e: Exception) {
             e.printStackTrace()
-        }
-        if (count == -1) {
-            return
         }
         if (add == true) {
             count++
@@ -88,12 +86,15 @@ class RoomMemberCountView : QKitTextView {
         }
     }
 
-    private val mScheduler = Scheduler(60000) {
+    private val mScheduler = Scheduler(10000) {
         if (roomInfo == null) {
             return@Scheduler
         }
         try {
             val room = client?.getService(QRoomService::class.java)?.roomInfo
+            if ((room?.onlineCount ?: 0L) == 0L) {
+                room?.onlineCount = 1
+            }
             text = room?.onlineCount.toString()
             checkTextSize()
         } catch (e: Exception) {

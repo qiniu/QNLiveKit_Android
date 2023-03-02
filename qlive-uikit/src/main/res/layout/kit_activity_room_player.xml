@@ -206,7 +206,6 @@
                     android:orientation="vertical"
                     android:src="@mipmap/kit_ic_go_shopping" />
 
-
                 <com.qlive.uikitlike.LikeView
                     android:layout_width="32dp"
                     android:layout_height="37dp"

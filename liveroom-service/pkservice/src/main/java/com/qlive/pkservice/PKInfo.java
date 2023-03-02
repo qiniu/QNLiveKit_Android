@@ -22,7 +22,7 @@ public class PKInfo implements Serializable {
     public String initUserId;
    @SerializedName(value =  "recv_user_id")
     public String recvUserId;
-   @SerializedName(value =  "extensions")
+   @SerializedName(value =  "extends")
     public Map<String, String> extensions;
    @SerializedName(value =  "status")
     public Integer status;

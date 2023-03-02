@@ -350,6 +350,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        QLiveLogUtil.d("RoomPlayerActivity", "onDestroy")
         mInflaterFactory.onDestroyed()
         //不是小窗模式
         if (FuncCPTPlayerFloatingHandler.currentFloatingPlayerView == null) {
@@ -385,6 +386,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
 
     override fun onPause() {
         super.onPause()
+        QLiveLogUtil.d("RoomPlayerActivity", "onPause")
         if (true == mQUIKitContext.getLiveFuncComponent(FuncCPTPlayerFloatingHandler::class.java)?.isGoingToRequestFloatPermission) {
             return
         }

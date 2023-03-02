@@ -4,6 +4,7 @@ import com.qlive.avparam.QPushRenderView;
 import com.qlive.core.QInvitationHandler;
 import com.qlive.core.QLiveCallBack;
 import com.qlive.core.QLiveService;
+import com.qlive.core.been.QExtension;
 
 import java.util.HashMap;
 
@@ -50,6 +51,14 @@ public interface QPKService extends QLiveService {
      * @param callBack 操作回调
      */
     void stop(QLiveCallBack<Void> callBack);
+
+    /**
+     * 跟新pk扩展字段
+     * 跟新后pk双方房间都会收到扩展字段更新事件
+     * @param extension 单个扩展字段
+     * @param callBack 回调
+     */
+    public void updateExtension(QExtension extension, QLiveCallBack<Void> callBack);
 
     /**
      * 主播设置对方的连麦预览

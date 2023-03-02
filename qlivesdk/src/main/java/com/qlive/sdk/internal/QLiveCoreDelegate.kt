@@ -35,7 +35,7 @@ import kotlin.coroutines.suspendCoroutine
 
 
 internal class QLiveCoreDelegate {
-    var qRooms: QRooms = QRoomImpl.instance;
+    val qRooms: QRooms = QRoomImpl.instance;
     private var loginUser: QLiveUser? = null
     private var uikitObj: Any? = null
     private val dataSource = QLiveDataSource()

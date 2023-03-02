@@ -31,8 +31,7 @@ class StartPKView : QKitViewBindingFrameMergeLayout<KitStartPkViewBinding> {
     private var showingPKListDialog: PKAbleListDialog? = null
     private var mPkSession: QPKSession? = null
 
-    private val mQPKServiceListener = object :
-        QPKServiceListener {
+    private val mQPKServiceListener = object : QPKServiceListener {
 
         override fun onStart(pkSession: QPKSession) {
             binding.ivStartPK.visibility = View.GONE

@@ -22,8 +22,8 @@ import com.qlive.qnlivekit.databinding.ActivityMainBinding
 import com.qlive.qnlivekit.uitil.*
 import com.qlive.uikitcore.activity.BaseBindingActivity
 import com.qlive.uikitcore.dialog.LoadingDialog
+import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitcore.ext.permission.PermissionAnywhere
-import com.qlive.uikitcore.ext.permission.PermissionCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,6 +37,7 @@ import kotlin.coroutines.suspendCoroutine
 class MainActivity : BaseBindingActivity<ActivityMainBinding>() {
 
     override fun init() {
+
         PermissionAnywhere.requestPermission(this, arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -71,7 +72,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding>() {
                     //登陆
                     auth()
                     //绑定用户信息
-                    suspendSetUser()
+                    setUser()
                     //启动跳转到直播列表
                     startActivity(Intent(this@MainActivity, DemoSelectActivity::class.java))
                 } catch (e: Exception) {
@@ -105,7 +106,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding>() {
     /**
      *  //绑定用户信息 绑定后房间在线用户能返回绑定设置的字段
      */
-    suspend fun suspendSetUser() =
+    private suspend fun setUser() =
         suspendCoroutine<Unit> { coroutine ->
             //绑定用户信息 绑定后房间在线用户能返回绑定设置的字段
             QLive.setUser(QUserInfo().apply {
@@ -129,7 +130,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding>() {
         }
 
     //demo自己的登陆
-    suspend fun login(phoneNumber: String, smsCode: String) = suspendCoroutine<Unit> { ct ->
+    private suspend fun login(phoneNumber: String, smsCode: String) = suspendCoroutine<Unit> { ct ->
         Thread {
             try {
                 val body = FormBody.Builder()
