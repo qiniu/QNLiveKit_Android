@@ -258,6 +258,13 @@
                 android:layout_gravity="center"
                 android:gravity="center_vertical" />
 
+            <com.qlive.qnlivekit.TestPKEXTButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="测试跟新pk扩展"
+                android:padding="22dp"
+                android:layout_gravity="center"
+                />
         </com.qlive.uikit.component.FrameLayoutSlidingCover>
 
     </com.qlive.uikit.component.TouchEventBusViewPager>

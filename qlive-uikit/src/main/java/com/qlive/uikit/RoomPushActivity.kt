@@ -15,6 +15,10 @@ import com.qlive.sdk.QLive
 import com.qlive.core.QLiveErrorCode
 import com.qlive.core.QLiveErrorCode.NOT_LOGGED_IN
 import com.qlive.core.QLiveErrorCode.NO_PERMISSION
+import com.qlive.coreimpl.BaseService
+import com.qlive.pubchatservice.QPublicChatService
+import com.qlive.rtm.RtmManager
+import com.qlive.rtm.joinChannel
 import com.qlive.uikit.component.FuncCPTBeautyDialogShower
 import com.qlive.uikit.component.OnKeyDownMonitor
 import com.qlive.uikitcore.*
@@ -240,7 +244,6 @@ class RoomPushActivity : BaseFrameActivity() {
                     mInflaterFactory.onEntering(roomId, QLive.getLoginUser())
                     val roomInfo = suspendGetRoomInfo(roomId)
                     mInflaterFactory.onGetLiveRoomInfo(roomInfo)
-
                     if (!roomInfo.isTrailering()) {
                         suspendJoinRoom(roomId)
                         startCallBack?.onSuccess(roomInfo)
