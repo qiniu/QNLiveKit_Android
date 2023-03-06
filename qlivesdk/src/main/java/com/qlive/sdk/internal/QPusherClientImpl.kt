@@ -239,15 +239,6 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider, QLiveServiceObse
     }
 
     override fun resume() {
-        val roomInfo = getService(QRoomService::class.java)?.roomInfo
-        if (RtmManager.isInit && roomInfo != null) {
-            backGround {
-                doWork {
-                    //im可能掉线被踢群
-                    RtmManager.rtmClient.joinChannel(roomInfo.chatID)
-                }
-            }
-        }
         mRtcRoom.localVideoTrack?.startCapture()
         mRtcRoom.localAudioTrack?.setVolume(1.0)
     }
