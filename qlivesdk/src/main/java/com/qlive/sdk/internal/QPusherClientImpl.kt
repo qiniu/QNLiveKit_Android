@@ -15,6 +15,7 @@ import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.getCode
 import com.qlive.liblog.QLiveLogUtil
 import com.qlive.pushclient.QPusherClient
+import com.qlive.roomservice.QRoomService
 import com.qlive.sdk.QLive
 import com.qlive.sdk.internal.AppCache.Companion.appContext
 
@@ -238,6 +239,15 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider, QLiveServiceObse
     }
 
     override fun resume() {
+        val roomInfo = getService(QRoomService::class.java)?.roomInfo
+        if (RtmManager.isInit && roomInfo != null) {
+            backGround {
+                doWork {
+                    //im可能掉线被踢群
+                    RtmManager.rtmClient.joinChannel(roomInfo.chatID)
+                }
+            }
+        }
         mRtcRoom.localVideoTrack?.startCapture()
         mRtcRoom.localAudioTrack?.setVolume(1.0)
     }
