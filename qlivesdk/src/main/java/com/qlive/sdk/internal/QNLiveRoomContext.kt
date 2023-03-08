@@ -51,6 +51,7 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
     private var roomStatus = QLiveStatus.OFF
     private var anchorStatus = 1
     var roomStatusChange: (status: QLiveStatus, msg: String) -> Unit = { _, _ -> }
+    var heartbeatErrorCall: suspend () -> Unit = {}
     private val mHeartBeatJob = Scheduler(8000) {
         check()
     }
@@ -79,10 +80,11 @@ internal class QNLiveRoomContext(private val mClient: QLiveClient) {
                     if (e.code == 500) {
                         QLiveLogUtil.d("res.liveStatus 心跳超时 ")
                         //心跳超时从新进入房间
-                        if (mClient.clientType == QClientType.PUSHER) {
-                        } else {
-                            roomDataSource.joinRoom(roomInfo!!.liveID)
-                        }
+//                        if (mClient.clientType == QClientType.PUSHER) {
+//                        } else {
+//                            roomDataSource.joinRoom(roomInfo!!.liveID)
+//                        }
+                        heartbeatErrorCall.invoke()
                     }
                 }
                 val room = roomDataSource.refreshRoomInfo(roomInfo?.liveID ?: "")

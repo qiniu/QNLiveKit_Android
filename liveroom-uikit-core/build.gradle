@@ -49,6 +49,7 @@ dependencies {
     }
     implementation depend.lifecycle_ext()
     api depend.glide()
+    api depend.constraintLayout()
     api depend.runtime_ktx()
     api depend.recyclerview()
     api depend.appcompat()

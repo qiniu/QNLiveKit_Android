@@ -10,6 +10,7 @@ import com.qlive.shoppingservice.QItem
 import com.qlive.shoppingservice.QShoppingService
 import com.qlive.shoppingservice.QShoppingServiceListener
 import com.qlive.uikitcore.QKitViewBindingCardView
+import com.qlive.uikitcore.QKitViewBindingFrameLayout
 import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.tryBackGroundWithLifecycle
 import com.qlive.uikitshopping.databinding.KitViewExplainingQitemBinding
@@ -22,7 +23,7 @@ import kotlinx.coroutines.delay
  *
  * @constructor Create empty Explaining q item view
  */
-class ExplainingQItemCardView : QKitViewBindingCardView<KitViewExplainingQitemBinding> {
+class ExplainingQItemCardView : QKitViewBindingFrameLayout<KitViewExplainingQitemBinding> {
 
     companion object {
         /**
@@ -45,10 +46,12 @@ class ExplainingQItemCardView : QKitViewBindingCardView<KitViewExplainingQitemBi
         context,
         attrs,
         defStyleAttr
-    ) {
+    )
+
+    override fun attachKitContext(context: QLiveUIKitContext) {
+        super.attachKitContext(context)
         visibility = View.GONE
     }
-
     private var job: Job? = null
 
     private fun startShowJob() {

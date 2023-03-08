@@ -12,7 +12,7 @@ class DemoSelectActivity : BaseBindingActivity<ActivityDemoSelectBinding>() {
             QLive.getLiveUIKit().getPage(RoomPage::class.java).playerCustomLayoutID =
                 R.layout.custom_layout_player_noshopping
             QLive.getLiveUIKit().getPage(RoomPage::class.java).anchorCustomLayoutID =
-                R.layout.custom_layout_pusher_no_shoping
+                R.layout.custom_layout_pusher_noshoping
 
             QLive.getLiveUIKit().launch(this)
         }

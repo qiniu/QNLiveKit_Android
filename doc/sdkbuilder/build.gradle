@@ -133,6 +133,7 @@ dependencies {
         embed project(':qlive-uicomponnets:uikitktv')
         implementation depend.appcompat()
         implementation depend.cardview()
+        implementation depend.constraintLayout()
         embed ('com.github.gzu-liyujiang.AndroidPicker:WheelPicker:4.1.9'){
             exclude group: 'com.android.support'
             transitive = false

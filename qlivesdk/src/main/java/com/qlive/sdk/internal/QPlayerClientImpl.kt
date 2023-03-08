@@ -41,6 +41,22 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QLiveServiceO
                     it.onLiveStatusChanged(status, msg)
                 }
             }
+            heartbeatErrorCall = {
+                try {
+                    roomDataSource.joinRoom(roomInfo!!.liveID)
+                    val roomInfo = getService(QRoomService::class.java)?.roomInfo
+                    if (RtmManager.isInit && roomInfo != null) {
+                        backGround {
+                            doWork {
+                                //im可能掉线被踢群
+                                RtmManager.rtmClient.joinChannel(roomInfo.chatID)
+                            }
+                        }
+                    }
+                }catch (e : Exception){
+                    e.printStackTrace()
+                }
+            }
         }
     }
 
@@ -139,15 +155,6 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QLiveServiceO
 
     override fun resume() {
         mMediaPlayer.resume()
-        val roomInfo = getService(QRoomService::class.java)?.roomInfo
-        if (RtmManager.isInit && roomInfo != null) {
-            backGround {
-                doWork {
-                    //im可能掉线被踢群
-                    RtmManager.rtmClient.joinChannel(roomInfo.chatID)
-                }
-            }
-        }
     }
 
     override fun addPlayerEventListener(playerEventListener: QPlayerEventListener) {

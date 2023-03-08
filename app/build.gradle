@@ -62,6 +62,7 @@ dependencies {
         //以下为 UIkit 的依赖包 不使用UIkit则不需要
         implementation project(':app-sdk:qlive-sdk-uikit')  //UIkit包
         //谷歌官方UI组件
+        implementation depend.constraintLayout()
         implementation depend.runtime_ktx()
         implementation depend.recyclerview()
         implementation depend.cardview()
@@ -75,7 +76,7 @@ dependencies {
     }
 
     implementation depend.appcompat()
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
     implementation "jp.wasabeef:glide-transformations:3.0.1"
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

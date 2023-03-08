@@ -2,6 +2,7 @@ package com.qlive.chatservice
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import com.qlive.rtm.*
 import com.qiniu.droid.imsdk.QNIMClient
 import com.qlive.core.*
@@ -102,6 +103,7 @@ internal class QChatRoomServiceImpl : BaseService(), QChatRoomService {
         }
 
         override fun onMemberLeft(group: BMXGroup, memberID: Long, reason: String?) {
+            Log.d("QChatRoomServiceImpl"," onMemberLeft  ${memberID}  $reason")
             super.onMemberLeft(group, memberID, reason)
             if (group.groupId().toString() != currentRoomInfo?.chatID) {
                 return
