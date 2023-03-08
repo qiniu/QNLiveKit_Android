@@ -171,15 +171,13 @@
                 <!--  输入框-->
                 <com.qlive.uikitpublicchat.InputView
                     android:id="@+id/inputView"
-                    android:layout_width="0dp"
+                    android:layout_width="100dp"
                     android:layout_height="32dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
                     android:layout_marginBottom="40dp"
                     android:layout_weight="1"
                     android:background="@drawable/kit_shape_40000000_16"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/sendDanmakuView"
                     app:layout_constraintStart_toStartOf="parent"
                     tools:ignore="TouchTargetSizeCheck">
 
@@ -196,12 +194,11 @@
                     android:id="@+id/sendDanmakuView"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
                     android:orientation="vertical"
                     android:src="@mipmap/kit_ic_go_danmaku"
                     app:layout_constraintBottom_toBottomOf="@+id/inputView"
                     app:layout_constraintEnd_toStartOf="@id/likeView"
-                    app:layout_constraintStart_toEndOf="@+id/inputView"
                     app:layout_constraintTop_toTopOf="@+id/inputView"
                     app:layout_constraintVertical_bias="0.0"
                     tools:ignore="MissingDefaultResource" />
@@ -211,24 +208,20 @@
                     android:id="@+id/likeView"
                     android:layout_width="32dp"
                     android:layout_height="37dp"
-                    android:layout_marginStart="4dp"
                     android:layout_marginEnd="4dp"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="@+id/inputView"
                     app:layout_constraintEnd_toStartOf="@+id/bottomMoreFuncButton"
-                    app:layout_constraintStart_toEndOf="@+id/sendDanmakuView"
                     app:layout_constraintTop_toTopOf="@+id/inputView" />
 
                 <com.qlive.uikit.component.BottomMoreFuncButton
                     android:id="@+id/bottomMoreFuncButton"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_marginStart="4dp"
                     android:layout_marginEnd="8dp"
                     android:src="@mipmap/kit_ic_more"
                     app:layout_constraintBottom_toBottomOf="@+id/inputView"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/likeView"
                     app:layout_constraintTop_toTopOf="@+id/inputView" />
 
 

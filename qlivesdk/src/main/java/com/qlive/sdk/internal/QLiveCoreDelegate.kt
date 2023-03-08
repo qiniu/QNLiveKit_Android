@@ -145,6 +145,7 @@ internal class QLiveCoreDelegate {
                 QLiveLogUtil.d("QLiveCoreDelegate. dataSource.appConfig()")
                 val appConfig = dataSource.appConfig()
                 SpUtil.get("qlive").saveData("appConfig", JsonUtils.toJson(appConfig))
+                QNIMManager.mRtmAdapter.checkLoginOutSuspend()
                 QNIMManager.init(appConfig.im_app_id, appContext)
                 val code = QNIMManager.mRtmAdapter.loginSuspend(
                     user.userId,
