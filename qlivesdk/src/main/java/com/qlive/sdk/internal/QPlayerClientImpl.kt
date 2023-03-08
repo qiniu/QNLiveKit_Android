@@ -9,6 +9,7 @@ import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.coreimpl.*
 import com.qlive.playerclient.QPlayerClient
 import com.qlive.qplayer.QMediaPlayer
+import com.qlive.roomservice.QRoomService
 import com.qlive.rtm.RtmManager
 import com.qlive.rtm.joinChannel
 import com.qlive.rtm.leaveChannel
@@ -38,6 +39,22 @@ internal class QPlayerClientImpl : QPlayerClient, QPlayerProvider, QLiveServiceO
                 }
                 mLiveStatusListeners.forEach {
                     it.onLiveStatusChanged(status, msg)
+                }
+            }
+            heartbeatErrorCall = {
+                try {
+                    roomDataSource.joinRoom(roomInfo!!.liveID)
+                    val roomInfo = getService(QRoomService::class.java)?.roomInfo
+                    if (RtmManager.isInit && roomInfo != null) {
+                        backGround {
+                            doWork {
+                                //im可能掉线被踢群
+                                RtmManager.rtmClient.joinChannel(roomInfo.chatID)
+                            }
+                        }
+                    }
+                }catch (e : Exception){
+                    e.printStackTrace()
                 }
             }
         }

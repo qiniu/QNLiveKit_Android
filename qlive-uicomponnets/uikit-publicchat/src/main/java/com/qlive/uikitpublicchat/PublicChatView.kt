@@ -1,6 +1,7 @@
 package com.qlive.uikitpublicchat
 
 import android.content.Context
+import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.View
 import androidx.lifecycle.Lifecycle
@@ -16,8 +17,11 @@ import com.qlive.liblog.QLiveLogUtil
 import com.qlive.pubchatservice.QPublicChat
 import com.qlive.pubchatservice.QPublicChatService
 import com.qlive.pubchatservice.QPublicChatServiceLister
-import com.qlive.uikitcore.*
+import com.qlive.uikitcore.QKitRecyclerView
+import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.adapter.QRecyclerAdapter
+import com.qlive.uikitcore.ext.ViewUtil
+import com.qlive.uikitcore.tryBackGroundWithLifecycle
 import kotlinx.coroutines.delay
 
 //公屏
@@ -70,6 +74,16 @@ class PublicChatView : QKitRecyclerView {
         defStyleAttr
     ) {
         this.layoutManager = LinearLayoutManager(context)
+        initialize(context, attrs)
+    }
+
+    private var mMaxHeight = 0
+    private fun initialize(context: Context, attrs: AttributeSet?) {
+        attrs ?: return
+        val arr: TypedArray =
+            context.obtainStyledAttributes(attrs, R.styleable.PublicChatView)
+        mMaxHeight = arr.getLayoutDimension(R.styleable.PublicChatView_maxHeight, mMaxHeight)
+        arr.recycle()
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -95,11 +109,17 @@ class PublicChatView : QKitRecyclerView {
             client?.getService(QPublicChatService::class.java)?.getHistoryChatMsg("", 30,
                 object : QLiveCallBack<List<QPublicChat>> {
                     override fun onError(code: Int, msg: String?) {
-                        QLiveLogUtil.d("PublicChatView", " getHistoryChatMsg onError ${code}${msg} ")
+                        QLiveLogUtil.d(
+                            "PublicChatView",
+                            " getHistoryChatMsg onError ${code}${msg} "
+                        )
                     }
 
                     override fun onSuccess(data: List<QPublicChat>) {
-                        QLiveLogUtil.d("PublicChatView", " getHistoryChatMsg onSuccess ${data.size} ")
+                        QLiveLogUtil.d(
+                            "PublicChatView",
+                            " getHistoryChatMsg onSuccess ${data.size} "
+                        )
                         mAdapter.addData(0, data.filter {
                             it.action != QPublicChat.action_welcome && it.action != QPublicChat.action_bye
                         })
@@ -127,4 +147,13 @@ class PublicChatView : QKitRecyclerView {
         mAdapter.data.clear()
         mAdapter.notifyDataSetChanged()
     }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        var heightMeasureSpec = heightMeasureSpec
+        if (mMaxHeight > 0) {
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.AT_MOST)
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+    }
+
 }

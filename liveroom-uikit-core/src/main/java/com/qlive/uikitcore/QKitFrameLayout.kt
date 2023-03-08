@@ -1,5 +1,6 @@
 package com.qlive.uikitcore
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -125,7 +126,8 @@ abstract class QKitViewBindingFrameMergeLayout<T : ViewBinding> : FrameLayout, Q
 }
 
 
-open class QKitImageView : androidx.appcompat.widget.AppCompatImageView, QLiveComponent {
+@SuppressLint("AppCompatCustomView")
+open class QKitImageView : ImageView, QLiveComponent {
     override var client: QLiveClient? = null
     override var roomInfo: QLiveRoomInfo? = null
     override var user: QLiveUser? = null
@@ -170,7 +172,8 @@ open class QKitRecyclerView : RecyclerView, QLiveComponent {
     )
 }
 
-open class QKitTextView : androidx.appcompat.widget.AppCompatTextView, QLiveComponent {
+@SuppressLint("AppCompatCustomView")
+open class QKitTextView : TextView, QLiveComponent {
     override var client: QLiveClient? = null
     override var roomInfo: QLiveRoomInfo? = null
     override var user: QLiveUser? = null
@@ -217,7 +220,6 @@ open class QKitCardView : CardView, QLiveComponent {
 
     }
 }
-
 
 open class QKitViewBindingCardView<T : ViewBinding> : CardView, QLiveComponent {
     override var client: QLiveClient? = null

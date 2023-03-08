@@ -1,3 +1,4 @@
+
 ```java
 //低代码直播客户端
 QLive{
@@ -28,6 +29,10 @@ QLive{
 
 	//获得UIkit
 	public static com.qlive.sdk.QLiveUIKit getLiveUIKit()
+
+	//设置qlivesdk监听
+	//@param-listener:	
+	public static void setQLiveListener(QLiveListener listener)
 }
 
 //UIkit客户端
@@ -633,9 +638,15 @@ QPusherClient{
 	//@param-muted:是否禁用	@param-callBack:	
 	public void muteCamera(boolean muted,QLiveCallBack callBack)
 
+	//当前摄像头状态
+	public boolean isCameraMute()
+
 	//禁用麦克风推流
 	//@param-muted:是否禁用	@param-callBack:	
 	public void muteMicrophone(boolean muted,QLiveCallBack callBack)
+
+	//当前摄像头状态
+	public boolean isMicrophoneMute()
 
 	//设置视频帧回调
 	//@param-frameListener:视频帧监听	
@@ -655,14 +666,16 @@ QPusherClient{
 	//@param-beautySetting:美颜参数	
 	public void setDefaultBeauty(QBeautySetting beautySetting)
 
-	//
-	public void enableEarMonitor()
+	//耳返
+	//@param-isEnable:	
+	public void enableEarMonitor(boolean isEnable)
 
 	//
 	public boolean isEarMonitorEnable()
 
-	//
-	public void setMicrophoneVolume()
+	//音量大小
+	//@param-volume:	
+	public void setMicrophoneVolume(double volume)
 
 	//
 	public double getMicrophoneVolume()
@@ -931,6 +944,10 @@ QPKService{
 	//@param-callBack:操作回调	
 	public void stop(QLiveCallBack callBack)
 
+	//跟新pk扩展字段跟新后pk双方房间都会收到扩展字段更新事件
+	//@param-extension:单个扩展字段	@param-callBack:回调	
+	public void updateExtension(QExtension extension,QLiveCallBack callBack)
+
 	//主播设置对方的连麦预览
 	//@param-view:预览窗口	
 	public void setPeerAnchorPreView(QPushRenderView view)
@@ -956,6 +973,10 @@ QPKServiceListener{
 	//主播主动开始后收对方流超时pk没有建立起来
 	//@param-pkSession:pk会话	
 	public void onStartTimeOut(QPKSession pkSession)
+
+	//有pk扩展字段变化
+	//@param-extension:某个自定义字段	
+	public void onPKExtensionChange(QExtension extension)
 }
 
 //pk混流适配器
@@ -983,8 +1004,9 @@ QPublicChatService{
 	//@param-msg:公屏消息内容	@param-callBack:操作回调	
 	public void sendPublicChat(String msg,QLiveCallBack callBack)
 
-	//
-	public void getHistoryChatMsg()
+	//获取历史公聊消息
+	//@param-startMsgID:起始消息ID 空字符串代表最新	@param-size:大小	@param-callBack:回调	
+	public void getHistoryChatMsg(String startMsgID,int size,QLiveCallBack callBack)
 
 	//发送进入消息
 	//@param-msg:消息内容	@param-callBack:操作回调	

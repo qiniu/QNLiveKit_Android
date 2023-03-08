@@ -7,6 +7,7 @@ import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
 import com.qlive.coreimpl.QLiveDataSource
 import com.qlive.coreimpl.backGround
+import com.qlive.liblog.QLiveLogUtil
 import java.util.*
 
 internal class AudiencePKSynchro() : BaseService() {
@@ -96,6 +97,7 @@ internal class AudiencePKSynchro() : BaseService() {
             backGround {
                 doWork {
                     val info = mPKDateSource.getPkInfo(roomInfo.pkID ?: "")
+                    QLiveLogUtil.d("getPkInfo","mPKDateSource.getPkInfo( ${info.status}")
                     if (info.status == PKStatus.RelaySessionStatusSuccess.intValue) {
                         val recever = mLiveDataSource.searchUserByUserId(info.recvUserId)
                         val inver = mLiveDataSource.searchUserByUserId(info.initUserId)

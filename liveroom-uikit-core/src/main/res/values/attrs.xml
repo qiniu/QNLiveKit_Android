@@ -51,4 +51,9 @@
             <enum name="right" value="1" />
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="PublicChatView">
+        <attr name="maxHeight" format="dimension" />
+    </declare-styleable>
+
 </resources>

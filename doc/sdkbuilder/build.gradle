@@ -66,8 +66,8 @@ android {
 fataar {
     transitive = true
 }
-def uikitversion = 'qlive-uikit-1.0.8'
-def qliveversion = 'qlive-sdk-1.0.8'
+def uikitversion = 'qlive-uikit-1.0.9'
+def qliveversion = 'qlive-sdk-1.0.9'
 
 task makeAAR(type: Copy) {
     def localProperties = new Properties()
@@ -133,6 +133,7 @@ dependencies {
         embed project(':qlive-uicomponnets:uikitktv')
         implementation depend.appcompat()
         implementation depend.cardview()
+        implementation depend.constraintLayout()
         embed ('com.github.gzu-liyujiang.AndroidPicker:WheelPicker:4.1.9'){
             exclude group: 'com.android.support'
             transitive = false

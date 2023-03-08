@@ -15,6 +15,7 @@ import com.qlive.coreimpl.backGround
 import com.qlive.coreimpl.getCode
 import com.qlive.liblog.QLiveLogUtil
 import com.qlive.pushclient.QPusherClient
+import com.qlive.roomservice.QRoomService
 import com.qlive.sdk.QLive
 import com.qlive.sdk.internal.AppCache.Companion.appContext
 

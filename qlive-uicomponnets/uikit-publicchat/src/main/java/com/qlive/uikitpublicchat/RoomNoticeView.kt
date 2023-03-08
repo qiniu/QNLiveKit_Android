@@ -3,8 +3,10 @@ package com.qlive.uikitpublicchat
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import com.qlive.core.QLiveClient
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.uikitcore.QKitTextView
+import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.tryBackGroundWithLifecycle
 import com.qlive.uikitcore.ext.toHtml
 import kotlinx.coroutines.*
@@ -28,6 +30,10 @@ class RoomNoticeView : QKitTextView {
         attrs,
         defStyleAttr
     ) {
+    }
+
+    override fun attachKitContext(context: QLiveUIKitContext) {
+        super.attachKitContext(context)
         visibility = View.INVISIBLE
     }
 
