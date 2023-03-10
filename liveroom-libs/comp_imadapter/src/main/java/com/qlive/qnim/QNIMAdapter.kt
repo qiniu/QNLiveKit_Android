@@ -140,14 +140,21 @@ class QNIMAdapter : RtmAdapter {
         }
     }
 
+    private var lastAppId = ""
+
     /**
      * 初始化
      */
     fun init(config: BMXSDKConfig, context: Context) {
-        if (QNIMClient.isInit()) {
+        if (QNIMClient.isInit() && config.appID == lastAppId) {
+            QLiveLogUtil.d("imAdapter","im同样ID初始化")
+            return
+        }
+        if (QNIMClient.isInit()){
             QNIMClient.getUserManager()?.removeUserListener(mBMXUserServiceListener)
             QNIMClient.getChatManager()?.removeChatListener(mChatListener)
         }
+        lastAppId = config.appID;
         QNIMClient.delete()
         QNIMClient.init(config)
         mContext = context
@@ -157,7 +164,7 @@ class QNIMAdapter : RtmAdapter {
     }
 
     private fun loginOut(callBack: BMXCallBack) {
-
+        QLiveLogUtil.d("imAdapter","loginOut")
         if (loginImUid.isNotEmpty()) {
             QNIMClient.getUserManager().signOut(loginImUid.toLong()) {
                 QNIMClient.getUserManager().signOut {
