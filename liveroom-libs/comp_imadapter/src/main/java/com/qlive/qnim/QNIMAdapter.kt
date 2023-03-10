@@ -32,7 +32,8 @@ class QNIMAdapter : RtmAdapter {
     private var loginImUid = ""
     private var mContext: Context? = null
 
-    private var rtmUserListener: RtmUserListener?=null
+    private var rtmUserListener: RtmUserListener? = null
+
     init {
         System.loadLibrary("floo")
     }
@@ -130,7 +131,7 @@ class QNIMAdapter : RtmAdapter {
     private val mBMXUserServiceListener = object : BMXUserServiceListener() {
         override fun onConnectStatusChanged(status: BMXConnectStatus) {
             super.onConnectStatusChanged(status)
-            rtmUserListener?.onLoginConnectStatusChanged(status==BMXConnectStatus.Connected)
+            rtmUserListener?.onLoginConnectStatusChanged(status == BMXConnectStatus.Connected)
         }
 
         override fun onOtherDeviceSingIn(deviceSN: Int) {
@@ -139,14 +140,21 @@ class QNIMAdapter : RtmAdapter {
         }
     }
 
+    private var lastAppId = ""
+
     /**
      * 初始化
      */
     fun init(config: BMXSDKConfig, context: Context) {
-        if (QNIMClient.isInit()) {
+        if (QNIMClient.isInit() && config.appID == lastAppId) {
+            QLiveLogUtil.d("imAdapter","im同样ID初始化")
+            return
+        }
+        if (QNIMClient.isInit()){
             QNIMClient.getUserManager()?.removeUserListener(mBMXUserServiceListener)
             QNIMClient.getChatManager()?.removeChatListener(mChatListener)
         }
+        lastAppId = config.appID;
         QNIMClient.delete()
         QNIMClient.init(config)
         mContext = context
@@ -156,14 +164,15 @@ class QNIMAdapter : RtmAdapter {
     }
 
     private fun loginOut(callBack: BMXCallBack) {
-        if(loginImUid.isNotEmpty()){
-            QNIMClient.getUserManager().signOut(loginImUid.toLong()){
+        QLiveLogUtil.d("imAdapter","loginOut")
+        if (loginImUid.isNotEmpty()) {
+            QNIMClient.getUserManager().signOut(loginImUid.toLong()) {
                 QNIMClient.getUserManager().signOut {
                     isLogin = false
                     callBack.onResult(it)
                 }
             }
-        }else{
+        } else {
             QNIMClient.getUserManager().signOut {
                 isLogin = false
                 callBack.onResult(it)
@@ -182,6 +191,17 @@ class QNIMAdapter : RtmAdapter {
                     }
                     continuation.resume(p0)
                 }
+            }
+        }
+
+    suspend fun checkLoginOutSuspend() =
+        suspendCoroutine<Unit> { continuation ->
+            if (!QNIMClient.isInit()) {
+                continuation.resume(Unit)
+                return@suspendCoroutine
+            }
+            loginOut {
+                continuation.resume(Unit)
             }
         }
 
@@ -360,34 +380,40 @@ class QNIMAdapter : RtmAdapter {
                 )
                 return@openConversation
             }
-            val lastId = if(refMsgId==-1L){
-               // p1.lastMsg().msgId()
+            val lastId = if (refMsgId == -1L) {
+                // p1.lastMsg().msgId()
                 refMsgId
-            }else{
+            } else {
                 refMsgId
             }
             QLiveLogUtil.d("getHistoryTextMsg", "  p1.lastMsg().msgId() $lastId")
-            QNIMClient.getChatManager().retrieveHistoryMessages(p1,lastId, size.toLong()) { code, msgList ->
-                if (code != BMXErrorCode.NoError) {
-                    call.onFailure(code.swigValue(), code.name)
-                    return@retrieveHistoryMessages
-                }
-                val textMsgList = LinkedList<TextMsg>()
-                QLiveLogUtil.d("getHistoryTextMsg", " msgList.size()() ${msgList.size()}")
-                for (i in 0 until msgList.size()) {
-                    val message = msgList.get(i.toInt())
-                    val targetId = message.toId().toString()
-                    val from = message.fromId().toString()
-                    if (message.contentType() == BMXMessage.ContentType.Text
-                        || message.contentType() == BMXMessage.ContentType.Command
-                    ) {
-                        textMsgList.add(
-                            TextMsg(message.content(), from, targetId, message.msgId().toString())
-                        )
+            QNIMClient.getChatManager()
+                .retrieveHistoryMessages(p1, lastId, size.toLong()) { code, msgList ->
+                    if (code != BMXErrorCode.NoError) {
+                        call.onFailure(code.swigValue(), code.name)
+                        return@retrieveHistoryMessages
                     }
+                    val textMsgList = LinkedList<TextMsg>()
+                    QLiveLogUtil.d("getHistoryTextMsg", " msgList.size()() ${msgList.size()}")
+                    for (i in 0 until msgList.size()) {
+                        val message = msgList.get(i.toInt())
+                        val targetId = message.toId().toString()
+                        val from = message.fromId().toString()
+                        if (message.contentType() == BMXMessage.ContentType.Text
+                            || message.contentType() == BMXMessage.ContentType.Command
+                        ) {
+                            textMsgList.add(
+                                TextMsg(
+                                    message.content(),
+                                    from,
+                                    targetId,
+                                    message.msgId().toString()
+                                )
+                            )
+                        }
+                    }
+                    call.onSuccess(textMsgList)
                 }
-                call.onSuccess(textMsgList)
-            }
         }
     }
 
@@ -417,7 +443,7 @@ class QNIMAdapter : RtmAdapter {
     }
 
     override fun setRtmUserListener(rtmUserListener: RtmUserListener) {
-       this.rtmUserListener=rtmUserListener
+        this.rtmUserListener = rtmUserListener
     }
 
 }
