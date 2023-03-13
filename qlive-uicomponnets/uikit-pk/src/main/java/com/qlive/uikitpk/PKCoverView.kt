@@ -9,13 +9,16 @@ import com.qlive.pkservice.QPKServiceListener
 import com.qlive.pkservice.QPKSession
 
 import com.qlive.uikitcore.QKitFrameLayout
+import com.qlive.uikitcore.QKitViewBindingFrameLayout
 import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.Scheduler
+import com.qlive.uikitpk.databinding.KitPkCoverViewBinding
+import java.text.DecimalFormat
 
 /**
  * PK覆盖层 暂无UI
  */
-class PKCoverView : QKitFrameLayout {
+class PKCoverView : QKitViewBindingFrameLayout<KitPkCoverViewBinding> {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -27,8 +30,9 @@ class PKCoverView : QKitFrameLayout {
 
     override fun attachKitContext(context: QLiveUIKitContext) {
         super.attachKitContext(context)
-      //  visibility = View.GONE
+        visibility = View.GONE
     }
+
     companion object {
         //pk总时长
         const val KEY_TOTAL_DURATION = "TotalDuration"
@@ -43,12 +47,50 @@ class PKCoverView : QKitFrameLayout {
         const val KEY_PK_INTEGRAL = "pkIntegral"
 
         //输赢事件
-        const val PK_DURATION = "pkWinOrLose"
+        const val PK_WIN_OR_LOSE = "pkWinOrLose"
 
     }
 
-    private val pkTimer = Scheduler(1000) {
+    private fun formatTime(time: Long): String {
+        val decimalFormat = DecimalFormat("00")
+        val hh: String = decimalFormat.format(time / 3600)
+        val mm: String = decimalFormat.format(time % 3600 / 60)
+        val ss: String = decimalFormat.format(time % 60)
+        return if (hh == "00") {
+            "$mm:$ss"
+        } else {
+            "$hh:$mm:$ss"
+        }
+    }
 
+    private val pkTimer = Scheduler(1000) {
+        val session =
+            client?.getService(QPKService::class.java)?.currentPKingSession() ?: return@Scheduler
+        val pkStartTime = session.startTimeStamp
+        val duration = session.extension[KEY_PK_DURATION]
+        val penaltyDuration = session.extension[KEY_PENALTY_DURATION]
+
+        if (duration == null) {
+            return@Scheduler
+        }
+
+        if (penaltyDuration == null) {
+            return@Scheduler
+        }
+
+        val now = System.currentTimeMillis()
+        val durationTime = pkStartTime.toLong() + duration.toLong() * 1000
+        val penaltyDurationTime = durationTime + penaltyDuration.toLong() * 1000
+
+        val timer = if (now > durationTime) {
+            penaltyDurationTime - now
+        } else {
+            durationTime - now
+        }
+        if (timer <= 0) {
+            return@Scheduler
+        }
+        binding.tvTimer.text = "倒计时 ${formatTime(timer)}"
     }
 
     private val mQPKServiceListener = object : QPKServiceListener {
@@ -73,6 +115,7 @@ class PKCoverView : QKitFrameLayout {
         }
 
         override fun onStartTimeOut(pkSession: QPKSession) {
+
         }
 
         override fun onPKExtensionChange(extension: QExtension) {
@@ -85,16 +128,14 @@ class PKCoverView : QKitFrameLayout {
     private fun setPKInfo(key: String, value: String) {
         when (key) {
             KEY_PK_INTEGRAL -> {
-
+                binding.pkProgressBar.setLeftText("我方")
+                binding.pkProgressBar.setLeftText("我方")
             }
-            PK_DURATION -> {
 
+            PK_WIN_OR_LOSE -> {
+              //pk输赢
             }
         }
-    }
-
-    override fun getLayoutId(): Int {
-        return R.layout.kit_pk_cover_view
     }
 
     override fun initView() {

@@ -1,24 +1,24 @@
 # PK打榜最佳实践
 
 对于pk业务QLivekit默认只维护房间里有一场pk以及pk信息：双方主播信息房间信息及状态信息。QLiveUIKit实现效果如下：
-![uikit-pk](http://qrnlrydxa.hn-bkt.clouddn.com/doc/pk4.png)
+![uikit-pk](https://demo-qnrtc-files.qnsdk.com/pk.png)
 
 如要实现PK其他业务如常见的pk打榜或者其他pk事件，如下图：
-![uikit-pk](http://qrnlrydxa.hn-bkt.clouddn.com/doc/pk3.png)
+![uikit-pk](https://demo-qnrtc-files.qnsdk.com/pk2.png)
 
 
-#### 对接步骤
+## 对接步骤
 
-![uikit-pk](http://qrnlrydxa.hn-bkt.clouddn.com/doc/pk.drawio.png)
+![uikit-pk](https://demo-qnrtc-files.qnsdk.com/pkdrawio.png)
 
-##### 实现服务pk开始回调
+### 实现服务pk开始回调
 配置低代码服务端的pk开始回调接口
 
-##### 实现自定义的记分业务
+### 实现自定义的记分业务
 业务服务端收到购买礼物请求等pk加分情况是调用服务端[跟新扩展字段接口](https://developer.qiniu.com/lowcode/12417/pk-module-interface)，如定义扩展字段”pk_score“为记分、”pk_win_or_lose“为输赢。
 调用pk跟新扩展字段接口后pk双方房间都会收到相应的消息，并且该字段记录在QPKSession(pk会话中)，后进房间的观众也能取得当前相应的值。
 
-##### 客户端监听事件实现自定义UI
+### 客户端监听事件实现自定义UI
 
 ```kotlin
  client.getService(QPKService::class.java)
