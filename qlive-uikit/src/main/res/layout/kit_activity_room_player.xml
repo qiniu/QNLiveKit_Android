@@ -40,12 +40,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <com.qlive.uikitpk.PKPlayerPreview
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
             </com.qlive.qplayer.QPlayerTextureRenderView>
 
             <!--    pk预览-->
-            <com.qlive.uikitpk.PKPlayerPreview
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
             <!-- 连麦者预览-->
             <com.qlive.uikitlinkmic.MicLinkersView
                 android:layout_width="wrap_content"
@@ -88,7 +88,8 @@
         <com.qlive.uikit.component.FrameLayoutSlidingCover
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:translationX="-411dp">
+            >
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -240,7 +241,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/likeView"
                     app:layout_constraintTop_toTopOf="@+id/inputView" />
-
 
                 <!--                公告-->
                 <com.qlive.uikitpublicchat.RoomNoticeView

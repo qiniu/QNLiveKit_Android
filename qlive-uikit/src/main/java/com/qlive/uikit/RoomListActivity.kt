@@ -3,9 +3,7 @@ package com.qlive.uikit
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import androidx.core.view.LayoutInflaterCompat
-import com.qlive.uikitcore.KITInflaterFactory
+import com.qlive.uikitcore.QLiveOutRoomComponentManager
 import com.qlive.uikitcore.QUIKitContext
 import com.qlive.uikitcore.activity.BaseFrameActivity
 
@@ -29,13 +27,11 @@ class RoomListActivity : BaseFrameActivity() {
             this@RoomListActivity
         )
     }
-    private val uiFactory by lazy { KITInflaterFactory(delegate, mQUIKitContext) }
+    private val uiFactory by lazy { QLiveOutRoomComponentManager( mQUIKitContext) }
     override fun onCreate(savedInstanceState: Bundle?) {
-        LayoutInflaterCompat.setFactory2(
-            LayoutInflater.from(this),
-            uiFactory
-        )
         super.onCreate(savedInstanceState)
+        val decorView = window.decorView
+        uiFactory.scanComponent(decorView)
     }
 
     override fun onDestroy() {
@@ -44,6 +40,7 @@ class RoomListActivity : BaseFrameActivity() {
     }
 
     override fun init() {
+
     }
 
     override fun getLayoutId(): Int {

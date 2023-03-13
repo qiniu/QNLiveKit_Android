@@ -3,15 +3,13 @@ package com.qlive.uikitshopping
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.WindowManager
-import androidx.core.view.LayoutInflaterCompat
 import com.qlive.core.QLiveClient
 import com.qlive.roomservice.QRoomService
 import com.qlive.sdk.QLive
 import com.qlive.shoppingservice.QItem
-import com.qlive.uikitcore.KITRoomDependsInflaterFactory
 import com.qlive.uikitcore.QLiveClientClone
+import com.qlive.uikitcore.QLiveRoomDepdComponentManager
 import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.activity.BaseFrameActivity
 
@@ -46,23 +44,19 @@ class WatchExplainingActivity : BaseFrameActivity() {
         )
     }
 
-    private val mInflaterFactory by lazy {
-        KITRoomDependsInflaterFactory(
-            delegate,
+    private val mComponentManager by lazy {
+        QLiveRoomDepdComponentManager(
             QLiveClientClone(qClient!!),
             mQUIKitContext
         )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        LayoutInflaterCompat.setFactory2(
-            LayoutInflater.from(this),
-            mInflaterFactory
-        )
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);//设置透明状态栏
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);//设置透明导航栏
         super.onCreate(savedInstanceState)
+        val decorView = window.decorView
+        mComponentManager.scanComponent(decorView)
         initView()
     }
 
@@ -74,13 +68,13 @@ class WatchExplainingActivity : BaseFrameActivity() {
 
     private fun initView() {
         val room = qClient?.getService(QRoomService::class.java)?.roomInfo ?: return
-        mInflaterFactory.mComponents.forEach {
+        mComponentManager.mComponents.forEach {
             it.onEntering(room, QLive.getLoginUser())
         }
     }
 
     override fun onDestroy() {
-        mInflaterFactory.onDestroyed()
+        mComponentManager.onDestroyed()
         super.onDestroy()
     }
 

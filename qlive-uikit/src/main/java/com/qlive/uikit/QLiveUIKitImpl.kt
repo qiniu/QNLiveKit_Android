@@ -7,9 +7,7 @@ import com.qlive.uikit.RoomListActivity.Companion.start
 import com.qlive.sdk.QLiveUIKit
 import com.qlive.sdk.QPage
 import com.qlive.uikit.component.*
-import com.qlive.uikitcore.KITInflaterFactory
 import com.qlive.uikitcore.KITLiveInflaterFactory
-import com.qlive.uikitcore.KITRoomDependsInflaterFactory
 import com.qlive.uikitcore.QKitImageView
 import com.qlive.uikitdanmaku.DanmakuTrackManagerView
 import com.qlive.uikitdanmaku.SendDanmakuView
@@ -48,17 +46,6 @@ class QLiveUIKitImpl(val appContext: Context) : QLiveUIKit {
         if (QInnerVideoFrameHook.isEnable) {
             //如果依赖的内置美颜 初始化美颜插件
             QInnerVideoFrameHook.mBeautyHooker?.init(appContext)
-        }
-        KITInflaterFactory.checkCreateView = { name: String,
-                                               context: Context,
-                                               attrs: AttributeSet
-            ->
-            when (name) {
-                QBackNavigationImg::class.java.canonicalName -> QBackNavigationImg(context, attrs)
-                RoomListView::class.java.canonicalName -> RoomListView(context, attrs)
-                CreateRoomButton::class.java.canonicalName -> CreateRoomButton(context, attrs)
-                else -> null
-            }
         }
         KITLiveInflaterFactory.checkCreateView = { name: String,
                                                    context: Context,
@@ -130,17 +117,15 @@ class QLiveUIKitImpl(val appContext: Context) : QLiveUIKit {
                 CloseRoomView::class.java.canonicalName -> CloseRoomView(context, attrs)
                 StartLinkView::class.java.canonicalName -> StartLinkView(context, attrs)
                 PKPlayerPreview::class.java.canonicalName -> PKPlayerPreview(context, attrs)
-                BottomMoreFuncButton::class.java.canonicalName -> BottomMoreFuncButton(context, attrs)
+                BottomMoreFuncButton::class.java.canonicalName -> BottomMoreFuncButton(
+                    context,
+                    attrs
+                )
                 LiveStatisticsView::class.java.canonicalName -> LiveStatisticsView(context, attrs)
-                AnchorStartTrailerLiveView::class.java.canonicalName -> AnchorStartTrailerLiveView(context, attrs)
-                else -> null
-            }
-        }
-        KITRoomDependsInflaterFactory.checkCreateView = { name: String,
-                                                          context: Context,
-                                                          attrs: AttributeSet
-            ->
-            when (name) {
+                AnchorStartTrailerLiveView::class.java.canonicalName -> AnchorStartTrailerLiveView(
+                    context,
+                    attrs
+                )
                 RoomDependsHostView::class.java.canonicalName -> RoomDependsHostView(context, attrs)
                 RoomDependsIdView::class.java.canonicalName -> RoomDependsIdView(context, attrs)
                 RoomDependsMemberCountView::class.java.canonicalName -> RoomDependsMemberCountView(
