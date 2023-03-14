@@ -2,6 +2,8 @@ package com.qlive.beautyhook
 
 import com.qiniu.droid.rtc.QNVideoFrameListener
 import com.qiniu.droid.rtc.QNVideoFrameType
+import com.qiniu.sensetimeplugin.QNSenseTimePlugin
+import com.qlive.beautyhook.BeautyHookerImpl.Companion.senseTimePlugin
 
 class SenseVideoFrameListener : QNVideoFrameListener {
     override fun onYUVFrameAvailable(
@@ -52,7 +54,7 @@ class SenseVideoFrameListener : QNVideoFrameListener {
             }
         }
         lastTextureID = textureID
-        return if (checkInit()) {
+        return if (checkInit() && senseTimePlugin?.checkLicense() == true) {
             if (mRotation != rotation) {
                 BeautyHookerImpl.senseTimePlugin?.updateDirection(
                     rotation,
