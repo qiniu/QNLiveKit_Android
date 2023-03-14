@@ -129,8 +129,8 @@ class OnlineUserView : QKitFrameLayout {
         this.roomId = roomId
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         lazyFreshJob.start()
     }
 

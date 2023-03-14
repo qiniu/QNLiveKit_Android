@@ -102,8 +102,8 @@ class PublicChatView : QKitRecyclerView {
         this.adapter = mAdapter
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         kitContext?.lifecycleOwner?.tryBackGroundWithLifecycle {
             delay(200)
             client?.getService(QPublicChatService::class.java)?.getHistoryChatMsg("", 30,

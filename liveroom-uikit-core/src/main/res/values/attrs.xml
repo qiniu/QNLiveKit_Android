@@ -56,4 +56,11 @@
         <attr name="maxHeight" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="QLiveXmlTag">
+        <attr name="componentTag" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="LivePreView">
+        <attr name="booking" format="integer" />
+    </declare-styleable>
 </resources>

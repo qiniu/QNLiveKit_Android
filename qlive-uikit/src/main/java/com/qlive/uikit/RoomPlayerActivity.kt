@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
  * 观众activity
  * UI插件底座 请勿在activity 做过多UI逻辑代码
  */
-class RoomPlayerActivity : BaseFrameActivity() {
+class RoomPlayerActivity : BaseFrameActivity() , QLiveComponentManagerOwner{
 
     companion object {
         var replaceLayoutId = -1
@@ -173,11 +173,10 @@ class RoomPlayerActivity : BaseFrameActivity() {
      */
     private val mComponentManager by lazy {
         QLiveComponentManager(
-            mRoomClient!!,
-            mQUIKitContext
+            mRoomClient!!
         ).apply {
-            addFuncComponent(FuncCPTBeautyDialogShower(this@RoomPlayerActivity))
-            addFuncComponent(FuncCPTPlayerFloatingHandler(this@RoomPlayerActivity))
+            addFuncComponent(FuncCPTBeautyDialogShower(this@RoomPlayerActivity), mQUIKitContext)
+            addFuncComponent(FuncCPTPlayerFloatingHandler(this@RoomPlayerActivity), mQUIKitContext)
         }
     }
 
@@ -230,7 +229,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
         )
         super.onCreate(savedInstanceState)
         val decorView = window.decorView
-        mComponentManager.scanComponent(decorView)
+        mComponentManager.scanComponent(decorView, mQUIKitContext)
         initView(true, isNewClient, isNewRoom)
         playerRenderView.setDisplayAspectRatio(PreviewMode.ASPECT_RATIO_PAVED_PARENT)
     }
@@ -355,6 +354,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
     override fun onDestroy() {
         super.onDestroy()
         QLiveLogUtil.d("RoomPlayerActivity", "onDestroy")
+        mQUIKitContext.destroyContext()
         mComponentManager.onDestroyed()
         //不是小窗模式
         if (FuncCPTPlayerFloatingHandler.currentFloatingPlayerView == null) {
@@ -397,5 +397,9 @@ class RoomPlayerActivity : BaseFrameActivity() {
         if (FuncCPTPlayerFloatingHandler.currentFloatingPlayerView == null) {
             mRoomClient?.pause()
         }
+    }
+
+    override fun getQLiveComponentManager(): QLiveComponentManager {
+        return mComponentManager
     }
 }

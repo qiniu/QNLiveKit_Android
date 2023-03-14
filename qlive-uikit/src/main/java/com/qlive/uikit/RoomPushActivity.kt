@@ -30,7 +30,7 @@ import kotlin.coroutines.suspendCoroutine
  * 主播房间activity
  * UI插件底座 请勿在activity 做过多UI逻辑代码
  */
-class RoomPushActivity : BaseFrameActivity() {
+class RoomPushActivity : BaseFrameActivity(), QLiveComponentManagerOwner {
     private var roomId = ""
 
     companion object {
@@ -205,10 +205,9 @@ class RoomPushActivity : BaseFrameActivity() {
      */
     private val mComponentManager by lazy {
         QLiveComponentManager(
-            mRoomClient,
-            mQUIKitContext
+            mRoomClient
         ).apply {
-            addFuncComponent(FuncCPTBeautyDialogShower(this@RoomPushActivity))
+            addFuncComponent(FuncCPTBeautyDialogShower(this@RoomPushActivity), mQUIKitContext)
         }
     }
 
@@ -227,7 +226,7 @@ class RoomPushActivity : BaseFrameActivity() {
         )
         super.onCreate(savedInstanceState)
         val decorView = window.decorView
-        mComponentManager.scanComponent(decorView)
+        mComponentManager.scanComponent(decorView, mQUIKitContext)
     }
 
     private fun start() {
@@ -268,6 +267,7 @@ class RoomPushActivity : BaseFrameActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        mQUIKitContext.destroyContext()
         mComponentManager.onDestroyed()
         mRoomClient.destroy()
         startCallBack?.onError(QLiveErrorCode.CANCELED_JOIN, "cancel the join room")
@@ -321,5 +321,9 @@ class RoomPushActivity : BaseFrameActivity() {
     override fun onResume() {
         super.onResume()
         mRoomClient.resume()
+    }
+
+    override fun getQLiveComponentManager(): QLiveComponentManager {
+        return mComponentManager
     }
 }

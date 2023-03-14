@@ -94,8 +94,8 @@ class TouchEventBusViewPager : FrameLayout, QLiveComponent {
         }
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         views.forEach {
             it.visibility = View.VISIBLE
         }

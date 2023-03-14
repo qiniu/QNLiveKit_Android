@@ -59,8 +59,8 @@ open class LivePreView : QKitViewBindingFrameMergeLayout<KitLivePreviewBinding> 
         }
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         //开播预览加入成功不可见
         visibility = View.GONE
     }

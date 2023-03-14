@@ -5,6 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
+import com.qlive.chatservice.QChatRoomService
+import com.qlive.core.QLiveClient
+import com.qlive.core.QLiveService
+import com.qlive.roomservice.QRoomService
+import com.qlive.uikitcore.QLiveComponentManagerOwner
+import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.ext.ViewBindingExt
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.ParameterizedType

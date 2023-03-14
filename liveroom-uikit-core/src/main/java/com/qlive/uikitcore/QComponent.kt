@@ -1,10 +1,12 @@
 package com.qlive.uikitcore
 
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import com.qlive.core.QLiveClient
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
-import com.qlive.liblog.QLiveLogUtil
 
 
 interface BaseComponent<T : BaseContext> {
@@ -72,6 +74,7 @@ interface BaseComponent<T : BaseContext> {
     fun <T : UIEvent?> sendUIEvent(event: T) {
         kitContext?.eventManager?.sendUIEvent(event)
     }
+
 }
 
 /**
@@ -108,7 +111,7 @@ interface QLiveComponent : QLiveUILifeCycleListener, BaseComponent<QLiveUIKitCon
      * 房间加入成功回调
      * @param roomInfo 加入哪个房间
      */
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
         this.roomInfo = roomInfo
     }
 

@@ -23,10 +23,10 @@ public interface QLiveUILifeCycleListener {
     /**
      * 加入回调
      * 房间验证成功加入了房间 我在房间里
-     * @param isResumeUIFromFloating 是不是从小窗恢复回来的 -- 从小窗恢复代表原来的UI都销毁了，从新创建了一个恢复数据
+     * @param isJoinedBefore 是不是从小窗恢复回来的 -- 从小窗恢复代表原来的UI都销毁了，从新创建了一个恢复数据
      * @param roomInfo 房间信息
      */
-    void onJoined(@NotNull QLiveRoomInfo roomInfo,boolean isResumeUIFromFloating);
+    void onJoined(@NotNull QLiveRoomInfo roomInfo,boolean isJoinedBefore);
 
     /**
      * 用户离开回调
