@@ -14,6 +14,7 @@ import com.qlive.pushclient.QPusherClient
 import com.qlive.rtclive.RTCRenderView
 import com.qlive.sdk.QLive
 import com.qlive.uikit.R
+import com.qlive.uikit.RoomPushActivity
 import com.qlive.uikit.databinding.KitDialogAnchorMoreFuncBinding
 import com.qlive.uikit.databinding.KitDialogPlayerMoreFuncBinding
 import com.qlive.uikitcore.BeautyHook
@@ -128,13 +129,20 @@ class PlayerBottomMoreFuncDialog(
     override val kitContext: QLiveUIKitContext
 ) : ComponentDialogFragment(kitContext) {
 
+    companion object{
+        var replaceLayoutId = -1
+    }
     init {
         applyDimAmount(0f)
         applyGravityStyle(Gravity.BOTTOM)
     }
 
     private var mStartLinkHandler: StartLinkHandler? = null
+
     override fun getViewLayoutId(): Int {
+        if (replaceLayoutId > 0) {
+            return replaceLayoutId
+        }
         return R.layout.kit_dialog_player_more_func
     }
 
