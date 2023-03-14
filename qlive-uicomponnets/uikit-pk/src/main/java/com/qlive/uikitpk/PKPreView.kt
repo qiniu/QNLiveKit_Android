@@ -47,9 +47,9 @@ class PKPlayerPreview : QKitViewBindingFrameLayout<KitAnchorPkPreviewBinding> {
         override fun onStartTimeOut(pkSession: QPKSession) {}
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
-        if (isResumeUIFromFloating) {
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
+        if (isJoinedBefore) {
             client!!.getService(QPKService::class.java).currentPKingSession()?.let {
                 mQPKServiceListener.onStart(it)
             }

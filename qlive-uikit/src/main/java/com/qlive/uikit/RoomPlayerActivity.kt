@@ -23,7 +23,6 @@ import com.qlive.pubchatservice.QPublicChat
 import com.qlive.pubchatservice.QPublicChatService
 import com.qlive.qplayer.QPlayerTextureRenderView
 import com.qlive.roomservice.QRoomService
-import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.activity.BaseFrameActivity
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -34,9 +33,7 @@ import com.qlive.core.QLiveErrorCode.CANCELED_JOIN
 import com.qlive.uikit.component.FuncCPTBeautyDialogShower
 import com.qlive.uikit.component.FuncCPTPlayerFloatingHandler
 import com.qlive.uikit.component.OnKeyDownMonitor
-import com.qlive.uikitcore.KITLiveInflaterFactory
-import com.qlive.uikitcore.backGround
-import com.qlive.uikitcore.getCode
+import com.qlive.uikitcore.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -45,7 +42,7 @@ import kotlinx.coroutines.launch
  * 观众activity
  * UI插件底座 请勿在activity 做过多UI逻辑代码
  */
-class RoomPlayerActivity : BaseFrameActivity() {
+class RoomPlayerActivity : BaseFrameActivity() , QLiveComponentManagerOwner{
 
     companion object {
         var replaceLayoutId = -1
@@ -56,8 +53,8 @@ class RoomPlayerActivity : BaseFrameActivity() {
             extSetter: StartRoomActivityExtSetter?,
             callBack: QLiveCallBack<QLiveRoomInfo>?
         ) {
-            if(QLive.getLoginUser()==null){
-                callBack?.onError(QLiveErrorCode.NOT_LOGGED_IN,"QLive.getLoginUser()==null")
+            if (QLive.getLoginUser() == null) {
+                callBack?.onError(QLiveErrorCode.NOT_LOGGED_IN, "QLive.getLoginUser()==null")
                 return
             }
             val goRoom = {
@@ -126,7 +123,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
 
                 override fun onSuccess(data: Void?) {
                     it.onSuccess(data)
-                    mInflaterFactory.onLeft()
+                    mComponentManager.onLeft()
                 }
             })
         }
@@ -174,15 +171,19 @@ class RoomPlayerActivity : BaseFrameActivity() {
      * UI组件以插件的形式加载进来
      * 装载器完成替换删除 功能分发操作
      */
+    private val mComponentManager by lazy {
+        QLiveComponentManager(
+            mRoomClient!!
+        ).apply {
+            addFuncComponent(FuncCPTBeautyDialogShower(this@RoomPlayerActivity), mQUIKitContext)
+            addFuncComponent(FuncCPTPlayerFloatingHandler(this@RoomPlayerActivity), mQUIKitContext)
+        }
+    }
+
     private val mInflaterFactory by lazy {
         KITLiveInflaterFactory(
-            delegate,
-            mRoomClient!!,
-            mQUIKitContext
-        ).apply {
-            addFuncComponent(FuncCPTBeautyDialogShower(this@RoomPlayerActivity))
-            addFuncComponent(FuncCPTPlayerFloatingHandler(this@RoomPlayerActivity))
-        }
+            delegate
+        )
     }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -227,6 +228,8 @@ class RoomPlayerActivity : BaseFrameActivity() {
             mInflaterFactory
         )
         super.onCreate(savedInstanceState)
+        val decorView = window.decorView
+        mComponentManager.scanComponent(decorView, mQUIKitContext)
         initView(true, isNewClient, isNewRoom)
         playerRenderView.setDisplayAspectRatio(PreviewMode.ASPECT_RATIO_PAVED_PARENT)
     }
@@ -252,7 +255,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
             QLiveLogUtil.d("RoomPlayerActivity", "onNewIntent 新的activity")
             lifecycleScope.launch(Dispatchers.Main) {
                 suspendLeftForce(mRoomClient!!, this@RoomPlayerActivity)
-                mInflaterFactory.onLeft()
+                mComponentManager.onLeft()
                 initView(false, false, true)
             }
         }
@@ -262,7 +265,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
         QLiveLogUtil.d("RoomPlayerActivity", "initView ${isNewClient} ${isNewRoom}")
 
         val joinCall = {
-            mInflaterFactory.onEntering(mRoomId, QLive.getLoginUser())
+            mComponentManager.onEntering(mRoomId, QLive.getLoginUser())
 
             Handler(Looper.myLooper()!!).post {
                 backGround {
@@ -270,12 +273,12 @@ class RoomPlayerActivity : BaseFrameActivity() {
                     doWork {
                         //加入房间
                         val room = suspendJoinRoom(mRoomId)
-                        mInflaterFactory.onGetLiveRoomInfo(room)
+                        mComponentManager.onGetLiveRoomInfo(room)
                         startCallBack?.onSuccess(room)
                         //开始播放
                         mRoomClient!!.play(playerRenderView)
                         //分发状态到各个UI组件
-                        mInflaterFactory.onJoined(room, false)
+                        mComponentManager.onJoined(room, false)
                     }
                     catchError {
                         Toast.makeText(this@RoomPlayerActivity, it.message, Toast.LENGTH_SHORT)
@@ -311,13 +314,13 @@ class RoomPlayerActivity : BaseFrameActivity() {
                     joinCall.invoke()
                     return
                 }
-                mInflaterFactory.onEntering(mRoomId, QLive.getLoginUser())
+                mComponentManager.onEntering(mRoomId, QLive.getLoginUser())
                 Handler(Looper.myLooper()!!).post {
                     //加入房间
                     startCallBack?.onSuccess(room)
-                    mInflaterFactory.onGetLiveRoomInfo(room)
+                    mComponentManager.onGetLiveRoomInfo(room)
                     //分发状态到各个UI组件
-                    mInflaterFactory.onJoined(room, true)
+                    mComponentManager.onJoined(room, true)
                     //开始播放
                     mRoomClient!!.play(playerRenderView)
                     startCallBack = null
@@ -333,7 +336,7 @@ class RoomPlayerActivity : BaseFrameActivity() {
 
     //安卓重写返回键事件
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        mInflaterFactory.mComponents.forEach {
+        mComponentManager.mComponents.forEach {
             if (it is OnKeyDownMonitor) {
                 if (it.onActivityKeyDown(keyCode, event)) {
                     return true
@@ -351,7 +354,8 @@ class RoomPlayerActivity : BaseFrameActivity() {
     override fun onDestroy() {
         super.onDestroy()
         QLiveLogUtil.d("RoomPlayerActivity", "onDestroy")
-        mInflaterFactory.onDestroyed()
+        mQUIKitContext.destroyContext()
+        mComponentManager.onDestroyed()
         //不是小窗模式
         if (FuncCPTPlayerFloatingHandler.currentFloatingPlayerView == null) {
             mRoomClient?.destroy()
@@ -393,5 +397,9 @@ class RoomPlayerActivity : BaseFrameActivity() {
         if (FuncCPTPlayerFloatingHandler.currentFloatingPlayerView == null) {
             mRoomClient?.pause()
         }
+    }
+
+    override fun getQLiveComponentManager(): QLiveComponentManager {
+        return mComponentManager
     }
 }

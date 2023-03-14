@@ -14,9 +14,7 @@ import com.qlive.core.QLiveClient
 import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.core.been.QLiveUser
 import com.qlive.pkservice.QPKService
-import com.qlive.uikitcore.QKitFrameLayout
-import com.qlive.uikitcore.QKitImageView
-import com.qlive.uikitcore.QLiveUIKitContext
+import com.qlive.uikitcore.*
 import com.qlive.uikitcore.dialog.FinalDialogFragment
 import com.qlive.uikitcore.dialog.LoadingDialog
 import com.qlive.uikitcore.ext.asToast
@@ -174,13 +172,52 @@ class StartLinkView : QKitImageView {
         mStartLinkHandler.user = user
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         mStartLinkHandler.roomInfo = roomInfo
     }
 
     override fun onDestroyed() {
         mStartLinkHandler.release()
         super.onDestroyed()
+    }
+}
+
+//开始连麦按钮
+class StartLinkLinearLayout : QKitLinearLayout {
+
+    private val mStartLinkHandler by lazy { StartLinkHandler(context) }
+
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    )
+
+    override fun attachLiveClient(client: QLiveClient) {
+        super.attachLiveClient(client)
+        mStartLinkHandler.attachClient(client, kitContext!!)
+        mStartLinkHandler.attachView(this)
+    }
+
+    override fun onEntering(roomId: String, user: QLiveUser) {
+        super.onEntering(roomId, user)
+        mStartLinkHandler.user = user
+    }
+
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
+        mStartLinkHandler.roomInfo = roomInfo
+    }
+
+    override fun onDestroyed() {
+        mStartLinkHandler.release()
+        super.onDestroyed()
+    }
+
+    override fun initView() {
+
     }
 }

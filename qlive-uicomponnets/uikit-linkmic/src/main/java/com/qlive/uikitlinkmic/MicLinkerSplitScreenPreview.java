@@ -78,9 +78,9 @@ public class MicLinkerSplitScreenPreview extends QKitFrameLayout {
     }
 
     @Override
-    public void onJoined(@NonNull QLiveRoomInfo roomInfo, boolean isResumeUIFromFloating) {
-        super.onJoined(roomInfo, isResumeUIFromFloating);
-        linkerPreview.onJoined(roomInfo, isResumeUIFromFloating);
+    public void onJoined(@NonNull QLiveRoomInfo roomInfo, boolean isJoinedBefore) {
+        super.onJoined(roomInfo, isJoinedBefore);
+        linkerPreview.onJoined(roomInfo, isJoinedBefore);
     }
 
     @Override
@@ -463,9 +463,9 @@ public class MicLinkerSplitScreenPreview extends QKitFrameLayout {
         };
 
         @Override
-        public void onJoined(@NonNull QLiveRoomInfo roomInfo, boolean isResumeUIFromFloating) {
-            super.onJoined(roomInfo, isResumeUIFromFloating);
-            if (isResumeUIFromFloating) {
+        public void onJoined(@NonNull QLiveRoomInfo roomInfo, boolean isJoinedBefore) {
+            super.onJoined(roomInfo, isJoinedBefore);
+            if (isJoinedBefore) {
                 //从销毁的activity 小窗恢复麦位置UI 没有小窗模式可以不加
                 if (getClient().getService(QLinkMicService.class).getAllLinker().size() == 2) {
                     micServiceListener.onLinkerJoin(getClient().getService(QLinkMicService.class).getAllLinker().get(1));

@@ -16,6 +16,7 @@ import com.qlive.uikit.RoomPushActivity.Companion.KEY_ROOM_ID
 import com.qlive.uikit.databinding.KitLivePreviewBinding
 import com.qlive.uikitcore.QKitViewBindingFrameMergeLayout
 import com.qlive.uikitcore.QLiveUIKitContext
+import com.qlive.uikitcore.UIJsonConfigurator
 import com.qlive.uikitcore.dialog.LoadingDialog
 import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
@@ -132,5 +133,8 @@ open class LivePreView : QKitViewBindingFrameMergeLayout<KitLivePreviewBinding> 
             }.show(binding.popAnchorView)
         }
         binding.rgLiveMode.check(R.id.rbLiveNow)
+
+        UIJsonConfigurator.checkEnable(UIJsonConfigurator.key_booking,binding.flTimeSelect)
+        UIJsonConfigurator.checkEnable(UIJsonConfigurator.key_booking,binding.tvCalendarHit)
     }
 }

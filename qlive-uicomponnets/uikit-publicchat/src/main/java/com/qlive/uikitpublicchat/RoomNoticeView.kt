@@ -38,8 +38,8 @@ class RoomNoticeView : QKitTextView {
     }
 
     private var goneJob: Job? = null
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         goneJob?.cancel()
         text = noticeHtmlShowAdapter.invoke(roomInfo.notice ?: "").toHtml()
         if (roomInfo.notice.isEmpty()) {

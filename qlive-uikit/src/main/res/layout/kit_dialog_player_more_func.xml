@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <LinearLayout
@@ -40,19 +41,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:orientation="horizontal"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp">
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:id="@+id/llGift"
+            <com.qlive.uikitgift.ShowGiftDialogButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
                 android:gravity="center"
-                android:orientation="vertical"
-
-                >
+                app:componentTag="gift"
+                android:orientation="vertical">
 
                 <ImageView
                     android:layout_width="32dp"
@@ -64,18 +62,18 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="@string/live_dialog_morefunc_gift"
-                    android:textColor="@color/white"
+                    android:textColor="#ffffff"
                     android:textSize="10sp" />
-            </LinearLayout>
+            </com.qlive.uikitgift.ShowGiftDialogButton>
 
-            <LinearLayout
-                android:id="@+id/llLink"
+
+            <com.qlive.uikitlinkmic.StartLinkLinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginStart="40dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
                 android:orientation="vertical"
-
+                app:componentTag="mic"
                 >
 
                 <ImageView
@@ -88,11 +86,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="@string/live_dialog_morefunc_link"
-                    android:textColor="@color/white"
+                    android:textColor="#ffffff"
                     android:textSize="10sp" />
-            </LinearLayout>
-
+            </com.qlive.uikitlinkmic.StartLinkLinearLayout>
         </LinearLayout>
-
     </LinearLayout>
 </FrameLayout>

@@ -34,7 +34,7 @@ class FrameLayoutSlidingCover : FrameLayout {
  * TouchEventBusViewPager 很好的解决这个事件分发问题，将底层UI放置到ViewPager下级别布局，底层UI能按照原来分发模式进行
  * 同时解决嵌套滑动也很方便
  */
-class TouchEventBusViewPager : ViewPager, QLiveComponent {
+class TouchEventBusViewPager : FrameLayout, QLiveComponent {
 
     override var client: QLiveClient? = null
     override var roomInfo: QLiveRoomInfo? = null
@@ -44,8 +44,33 @@ class TouchEventBusViewPager : ViewPager, QLiveComponent {
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
+    private val viewPager by lazy { ViewPager(context) }
+    private val views = ArrayList<View>()
+
     override fun attachKitContext(context: QLiveUIKitContext) {
         super.attachKitContext(context)
+        var mFrameLayoutBgCover:FrameLayoutBgCover?=null
+        for (i in 0 until childCount) {
+            val itemView = getChildAt(i)
+            if (itemView is FrameLayoutSlidingCover) {
+                views.add(itemView)
+            }
+            if(itemView is FrameLayoutBgCover){
+                mFrameLayoutBgCover=itemView
+            }
+        }
+
+        views.forEach {
+            removeView(it)
+        }
+        addView(viewPager)
+        mFrameLayoutBgCover?.let {
+            removeView(it)
+            viewPager.addView(it)
+        }
+        viewPager.adapter = CommonViewPagerAdapter(views)
+        viewPager.currentItem = 0
+
         views.forEach {
             it.visibility = View.INVISIBLE
         }
@@ -53,45 +78,32 @@ class TouchEventBusViewPager : ViewPager, QLiveComponent {
 
     override fun onGetLiveRoomInfo(roomInfo: QLiveRoomInfo) {
         super.onGetLiveRoomInfo(roomInfo)
-        val roomId = kitContext!!.currentActivity.intent.getStringExtra(RoomPushActivity.KEY_ROOM_ID) ?: ""
+        val roomId =
+            kitContext!!.currentActivity.intent.getStringExtra(RoomPushActivity.KEY_ROOM_ID) ?: ""
         if (roomInfo.isTrailering() && roomId.isNotEmpty()
-            && client?.clientType == QClientType.PUSHER) {
+            && client?.clientType == QClientType.PUSHER
+        ) {
             views.forEach {
                 it.visibility = View.VISIBLE
             }
             if (views.size > 1) {
-                setCurrentItem(1, true)
+                viewPager.setCurrentItem(1, true)
             } else {
-                currentItem = views.size - 1
+                viewPager.currentItem = views.size - 1
             }
         }
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         views.forEach {
             it.visibility = View.VISIBLE
         }
         if (views.size > 1) {
-            setCurrentItem(1, true)
+            viewPager.setCurrentItem(1, true)
         } else {
-            currentItem = views.size - 1
+            viewPager.currentItem = views.size - 1
         }
     }
 
-    private val views = ArrayList<View>()
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-        for (i in 0 until childCount) {
-            val itemView = getChildAt(i)
-            if (itemView is FrameLayoutSlidingCover) {
-                views.add(itemView)
-            }
-        }
-        views.forEach {
-            removeView(it)
-        }
-        adapter = CommonViewPagerAdapter(views)
-        currentItem = 0
-    }
 }

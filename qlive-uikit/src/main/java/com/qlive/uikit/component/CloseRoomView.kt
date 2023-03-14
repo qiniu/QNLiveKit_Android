@@ -154,10 +154,10 @@ class CloseRoomView : QKitImageView {
         }
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         visibility = VISIBLE
-        if (!isResumeUIFromFloating) {
+        if (!isJoinedBefore) {
             //发进入房间消息
             client?.getService(QPublicChatService::class.java)
                 ?.sendWelCome(context.getString(R.string.live_welcome_tip), null)

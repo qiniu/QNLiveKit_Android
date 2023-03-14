@@ -85,7 +85,7 @@
         <com.qlive.uikit.component.FrameLayoutSlidingCover
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:translationX="-411dp">
+            >
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="266dp"
+    android:layout_height="288dp"
     android:layout_marginTop="116dp">
 
     <LinearLayout
         android:id="@+id/llPKContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="266dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -25,6 +25,25 @@
 
     </LinearLayout>
 
+    <com.qlive.uikitpk.PKProgressBar
+        android:id="@+id/pkProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
 
+    <TextView
+        android:id="@+id/tvTimer"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="24dp"
+        android:layout_width="96dp"
+        android:layout_height="20dp"
+        android:text="0"
+        android:textColor="#ffffff"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:background="@drawable/shape_bf000000_top6"
+        />
 
 </FrameLayout>

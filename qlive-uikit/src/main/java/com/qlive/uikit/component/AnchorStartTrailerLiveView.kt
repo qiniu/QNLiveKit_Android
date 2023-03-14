@@ -65,8 +65,8 @@ class AnchorStartTrailerLiveView :
         binding.tvTime.text = showTimeCall(total).toHtml()
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         binding.tvStartReserve.visibility = GONE
         binding.tvTime.visibility = VISIBLE
         mScheduler.start()

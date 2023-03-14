@@ -14,12 +14,14 @@ import com.qlive.pushclient.QPusherClient
 import com.qlive.rtclive.RTCRenderView
 import com.qlive.sdk.QLive
 import com.qlive.uikit.R
+import com.qlive.uikit.RoomPushActivity
 import com.qlive.uikit.databinding.KitDialogAnchorMoreFuncBinding
 import com.qlive.uikit.databinding.KitDialogPlayerMoreFuncBinding
 import com.qlive.uikitcore.BeautyHook
 import com.qlive.uikitcore.QKitImageView
 import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.TestUIEvent
+import com.qlive.uikitcore.dialog.ComponentDialogFragment
 import com.qlive.uikitcore.dialog.ViewBindingDialogFragment
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
 import com.qlive.uikitgift.GiftDialog
@@ -124,35 +126,30 @@ class AnchorBottomMoreFuncDialog(
 }
 
 class PlayerBottomMoreFuncDialog(
-    private val kitContext: QLiveUIKitContext,
-    private val client: QLiveClient, var roomInfo: QLiveRoomInfo
-) : ViewBindingDialogFragment<KitDialogPlayerMoreFuncBinding>() {
+    override val kitContext: QLiveUIKitContext
+) : ComponentDialogFragment(kitContext) {
 
+    companion object{
+        var replaceLayoutId = -1
+    }
     init {
         applyDimAmount(0f)
         applyGravityStyle(Gravity.BOTTOM)
     }
 
-    private val mGiftDialog by lazy { GiftDialog(client) }
-
     private var mStartLinkHandler: StartLinkHandler? = null
 
-    override fun init() {
-        if (mStartLinkHandler == null) {
-            mStartLinkHandler = StartLinkHandler(requireContext()).apply {
-                attachClient(client, kitContext)
-                user = QLive.getLoginUser()
-            }
+    override fun getViewLayoutId(): Int {
+        if (replaceLayoutId > 0) {
+            return replaceLayoutId
         }
-        mStartLinkHandler?.roomInfo = roomInfo
-        binding.ivClose.setOnClickListener {
+        return R.layout.kit_dialog_player_more_func
+    }
+
+    override fun init() {
+        view?.findViewById<View>(R.id.ivClose)?.setOnClickListener {
             dismiss()
         }
-        binding.llGift.setOnClickListener {
-            mGiftDialog.show(kitContext.fragmentManager, "")
-        }
-
-        mStartLinkHandler?.attachView(binding.llLink)
     }
 
     fun release() {
@@ -180,9 +177,8 @@ class BottomMoreFuncButton : QKitImageView {
             if (client?.clientType == QClientType.PLAYER) {
                 if (mPlayerBottomMoreFuncDialog == null) {
                     mPlayerBottomMoreFuncDialog =
-                        PlayerBottomMoreFuncDialog(kitContext!!, client!!, roomInfo!!)
+                        PlayerBottomMoreFuncDialog(kitContext!!)
                 }
-                mPlayerBottomMoreFuncDialog?.roomInfo = roomInfo!!
                 mPlayerBottomMoreFuncDialog?.show(kitContext!!.fragmentManager, "")
             } else {
                 if (mAnchorBottomMoreFuncDialog == null) {
@@ -193,11 +189,8 @@ class BottomMoreFuncButton : QKitImageView {
         }
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
-        if (client?.clientType == QClientType.PLAYER) {
-            mPlayerBottomMoreFuncDialog?.roomInfo = roomInfo
-        }
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
     }
 
     override fun onDestroyed() {

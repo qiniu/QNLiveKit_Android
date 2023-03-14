@@ -13,6 +13,8 @@ import com.qlive.core.been.QLiveRoomInfo
 import com.qlive.liblog.QLiveLogUtil
 import com.qlive.uikitcore.ext.asToast
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 open class BaseContext(
     /**
@@ -32,15 +34,12 @@ open class BaseContext(
      */
     val lifecycleOwner: LifecycleOwner,
 ) {
-    internal var mAllComponentCall: () -> List<BaseComponent<*>> = {
-        LinkedList<BaseComponent<*>>()
-    }
-
-    internal val eventManager = QLiveUIEventManager().apply {
-        mQLiveComponents = {
-            mAllComponentCall.invoke()
+    internal val eventManager = QLiveUIEventManager()
+    internal var sharedAllComponent: HashSet<out BaseComponent<*>>? = null
+        set(value) {
+            field = value
+            eventManager.mQLiveComponents = value
         }
-    }
 
     fun getIntent(): Intent {
         return currentActivity.intent
@@ -135,9 +134,26 @@ class QLiveUIKitContext(
      */
     fun <T : QLiveFuncComponent> getLiveFuncComponent(serviceClass: Class<T>): T? {
         return JavaGenericsEliminateUtil.getLiveComponent(
-            mAllComponentCall.invoke(),
+            sharedAllComponent!!.toList(),
             serviceClass
         )
+    }
+
+    fun destroyContext() {
+        eventManager.clear()
+        val toDelete = ArrayList<BaseComponent<*>>()
+        sharedAllComponent!!.forEach {
+            if (it.kitContext == this) {
+                toDelete.add(it)
+            }
+        }
+        toDelete.forEach {
+            QLiveLogUtil.d(
+                "QLiveComponentManager",
+                "sharedAllComponent!!.remove(${it.javaClass.canonicalName})"
+            )
+            sharedAllComponent!!.remove(it)
+        }
     }
 }
 

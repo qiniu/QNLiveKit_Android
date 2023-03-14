@@ -95,8 +95,8 @@ class LiveStatisticsView : QKitTextView {
         text = "${uv}浏览 ${onlineCount}在线 ${like}点赞"
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         mScheduler.start(true)
     }
 

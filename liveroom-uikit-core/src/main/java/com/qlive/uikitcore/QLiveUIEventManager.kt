@@ -4,9 +4,7 @@ import java.util.*
 
 class QLiveUIEventManager {
 
-    var mQLiveComponents: () -> List<BaseComponent<*>> = {
-        LinkedList<BaseComponent<*>>()
-    }
+    var mQLiveComponents: HashSet<out BaseComponent<*>>? = null
 
     val mActionMap = HashMap<BaseComponent<*>, HashMap<String, Function1<UIEvent, Unit>>>()
     private fun getActionMap(component: BaseComponent<*>): HashMap<String, Function1<UIEvent, Unit>> {
@@ -25,7 +23,7 @@ class QLiveUIEventManager {
      * @param data   数据
      */
     fun <T : UIEvent?> sendUIEvent(event: T) {
-        mQLiveComponents().forEach {
+        mQLiveComponents?.forEach {
             val function1 = getActionMap(it)[event!!.getAction()]
             function1?.invoke(event)
         }

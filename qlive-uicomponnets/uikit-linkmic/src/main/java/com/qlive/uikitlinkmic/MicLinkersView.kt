@@ -199,9 +199,9 @@ open class MicLinkersView : QKitViewBindingFrameMergeLayout<KitViewLinkersBindin
         }
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
-        if (isResumeUIFromFloating && client?.clientType == QClientType.PLAYER) {
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
+        if (isJoinedBefore && client?.clientType == QClientType.PLAYER) {
             binding.root.post {
                 linkService.allLinker.forEach {
                     if (it.user?.userId != roomInfo.anchor?.userId) {

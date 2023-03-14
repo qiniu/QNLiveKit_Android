@@ -65,9 +65,13 @@ class DanmakuTrackManagerView : QKitLinearLayout {
         orientation = VERTICAL
     }
 
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-        kitContext?:return
+    override fun attachLiveClient(client: QLiveClient) {
+        super.attachLiveClient(client)
+        client.getService(QDanmakuService::class.java)
+            .addDanmakuServiceListener(mQDanmakuServiceListener)
+    }
+
+    override fun initView() {
         for (i in 0 until mDanmukeViewSlot.getIDanmakuViewCount()) {
             val itemView = mDanmukeViewSlot.createView(
                 kitContext!!.lifecycleOwner,
@@ -84,14 +88,6 @@ class DanmakuTrackManagerView : QKitLinearLayout {
             mTrackManager.addTrackView(itemView)
         }
     }
-
-    override fun attachLiveClient(client: QLiveClient) {
-        super.attachLiveClient(client)
-        client.getService(QDanmakuService::class.java)
-            .addDanmakuServiceListener(mQDanmakuServiceListener)
-    }
-
-    override fun initView() {}
 
     override fun onDestroyed() {
         client?.getService(QDanmakuService::class.java)

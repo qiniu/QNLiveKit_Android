@@ -22,8 +22,8 @@ class RoomIdView : QKitTextView {
         attrs,
         defStyleAttr
     )
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo,isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo,isJoinedBefore)
         text = getShowTextCall.invoke(roomInfo).toHtml()
     }
 

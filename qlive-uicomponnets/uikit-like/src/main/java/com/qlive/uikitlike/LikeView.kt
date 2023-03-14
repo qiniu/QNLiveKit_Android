@@ -99,8 +99,8 @@ class LikeView : QKitViewBindingFrameMergeLayout<KitLikeViewBinding> {
         binding.tvLikeCount.text = totalStr
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         QLive.getRooms()
             .getLiveStatistics(roomInfo.liveID, object : QLiveCallBack<QLiveStatistics> {
                 override fun onError(code: Int, msg: String) {

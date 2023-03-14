@@ -41,8 +41,8 @@ class AnchorOfflineTipView : QKitTextView {
         }
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         if (roomInfo.isTrailering()) {
             visibility = View.VISIBLE
             val format = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault())

@@ -123,8 +123,8 @@ class KTVControlView : QKitViewBindingFrameLayout<KitViewKtvCtrolBinding> {
         client?.getService(QKTVService::class.java)?.removeKTVServiceListener(mKTVServiceListener)
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
-        super.onJoined(roomInfo, isResumeUIFromFloating)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
+        super.onJoined(roomInfo, isJoinedBefore)
         if (roomInfo.anchor.userId == user?.userId) {
             binding.ivNext.visibility = VISIBLE
         } else {

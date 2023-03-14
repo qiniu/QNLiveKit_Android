@@ -15,10 +15,6 @@ import com.qlive.sdk.QLive
 import com.qlive.core.QLiveErrorCode
 import com.qlive.core.QLiveErrorCode.NOT_LOGGED_IN
 import com.qlive.core.QLiveErrorCode.NO_PERMISSION
-import com.qlive.coreimpl.BaseService
-import com.qlive.pubchatservice.QPublicChatService
-import com.qlive.rtm.RtmManager
-import com.qlive.rtm.joinChannel
 import com.qlive.uikit.component.FuncCPTBeautyDialogShower
 import com.qlive.uikit.component.OnKeyDownMonitor
 import com.qlive.uikitcore.*
@@ -34,7 +30,7 @@ import kotlin.coroutines.suspendCoroutine
  * 主播房间activity
  * UI插件底座 请勿在activity 做过多UI逻辑代码
  */
-class RoomPushActivity : BaseFrameActivity() {
+class RoomPushActivity : BaseFrameActivity(), QLiveComponentManagerOwner {
     private var roomId = ""
 
     companion object {
@@ -46,8 +42,8 @@ class RoomPushActivity : BaseFrameActivity() {
             extSetter: StartRoomActivityExtSetter?,
             callBack: QLiveCallBack<QLiveRoomInfo>?
         ) {
-            if(QLive.getLoginUser()==null){
-                callBack?.onError(NOT_LOGGED_IN,"QLive.getLoginUser()==null")
+            if (QLive.getLoginUser() == null) {
+                callBack?.onError(NOT_LOGGED_IN, "QLive.getLoginUser()==null")
                 return
             }
             startCallBack = callBack
@@ -62,8 +58,8 @@ class RoomPushActivity : BaseFrameActivity() {
             extSetter: StartRoomActivityExtSetter?,
             callBack: QLiveCallBack<QLiveRoomInfo>?
         ) {
-            if(QLive.getLoginUser()==null){
-                callBack?.onError(NOT_LOGGED_IN,"QLive.getLoginUser()==null")
+            if (QLive.getLoginUser() == null) {
+                callBack?.onError(NOT_LOGGED_IN, "QLive.getLoginUser()==null")
                 return
             }
             startCallBack = callBack
@@ -112,7 +108,7 @@ class RoomPushActivity : BaseFrameActivity() {
                     }
 
                     override fun onSuccess(data: Void?) {
-                        mInflaterFactory.onLeft()
+                        mComponentManager.onLeft()
                         it.onSuccess(data)
                     }
                 })
@@ -123,7 +119,7 @@ class RoomPushActivity : BaseFrameActivity() {
                     }
 
                     override fun onSuccess(data: Void?) {
-                        mInflaterFactory.onLeft()
+                        mComponentManager.onLeft()
                         it.onSuccess(data)
                     }
                 })
@@ -137,13 +133,13 @@ class RoomPushActivity : BaseFrameActivity() {
             backGround {
                 LoadingDialog.showLoading(supportFragmentManager)
                 doWork {
-                   val roomInfo= if (p == null) {
+                    val roomInfo = if (p == null) {
                         val roomId = intent.getStringExtra(KEY_ROOM_ID) ?: ""
                         suspendJoinRoom(roomId)
                     } else {
                         val room = createSuspend(p)
-                        mInflaterFactory.onEntering(room.liveID, QLive.getLoginUser())
-                        mInflaterFactory.onGetLiveRoomInfo(room)
+                        mComponentManager.onEntering(room.liveID, QLive.getLoginUser())
+                        mComponentManager.onGetLiveRoomInfo(room)
                         suspendJoinRoom(room.liveID)
                     }
                     startCallBack?.onSuccess(roomInfo)
@@ -199,7 +195,7 @@ class RoomPushActivity : BaseFrameActivity() {
 
             override fun onSuccess(data: QLiveRoomInfo) {
                 cont.resume(data)
-                mInflaterFactory.onJoined(data, false)
+                mComponentManager.onJoined(data, false)
             }
         })
     }
@@ -207,14 +203,18 @@ class RoomPushActivity : BaseFrameActivity() {
     /**
      * UI组件装载器
      */
+    private val mComponentManager by lazy {
+        QLiveComponentManager(
+            mRoomClient
+        ).apply {
+            addFuncComponent(FuncCPTBeautyDialogShower(this@RoomPushActivity), mQUIKitContext)
+        }
+    }
+
     private val mInflaterFactory by lazy {
         KITLiveInflaterFactory(
-            delegate,
-            mRoomClient,
-            mQUIKitContext
-        ).apply {
-            addFuncComponent(FuncCPTBeautyDialogShower(this@RoomPushActivity))
-        }
+            delegate
+        )
     }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -225,6 +225,8 @@ class RoomPushActivity : BaseFrameActivity() {
             mInflaterFactory
         )
         super.onCreate(savedInstanceState)
+        val decorView = window.decorView
+        mComponentManager.scanComponent(decorView, mQUIKitContext)
     }
 
     private fun start() {
@@ -241,9 +243,9 @@ class RoomPushActivity : BaseFrameActivity() {
             backGround {
                 LoadingDialog.showLoading(supportFragmentManager)
                 doWork {
-                    mInflaterFactory.onEntering(roomId, QLive.getLoginUser())
+                    mComponentManager.onEntering(roomId, QLive.getLoginUser())
                     val roomInfo = suspendGetRoomInfo(roomId)
-                    mInflaterFactory.onGetLiveRoomInfo(roomInfo)
+                    mComponentManager.onGetLiveRoomInfo(roomInfo)
                     if (!roomInfo.isTrailering()) {
                         suspendJoinRoom(roomId)
                         startCallBack?.onSuccess(roomInfo)
@@ -265,7 +267,8 @@ class RoomPushActivity : BaseFrameActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mInflaterFactory.onDestroyed()
+        mQUIKitContext.destroyContext()
+        mComponentManager.onDestroyed()
         mRoomClient.destroy()
         startCallBack?.onError(QLiveErrorCode.CANCELED_JOIN, "cancel the join room")
         startCallBack = null
@@ -293,7 +296,7 @@ class RoomPushActivity : BaseFrameActivity() {
 
     //安卓重写返回键事件
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        mInflaterFactory.mComponents.forEach {
+        mComponentManager.mComponents.forEach {
             if (it is OnKeyDownMonitor) {
                 if (it.onActivityKeyDown(keyCode, event)) {
                     return true
@@ -318,5 +321,9 @@ class RoomPushActivity : BaseFrameActivity() {
     override fun onResume() {
         super.onResume()
         mRoomClient.resume()
+    }
+
+    override fun getQLiveComponentManager(): QLiveComponentManager {
+        return mComponentManager
     }
 }
