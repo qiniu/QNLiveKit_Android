@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import com.qlive.core.QClientLifeCycleListener
 import com.qlive.core.QLiveClient
@@ -19,50 +20,41 @@ class KITLiveInflaterFactory(
     private val appDelegate: AppCompatDelegate
 ) : LayoutInflater.Factory2 {
 
-    companion object {
-        var checkCreateView: (
-            name: String,
-            context: Context,
-            attrs: AttributeSet
-        ) -> View? = { _, _, _ ->
-            null
-        }
-    }
-
     override fun onCreateView(
         parent: View?,
         name: String,
         context: Context,
         attrs: AttributeSet
     ): View? {
-        //优先匹配已知的类 减少反射次数
-        var view: View? = checkCreateView(name, context, attrs) ?: appDelegate.createView(
-            parent,
-            name,
-            context,
-            attrs
-        )
-
-        val len = name.split(".").size
-        if (view == null && len > 1) {
-            QLiveLogUtil.d("createView by appDelegate == null $name")
-            try {
-                val viewClass = Class.forName(name)
-                if (QLiveComponent::class.java.isAssignableFrom(viewClass)) {
-                    QLiveLogUtil.d("createView by constructor.newInstance $name")
-                    //使用反射创建没有匹配的类
-                    val constructor =
-                        viewClass.getConstructor(Context::class.java, AttributeSet::class.java)
-                    view = constructor.newInstance(context, attrs) as View
-                }
-            } catch (e: ClassNotFoundException) {
-                QLiveLogUtil.d("createView $name" + e.message ?: "")
-            }
+        val componentTag =
+            attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "componentTag")
+        if (componentTag?.isNotEmpty() == true && !UIJsonConfigurator.checkEnable(componentTag)) {
+            QLiveLogUtil.d("createView ==componentTag != null $componentTag")
+            return LazyDeleteView(context)
         }
-        return view
+        return appDelegate.createView(parent, name, context, attrs)
     }
 
     override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
         return onCreateView(null, name, context, attrs)
+    }
+}
+
+class LazyDeleteView : ViewGroup {
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        visibility = View.GONE
+    }
+
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
+
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        (parent as ViewGroup?)?.removeView(this)
     }
 }

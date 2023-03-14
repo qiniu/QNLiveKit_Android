@@ -16,6 +16,7 @@ import com.qlive.uikit.RoomPushActivity.Companion.KEY_ROOM_ID
 import com.qlive.uikit.databinding.KitLivePreviewBinding
 import com.qlive.uikitcore.QKitViewBindingFrameMergeLayout
 import com.qlive.uikitcore.QLiveUIKitContext
+import com.qlive.uikitcore.UIJsonConfigurator
 import com.qlive.uikitcore.dialog.LoadingDialog
 import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
@@ -59,8 +60,8 @@ open class LivePreView : QKitViewBindingFrameMergeLayout<KitLivePreviewBinding> 
         }
     }
 
-    override fun onJoined(roomInfo: QLiveRoomInfo, isJoinedBefore: Boolean) {
-        super.onJoined(roomInfo, isJoinedBefore)
+    override fun onJoined(roomInfo: QLiveRoomInfo, isResumeUIFromFloating: Boolean) {
+        super.onJoined(roomInfo, isResumeUIFromFloating)
         //开播预览加入成功不可见
         visibility = View.GONE
     }
@@ -132,5 +133,8 @@ open class LivePreView : QKitViewBindingFrameMergeLayout<KitLivePreviewBinding> 
             }.show(binding.popAnchorView)
         }
         binding.rgLiveMode.check(R.id.rbLiveNow)
+
+        UIJsonConfigurator.checkEnable(UIJsonConfigurator.key_booking,binding.flTimeSelect)
+        UIJsonConfigurator.checkEnable(UIJsonConfigurator.key_booking,binding.tvCalendarHit)
     }
 }
