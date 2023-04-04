@@ -5,25 +5,19 @@ import android.content.Intent
 import android.os.Process
 import android.util.Log
 import android.view.View
-import com.qlive.chatservice.QChatRoomService
 import com.qlive.core.QLiveCallBack
 import com.qlive.core.QLiveClient
 import com.qlive.core.QLiveConfig
 import com.qlive.core.been.QLiveRoomInfo
-import com.qlive.core.been.QLiveUser
-import com.qlive.pubchatservice.QPublicChat
 import com.qlive.qnlivekit.uitil.*
 import com.qlive.sdk.QLive
 import com.qlive.sdk.QLiveListener
 import com.qlive.shoppingservice.QItem
 import com.qlive.uikit.component.CloseRoomView
 import com.qlive.uikit.component.LiveRecordListView
-import com.qlive.uikitcore.CoroutineExtSetting.canUseLifecycleScope
 import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.ext.asToast
-import com.qlive.uikitpublicchat.PublicChatView
 import com.qlive.uikitshopping.PlayerShoppingDialog
-import com.qlive.uikituser.OnlineUserView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -34,7 +28,7 @@ class App : Application() {
     companion object {
         //模拟接入方的登录获取token地址 - （不是低代码的服务地址）
         val demo_url = "https://niucube-api.qiniu.com"
-        //  val demo_url="http://10.200.20.28:5080"
+       // val demo_url="http://10.200.20.28:5080"
     }
 
     override fun onCreate() {

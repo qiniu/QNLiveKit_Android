@@ -13,11 +13,11 @@ public class PKInfo implements Serializable {
    @SerializedName(value =  "stop_at")
     public String stopAt;
    @SerializedName(value =  "start_at")
-    public String startAt;
+    public long startAt = 0;
    @SerializedName(value =  "created_at")
     public long createdAt;
-   @SerializedName(value =  "id")
-    public String id;
+   @SerializedName(value =  "sid")
+    public String sid;
    @SerializedName(value =  "init_user_id")
     public String initUserId;
    @SerializedName(value =  "recv_user_id")

@@ -14,14 +14,15 @@ object UIJsonConfigurator {
     var enable = true
     private var uiJsonConfOption: UIJsonConfOption? = null
     const val key_booking = "booking"
+
     fun init(context: Context) {
         if (!enable) {
             return
         }
-        readBundleFile(context)
+        readConfFile(context)
     }
 
-    fun checkEnable(name: String): Boolean {
+    fun checkUIEnable(name: String): Boolean {
         if (uiJsonConfOption == null) {
             return true
         }
@@ -32,7 +33,8 @@ object UIJsonConfigurator {
         }
         return true
     }
-    fun checkEnable(name: String, view: View): Boolean {
+
+    fun checkUIEnable(name: String, view: View): Boolean {
         if (uiJsonConfOption == null) {
             return true
         }
@@ -44,12 +46,13 @@ object UIJsonConfigurator {
         }
         return true
     }
-    private fun readBundleFile(context: Context) {
+
+    private fun readConfFile(context: Context) {
         var buffer: ByteArray? = null
         try {
             val mAssets: InputStream = context.assets.open("config.conf")
-            val lenght: Int = mAssets.available()
-            buffer = ByteArray(lenght)
+            val len: Int = mAssets.available()
+            buffer = ByteArray(len)
             mAssets.read(buffer)
             mAssets.close()
         } catch (e: Exception) {

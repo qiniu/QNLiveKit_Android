@@ -9,12 +9,20 @@ internal class PKDataSource {
     suspend fun startPk(
         init_room_id: String,
         recv_room_id: String,
-        recv_user_id: String
+        recv_user_id: String,
+        ext: HashMap<String,String>?
     ): PKOutline {
         val jsonObj = JSONObject()
         jsonObj.put("init_room_id", init_room_id)
         jsonObj.put("recv_room_id", recv_room_id)
         jsonObj.put("recv_user_id", recv_user_id)
+        ext?.let {
+            val jsonObjectExt = JSONObject()
+            it.entries.forEach {
+                jsonObjectExt.put(it.key,it.value)
+            }
+            jsonObj.put("extends", jsonObjectExt)
+        }
         return httpClient.post("/client/relay/start", jsonObj.toString(), PKOutline::class.java)
     }
 
