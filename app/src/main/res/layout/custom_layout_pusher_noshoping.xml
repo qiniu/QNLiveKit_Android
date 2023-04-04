@@ -57,6 +57,11 @@
             <com.qlive.uikitpk.PKAnchorPreview
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+
+            <com.qlive.uikitpk.PKCoverView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
             <!-- 连麦者预览-->
             <com.qlive.uikitlinkmic.MicLinkersView
                 android:layout_width="wrap_content"

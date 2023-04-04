@@ -17,6 +17,7 @@ import com.qlive.uikitcore.dialog.LoadingDialog
 import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitcore.ext.setDoubleCheckClickListener
 import com.qlive.uikitpk.databinding.KitStartPkViewBinding
+import java.util.HashMap
 
 class StartPKView : QKitViewBindingFrameMergeLayout<KitStartPkViewBinding> {
 
@@ -64,8 +65,13 @@ class StartPKView : QKitViewBindingFrameMergeLayout<KitStartPkViewBinding> {
             LoadingDialog.cancelLoadingDialog()
             context.getString(R.string.pk_invite_be_accept_tip, invitation.receiver.nick)
                 .asToast(context)
+            val ext = HashMap<String,String>().apply {
+                put(PKCoverView.KEY_TOTAL_DURATION,"180")
+                put(PKCoverView.KEY_PK_DURATION,"120")
+                put(PKCoverView.KEY_PENALTY_DURATION,"60")
+            }
             client?.getService(QPKService::class.java)?.start(20 * 1000,
-                invitation.receiverRoomID, invitation.receiver.userId, null,
+                invitation.receiverRoomID, invitation.receiver.userId, ext,
                 object : QLiveCallBack<QPKSession> {
                     override fun onError(code: Int, msg: String) {
                         context.getString(R.string.pk_start_error_tip, msg).asToast(context)

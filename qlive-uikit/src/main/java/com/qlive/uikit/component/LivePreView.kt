@@ -134,7 +134,7 @@ open class LivePreView : QKitViewBindingFrameMergeLayout<KitLivePreviewBinding> 
         }
         binding.rgLiveMode.check(R.id.rbLiveNow)
 
-        UIJsonConfigurator.checkEnable(UIJsonConfigurator.key_booking,binding.flTimeSelect)
-        UIJsonConfigurator.checkEnable(UIJsonConfigurator.key_booking,binding.tvCalendarHit)
+        UIJsonConfigurator.checkUIEnable(UIJsonConfigurator.key_booking,binding.flTimeSelect)
+        UIJsonConfigurator.checkUIEnable(UIJsonConfigurator.key_booking,binding.tvCalendarHit)
     }
 }

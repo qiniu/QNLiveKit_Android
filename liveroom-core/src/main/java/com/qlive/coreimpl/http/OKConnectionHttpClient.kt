@@ -48,11 +48,12 @@ class OKConnectionHttpClient(context: Context) : HttpClient() {
         }
     }
 
-    private var okHttp: OkHttpClient = OkHttpClient.Builder().connectTimeout(8000, TimeUnit.MILLISECONDS)
-        .retryOnConnectionFailure(true)
-        .addNetworkInterceptor(CacheInterceptor())//缓存拦截器
-        .cache(CacheProvide(context).provideCache())//缓存空间提供器
-        .build()
+    private var okHttp: OkHttpClient =
+        OkHttpClient.Builder().connectTimeout(8000, TimeUnit.MILLISECONDS)
+            .retryOnConnectionFailure(true)
+            .addNetworkInterceptor(CacheInterceptor())//缓存拦截器
+            .cache(CacheProvide(context).provideCache())//缓存空间提供器
+            .build()
         private set
 
     override fun <T> req(
@@ -70,7 +71,7 @@ class OKConnectionHttpClient(context: Context) : HttpClient() {
             .addHeader("Connection", "Keep-Alive")
             .addHeader("Authorization", token)
         headers?.entries?.forEach {
-            requestBuild.addHeader(it.key,it.value)
+            requestBuild.addHeader(it.key, it.value)
         }
         QLiveLogUtil.d("QLiveHttpService", " req $method $path $jsonString")
         val body = jsonString.toRequestBody("application/json;charset=utf-8".toMediaType())

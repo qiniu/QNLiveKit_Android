@@ -40,7 +40,7 @@ internal class AudiencePKSynchro() : BaseService() {
                         mPKSession = null
                     }
                 } else {
-                    val reFreshRoom = currentRoomInfo?:return@doWork
+                    val reFreshRoom = currentRoomInfo ?: return@doWork
                     if (reFreshRoom.pkID.isNotEmpty() && mPKSession == null) {
                         val info = mPKDateSource.getPkInfo(reFreshRoom.pkID ?: "")
                         if (info.status == PKStatus.RelaySessionStatusSuccess.intValue) {
@@ -80,7 +80,7 @@ internal class AudiencePKSynchro() : BaseService() {
     }
 
     override fun attachRoomClient(client: QLiveClient, appContext: Context) {
-        super.attachRoomClient(client,appContext)
+        super.attachRoomClient(client, appContext)
         mListenersCall?.invoke()?.add(mQPKServiceListener)
     }
 
@@ -97,7 +97,7 @@ internal class AudiencePKSynchro() : BaseService() {
             backGround {
                 doWork {
                     val info = mPKDateSource.getPkInfo(roomInfo.pkID ?: "")
-                    QLiveLogUtil.d("getPkInfo","mPKDateSource.getPkInfo( ${info.status}")
+                    QLiveLogUtil.d("getPkInfo", "mPKDateSource.getPkInfo( ${info.status}")
                     if (info.status == PKStatus.RelaySessionStatusSuccess.intValue) {
                         val recever = mLiveDataSource.searchUserByUserId(info.recvUserId)
                         val inver = mLiveDataSource.searchUserByUserId(info.initUserId)
@@ -133,7 +133,7 @@ internal class AudiencePKSynchro() : BaseService() {
     private fun fromPkInfo(info: PKInfo, inver: QLiveUser, recver: QLiveUser): QPKSession {
         return QPKSession().apply {
             //PK场次ID
-            sessionID = info.id
+            sessionID = info.sid
             //发起方
             initiator = inver
             //接受方
@@ -147,7 +147,10 @@ internal class AudiencePKSynchro() : BaseService() {
             //pk 状态 0邀请过程  1pk中 2结束 其他自定义状态比如惩罚时间
             status = info.status
             //pk开始时间戳
-            startTimeStamp = info.createdAt
+            startTimeStamp = info.startAt
+            if (info.startAt <= 0) {
+                startTimeStamp = info.createdAt
+            }
         }
     }
 }

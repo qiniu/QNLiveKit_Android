@@ -2,15 +2,10 @@ package com.qlive.uikitcore
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
-import com.qlive.core.QClientLifeCycleListener
-import com.qlive.core.QLiveClient
-import com.qlive.core.been.QLiveRoomInfo
-import com.qlive.core.been.QLiveUser
 import com.qlive.liblog.QLiveLogUtil
 
 /**
@@ -28,7 +23,7 @@ class KITLiveInflaterFactory(
     ): View? {
         val componentTag =
             attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "componentTag")
-        if (componentTag?.isNotEmpty() == true && !UIJsonConfigurator.checkEnable(componentTag)) {
+        if (componentTag?.isNotEmpty() == true && !UIJsonConfigurator.checkUIEnable(componentTag)) {
             QLiveLogUtil.d("createView ==componentTag != null $componentTag")
             return LazyDeleteView(context)
         }

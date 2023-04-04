@@ -39,13 +39,8 @@ open class BaseService : QLiveService ,QClientLifeCycleListener{
         this.user = user
     }
 
-    /**
-     * 加入回调
-     *
-     * @param roomInfo 加入了哪个房间
-     */
     override fun onJoined(roomInfo: QLiveRoomInfo) {
-        this.currentRoomInfo = roomInfo
+       currentRoomInfo=roomInfo
     }
 
     /**

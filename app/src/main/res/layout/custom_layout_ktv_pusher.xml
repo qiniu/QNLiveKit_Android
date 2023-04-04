@@ -57,6 +57,11 @@
             <com.qlive.uikitpk.PKAnchorPreview
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+
+            <com.qlive.uikitpk.PKCoverView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
             <!-- 连麦者预览-->
             <com.qlive.uikitlinkmic.MicLinkersView
                 android:layout_width="wrap_content"
@@ -86,8 +91,7 @@
         <!--    左右滑动覆盖面-->
         <com.qlive.uikit.component.FrameLayoutSlidingCover
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="match_parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -207,6 +211,7 @@
                 <com.qlive.uikitpublicchat.RoomNoticeView
                     android:layout_width="238dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
                     android:background="@drawable/kit_shape_40000000_6"
                     android:orientation="vertical"
                     android:paddingStart="8dp"
@@ -215,7 +220,6 @@
                     android:paddingBottom="16dp"
                     android:textColor="#ffffff"
                     android:textSize="13sp"
-                    android:layout_marginBottom="6dp"
                     app:layout_constraintBottom_toTopOf="@+id/publicChatView"
                     app:layout_constraintStart_toStartOf="@+id/publicChatView"
                     tools:text="官方公告" />
@@ -227,17 +231,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginBottom="80dp"
+                    android:fadingEdgeLength="20dp"
                     android:gravity="bottom"
                     android:orientation="vertical"
+                    android:requiresFadingEdge="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:maxHeight="250dp"
                     tools:background="#44000000"
                     tools:layout_height="150dp"
-                    tools:layout_width="238dp"
-                    android:requiresFadingEdge="vertical"
-                    android:fadingEdgeLength="20dp"
-                    />
+                    tools:layout_width="238dp" />
 
                 <!--            主播讲解卡片-->
                 <com.qlive.uikitshopping.ExplainingQItemCardView

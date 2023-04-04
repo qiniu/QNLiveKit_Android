@@ -97,6 +97,16 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                     mPKSession?.status = PK_STATUS_OK
 
                     try {
+                        val info = mPKDateSource.getPkInfo(mPKSession!!.sessionID)
+                        mPKSession!!.startTimeStamp = info.startAt
+                        if(info.startAt<=0){
+                            mPKSession!!.startTimeStamp = info.createdAt
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                    try {
                         //群信号
                         RtmManager.rtmClient.sendChannelCMDMsg(
                             RtmTextMsg<QPKSession>(
@@ -178,7 +188,12 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 PK_EXTENDS_NOTIFY -> {
                     val pkExt = JsonUtils.parseObject(msg.optData(), PKExtendsNotify::class.java)
                         ?: return true
-                    if (pkExt.sid != mPKSession?.sessionID) {
+                    val pkS =  if (client?.clientType == QClientType.PUSHER) {
+                        mPKSession
+                    }else{
+                        mAudiencePKSynchro.mPKSession
+                    }
+                    if (pkExt.sid != pkS?.sessionID) {
                         return true
                     }
                     pkExt.extendsX.forEach { ext ->
@@ -233,6 +248,16 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                     doWork {
                         timeoutJob?.cancel()
                         mPKSession?.status = PK_STATUS_OK
+
+                        try {
+                            val info = mPKDateSource.getPkInfo(mPKSession!!.sessionID)
+                            mPKSession!!.startTimeStamp = info.startAt
+                            if(info.startAt<=0){
+                                mPKSession!!.startTimeStamp = info.createdAt
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
 
                         try {
                             //群信号
@@ -490,7 +515,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                     mPKDateSource.startPk(
                         currentRoomInfo?.liveID ?: "",
                         receiverRoomID,
-                        receiverUID
+                        receiverUID, extensions
                     )
                 val receiver =
                     QLiveDataSource().searchUserByUserId(receiverUID)
@@ -502,7 +527,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 pkSession.receiverRoomID = receiverRoomID
                 pkSession.sessionID = pkOutline.relay_id
                 pkSession.status = pkOutline.relay_status
-
+                pkSession.startTimeStamp = System.currentTimeMillis()
                 mPKSession = pkSession
 
                 //发c2c消息

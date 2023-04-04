@@ -22,19 +22,25 @@ class PKProgressBar : FrameLayout {
 
     fun setProgress(progress: Int) {
         binding.pkProgressBar.progress = progress
-        val with = measuredWidth
-        if (with == 0) {
-            return
+        val w = width
+        val runnable = {
+            val w2 = width
+            val transx = progress / 100f * w2
+            binding.pkIndicator.translationX = transx
         }
-        val transx = progress / 100f * with
-        binding.pkIndicator.translationX = transx
+        if (w == 0) {
+            post(runnable)
+            return
+        } else {
+            runnable.invoke()
+        }
     }
 
-    fun setLeftText(string: String){
+    fun setLeftText(string: String) {
         binding.tvLeftScore.text = string
     }
 
-    fun setRightText(string: String){
+    fun setRightText(string: String) {
         binding.tvRightScore.text = string
     }
 }
