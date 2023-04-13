@@ -233,7 +233,7 @@ QLinkMicService{
 	
 	//添加麦位监听
 	//@param-listener:麦位监听	
-   void addMicLinkerListener(QLinkMicServiceListener listener)
+    void addMicLinkerListener(QLinkMicServiceListener listener)
 	
 	//开始上麦
 	//@param-extension:麦位扩展字段	@param-cameraParams:摄像头参数 空代表不开	@param-microphoneParams:麦克参数  空代表不开	@param-callBack:上麦成功失败回调	

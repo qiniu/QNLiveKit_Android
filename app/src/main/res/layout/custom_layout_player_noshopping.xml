@@ -48,7 +48,9 @@
                 tools:visibility="gone" />
             <com.qlive.uikitpk.PKCoverView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                app:componentTag="relay"
+                />
             <!-- 连麦者预览-->
             <com.qlive.uikitlinkmic.MicLinkersView
                 android:layout_width="wrap_content"

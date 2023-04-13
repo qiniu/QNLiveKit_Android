@@ -71,16 +71,9 @@ class PKCoverView : QKitViewBindingFrameLayout<KitPkCoverViewBinding> {
         val session =
             client?.getService(QPKService::class.java)?.currentPKingSession() ?: return@Scheduler
         val pkStartTime = session.startTimeStamp * 1000
-        val duration = session.extension[KEY_PK_DURATION]
-        val penaltyDuration = session.extension[KEY_PENALTY_DURATION]
-
-        if (duration == null) {
-            return@Scheduler
-        }
-
-        if (penaltyDuration == null) {
-            return@Scheduler
-        }
+        session.extension?:return@Scheduler
+        val duration = session.extension[KEY_PK_DURATION]?:return@Scheduler
+        val penaltyDuration = session.extension[KEY_PENALTY_DURATION]?:return@Scheduler
 
         val now = System.currentTimeMillis()
         val durationTime = pkStartTime.toLong() + duration.toLong() * 1000
