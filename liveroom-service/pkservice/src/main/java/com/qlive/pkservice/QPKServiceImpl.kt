@@ -99,7 +99,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                     try {
                         val info = mPKDateSource.getPkInfo(mPKSession!!.sessionID)
                         mPKSession!!.startTimeStamp = info.startAt
-                        if(info.startAt<=0){
+                        if (info.startAt <= 0) {
                             mPKSession!!.startTimeStamp = info.createdAt
                         }
                     } catch (e: Exception) {
@@ -177,6 +177,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                     }
                     return true
                 }
+
                 LIVE_ROOM_PK_STOP -> {
                     val pk = JsonUtils.parseObject(msg.optData(), QPKSession::class.java)
                         ?: return true
@@ -185,18 +186,21 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                     }
                     return true
                 }
+
                 PK_EXTENDS_NOTIFY -> {
                     val pkExt = JsonUtils.parseObject(msg.optData(), PKExtendsNotify::class.java)
                         ?: return true
-                    val pkS =  if (client?.clientType == QClientType.PUSHER) {
+                    val pkS = if (client?.clientType == QClientType.PUSHER) {
                         mPKSession
-                    }else{
+                    } else {
                         mAudiencePKSynchro.mPKSession
                     }
                     if (pkExt.sid != pkS?.sessionID) {
                         return true
                     }
+
                     pkExt.extendsX.forEach { ext ->
+                        mPKSession?.extension?.put(ext.key, ext.value)
                         mServiceListeners.forEach {
                             it.onPKExtensionChange(QExtension().apply {
                                 key = ext.key
@@ -252,7 +256,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                         try {
                             val info = mPKDateSource.getPkInfo(mPKSession!!.sessionID)
                             mPKSession!!.startTimeStamp = info.startAt
-                            if(info.startAt<=0){
+                            if (info.startAt <= 0) {
                                 mPKSession!!.startTimeStamp = info.createdAt
                             }
                         } catch (e: Exception) {
@@ -667,6 +671,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
             doWork {
                 mPKDateSource.updatePKExt(mPKSession!!.sessionID, extension)
                 callBack?.onSuccess(null)
+                mPKSession?.extension?.put(extension.key, extension.value)
             }
             catchError {
                 callBack?.onError(it.getCode(), it.message)
