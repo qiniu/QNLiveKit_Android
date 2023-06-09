@@ -190,11 +190,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                 PK_EXTENDS_NOTIFY -> {
                     val pkExt = JsonUtils.parseObject(msg.optData(), PKExtendsNotify::class.java)
                         ?: return true
-                    val pkS = if (client?.clientType == QClientType.PUSHER) {
-                        mPKSession
-                    } else {
-                        mAudiencePKSynchro.mPKSession
-                    }
+                    val pkS = currentPKingSession()
                     if (pkExt.sid != pkS?.sessionID) {
                         QLiveLogUtil.d("PK_EXTENDS_NOTIFY but ${pkExt.sid} != ${pkS?.sessionID}")
                         return true
@@ -510,6 +506,12 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         extensions: HashMap<String, String>?,
         callBack: QLiveCallBack<QPKSession>?
     ) {
+        if (client?.clientType == QClientType.PLAYER) {
+            callBack?.onError(
+                QLiveErrorCode.NO_PERMISSION,
+                " client?.clientType == QClientType.PLAYER"
+            )
+        }
         if (currentRoomInfo == null) {
             callBack?.onError(QLiveErrorCode.NOT_A_ROOM_MEMBER, " roomInfo==null")
             return
@@ -612,6 +614,12 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         }
 
     override fun stop(callBack: QLiveCallBack<Void>?) {
+        if (client?.clientType == QClientType.PLAYER) {
+            callBack?.onError(
+                QLiveErrorCode.NO_PERMISSION,
+                " client?.clientType == QClientType.PLAYER"
+            )
+        }
         if (currentRoomInfo == null || mPKSession?.status != PK_STATUS_OK) {
             callBack?.onError(QLiveErrorCode.NOT_A_ROOM_MEMBER, " roomInfo==null")
             return
@@ -664,14 +672,15 @@ internal class QPKServiceImpl : QPKService, BaseService() {
     }
 
     override fun updateExtension(extension: QExtension, callBack: QLiveCallBack<Void>?) {
-        if (mPKSession == null) {
+        val currentPKingSession = currentPKingSession()
+        if (currentPKingSession == null) {
             callBack?.onError(PK_STATUS_ERROR, "mPKSession==null")
             return
         }
         backGround {
             doWork {
                 mPKDateSource.updatePKExt(mPKSession!!.sessionID, extension)
-                mPKSession?.extension?.put(extension.key, extension.value)
+                currentPKingSession.extension?.put(extension.key, extension.value)
                 callBack?.onSuccess(null)
             }
             catchError {
