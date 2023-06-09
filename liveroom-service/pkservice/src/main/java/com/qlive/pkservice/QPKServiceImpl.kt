@@ -196,11 +196,12 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                         mAudiencePKSynchro.mPKSession
                     }
                     if (pkExt.sid != pkS?.sessionID) {
+                        QLiveLogUtil.d("PK_EXTENDS_NOTIFY but ${pkExt.sid} != ${pkS?.sessionID}")
                         return true
                     }
 
                     pkExt.extendsX.forEach { ext ->
-                        mPKSession?.extension?.put(ext.key, ext.value)
+                        pkS?.extension?.put(ext.key, ext.value)
                         mServiceListeners.forEach {
                             it.onPKExtensionChange(QExtension().apply {
                                 key = ext.key
@@ -670,8 +671,8 @@ internal class QPKServiceImpl : QPKService, BaseService() {
         backGround {
             doWork {
                 mPKDateSource.updatePKExt(mPKSession!!.sessionID, extension)
-                callBack?.onSuccess(null)
                 mPKSession?.extension?.put(extension.key, extension.value)
+                callBack?.onSuccess(null)
             }
             catchError {
                 callBack?.onError(it.getCode(), it.message)
