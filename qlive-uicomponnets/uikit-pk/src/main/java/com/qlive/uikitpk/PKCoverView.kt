@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import com.qlive.core.QLiveCallBack
 import com.qlive.core.been.QExtension
 import com.qlive.jsonutil.JsonUtils
 import com.qlive.liblog.QLiveLogUtil
@@ -16,6 +17,7 @@ import com.qlive.uikitcore.QKitFrameLayout
 import com.qlive.uikitcore.QKitViewBindingFrameLayout
 import com.qlive.uikitcore.QLiveUIKitContext
 import com.qlive.uikitcore.Scheduler
+import com.qlive.uikitcore.ext.asToast
 import com.qlive.uikitpk.databinding.KitPkCoverViewBinding
 import java.text.DecimalFormat
 
@@ -71,9 +73,9 @@ class PKCoverView : QKitViewBindingFrameLayout<KitPkCoverViewBinding> {
         val session =
             client?.getService(QPKService::class.java)?.currentPKingSession() ?: return@Scheduler
         val pkStartTime = session.startTimeStamp * 1000
-        session.extension?:return@Scheduler
-        val duration = session.extension[KEY_PK_DURATION]?:return@Scheduler
-        val penaltyDuration = session.extension[KEY_PENALTY_DURATION]?:return@Scheduler
+        session.extension ?: return@Scheduler
+        val duration = session.extension[KEY_PK_DURATION] ?: return@Scheduler
+        val penaltyDuration = session.extension[KEY_PENALTY_DURATION] ?: return@Scheduler
 
         val now = System.currentTimeMillis()
         val durationTime = pkStartTime.toLong() + duration.toLong() * 1000
@@ -93,9 +95,9 @@ class PKCoverView : QKitViewBindingFrameLayout<KitPkCoverViewBinding> {
             return@Scheduler
         }
 
-        val timeStr = if(isInPenaltyDurationTime){
+        val timeStr = if (isInPenaltyDurationTime) {
             "pk惩罚 ${formatTime(timer / 1000)}"
-        }else{
+        } else {
             "倒计时 ${formatTime(timer / 1000)}"
         }
         binding.tvTimer.text = timeStr
@@ -107,7 +109,7 @@ class PKCoverView : QKitViewBindingFrameLayout<KitPkCoverViewBinding> {
          * pk开始 显示
          */
         override fun onStart(pkSession: QPKSession) {
-            Log.d("setPKInfo"," 开始 ${JsonUtils.toJson(pkSession) } ")
+            Log.d("setPKInfo", " 开始 ${JsonUtils.toJson(pkSession)} ")
             visibility = View.VISIBLE
             pkTimer.start()
             binding.pkProgressBar.setProgress(50)
@@ -133,6 +135,7 @@ class PKCoverView : QKitViewBindingFrameLayout<KitPkCoverViewBinding> {
 
         override fun onPKExtensionChange(extension: QExtension) {
             super.onPKExtensionChange(extension)
+            Log.d("floo_log","onPKExtensionChange"+extension.key+" "+extension.value)
             setPKInfo(extension.key, extension.value)
         }
 
@@ -164,6 +167,7 @@ class PKCoverView : QKitViewBindingFrameLayout<KitPkCoverViewBinding> {
                 binding.pkProgressBar.setRightText("对方${right}")
                 binding.pkProgressBar.setProgress((leftTemp / (leftTemp + rightTemp) * 100).toInt())
             }
+
             PK_WIN_OR_LOSE -> {
                 //pk输赢
                 val pkResult = JsonUtils.parseObject(value, PKWinOrLose::class.java) ?: return
@@ -172,8 +176,24 @@ class PKCoverView : QKitViewBindingFrameLayout<KitPkCoverViewBinding> {
         }
     }
 
+    var i=0
     override fun initView() {
         client!!.getService(QPKService::class.java).addServiceListener(mQPKServiceListener)
+        binding.tvTimer.setOnClickListener {
+            client!!.getService(QPKService::class.java).updateExtension(QExtension().apply {
+                key="aa"
+                value="222 sss ${i++}"
+            },object: QLiveCallBack<Void>{
+                override fun onError(code: Int, msg: String?) {
+
+                }
+
+                override fun onSuccess(data: Void?) {
+                    "c".asToast(context)
+                }
+
+            })
+        }
     }
 
     override fun onDestroyed() {
