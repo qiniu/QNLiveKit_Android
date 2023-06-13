@@ -19,11 +19,10 @@ private val vs = """#version 300 es
 layout (location = 0) in vec4 vPosition;
 layout (location = 1) in vec4 aTextureCoord;
 uniform mat4 uPositionMatrix;
-uniform mat4 uTextureMatrix;
 out vec2 vTexCoord;
 void main() { 
      gl_Position  =  (uPositionMatrix * vPosition);
-     vTexCoord =  (uTextureMatrix * aTextureCoord).xy;
+     vTexCoord =  aTextureCoord.xy;
 }"""
 
 
@@ -46,7 +45,6 @@ class TextureRenderer {
     private var textureId = 0
     private var textureId2 = 0
     private var uTextureUnitLocation = 0
-    private var uTextureMatrixLocation = 0
     private var uPositionMatrixLocation = 0
 
 
@@ -60,27 +58,31 @@ class TextureRenderer {
      * (x,y,z)
      */
     private val POSITION_VERTEX = floatArrayOf(
-        0f, 0f, 0f,     //顶点坐标V0
-        //顶点坐标V0
-        1f, -1f, 0f,     //顶点坐标V4
-        //顶点坐标V4
-        -1f, -1f, 0f,   //顶点坐标V3
-        //顶点坐标V3
-        -1f, 1f, 0f,    //顶点坐标V2
-        //顶点坐标V2
-        1f, 1f, 0f,     //顶点坐标V1
+        0f, 0f, 0f,  //顶点坐标V0
+        1f, 1f, 0f,  //顶点坐标V1
+        -1f, 1f, 0f,  //顶点坐标V2
+        -1f, -1f, 0f,  //顶点坐标V3
+        1f, -1f, 0f //顶点坐标V4
     )
 
     /**
      * 纹理坐标
      * (s,t)
      */
+//    private val TEX_VERTEX = floatArrayOf(
+//        0.5f, 0.5f,  //纹理坐标V0
+//        1f, 0f,  //纹理坐标V1
+//        0f, 0f,  //纹理坐标V2
+//        0f, 1.0f,  //纹理坐标V3
+//        1f, 1.0f //纹理坐标V4
+//    )
+
     private val TEX_VERTEX = floatArrayOf(
         0.5f, 0.5f,  //纹理坐标V0
-        1f, 0f,  //纹理坐标V1
-        0f, 0f,  //纹理坐标V2
-        0f, 1.0f,  //纹理坐标V3
-        1f, 1.0f //纹理坐标V4
+        1f, 1f,  //纹理坐标V1
+        0f, 1f,  //纹理坐标V2
+        0f, 0f,  //纹理坐标V3
+        1f, 0f //纹理坐标V4
     )
 
     /**
@@ -121,12 +123,11 @@ class TextureRenderer {
         mProgram = ShaderUtils.linkProgram(vertexShaderId, fragmentShaderId)
 
         uPositionMatrixLocation = GLES30.glGetUniformLocation(mProgram, "uPositionMatrix")
-        uTextureMatrixLocation = GLES30.glGetUniformLocation(mProgram, "uTextureMatrix")
         uTextureUnitLocation = GLES30.glGetUniformLocation(mProgram, "uTextureUnit")
 
         Log.d(
             "mjl",
-            "  TextureRenderer $vertexShaderId $fragmentShaderId $uTextureUnitLocation $uPositionMatrixLocation $uTextureMatrixLocation"
+            "  TextureRenderer $vertexShaderId $fragmentShaderId $uTextureUnitLocation $uPositionMatrixLocation "
         )
     }
 
@@ -145,7 +146,7 @@ class TextureRenderer {
     var targetH = 320
 
     var targetX = 0
-    var targetY = 0
+    var targetY = 800
     fun drawFrame(textureIdb: Int, textureIdf: Int, f16Matrix: FloatArray, rotation: Int): Int {
         textureId = textureIdb
         textureId2 = textureIdf
@@ -174,37 +175,19 @@ class TextureRenderer {
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId)
         GLES30.glUniform1i(uTextureUnitLocation, 0)
 
-
         GLES30.glUniform1i(uPositionMatrixLocation, 0)
-        val mRotationMatrix: FloatArray = arrayOf<Float>(
-            1f, 0f, 0f, 0f,
-            0f, 1f, 0f, 0f,
-            0f, 0f, 1f, 0f,
-            0f, 0f, 0f, 1f,
-        ).toFloatArray()
 
-        val origin = mRotationMatrix.clone()
+        val origin = f16Matrix.clone()
         Matrix.setRotateM(origin, 0, 360 - rotationDegrees, 0f, 0f, 1.0f)
+        if (rotationDegrees == 270F) {
+            Matrix.scaleM(origin, 0, -1f, 1f, 1f)
+        }
         //将纹理矩阵传给片段着色器
         GLES30.glUniformMatrix4fv(
             uPositionMatrixLocation,
             1,
             false,
             origin,
-            0
-        )
-
-        val origin2 = mRotationMatrix.clone()
-        if (rotationDegrees == 270F) {
-            Matrix.scaleM(origin2, 0, -1f, 1f, 1f)
-        }
-        GLES30.glUniform1i(uTextureMatrixLocation, 0)
-        //将纹理矩阵传给片段着色器
-        GLES30.glUniformMatrix4fv(
-            uTextureMatrixLocation,
-            1,
-            false,
-            origin2,
             0
         )
         // 绘制
@@ -227,25 +210,25 @@ class TextureRenderer {
         GLES30.glUniform1i(uTextureUnitLocation, 0)
 
         GLES30.glUniform1i(uPositionMatrixLocation, 0)
-        val matrix: FloatArray = arrayOf<Float>(
-            1f, 0f, 0f, 0f,
-            0f, 1f, 0f, 0f,
-            0f, 0f, 1f, 0f,
-            0f, 0f, 0f, 1f,
-        ).toFloatArray()
 
+        val matrix = FloatArray(16)
+        Matrix.setIdentityM(matrix, 0)
 
         val x = (targetX.toFloat() + targetW / 2 - h / 2) / (h / 2)
-        val y = (targetY.toFloat() + targetH / 2 - w / 2) / (w / 2)
-        val v = floatArrayOf(x, y, 0.0f, 0f)
-        val rotationMatrix = matrix.clone()
+        val y = -(targetY.toFloat() + targetH / 2 - w / 2) / (w / 2)
 
-        Matrix.rotateM(rotationMatrix, 0,  - rotationDegrees, 0.0f, 0.0f, 1.0f)
+        val v = floatArrayOf(x, y, 0.0f, 0f)
+        val rotationMatrix = f16Matrix.clone()
+
+        Matrix.rotateM(
+            rotationMatrix, 0, rotationDegrees, 0.0f, 0.0f, 1.0f
+        )
         val rotatedV = FloatArray(4)
         Matrix.multiplyMV(rotatedV, 0, rotationMatrix, 0, v, 0)
 
         Matrix.translateM(matrix, 0, rotatedV[0], rotatedV[1], 1f)
         Log.d("mjl", "  multiplyMV $rotatedV")
+
         if (targetW <= 0) {
             targetW = w
         }
@@ -254,6 +237,7 @@ class TextureRenderer {
         }
         val scaleX = targetW / w.toFloat()
         val scaleY = targetH / h.toFloat()
+
         Matrix.scaleM(matrix, 0, scaleX, scaleY, 1f)
 
         //将纹理矩阵传给片段着色器
@@ -262,17 +246,6 @@ class TextureRenderer {
             1,
             false,
             matrix,
-            0
-        )
-
-        val f16Matrix1 = f16Matrix.clone()
-        GLES30.glUniform1i(uTextureUnitLocation, 0)
-        //将纹理矩阵传给片段着色器
-        GLES30.glUniformMatrix4fv(
-            uTextureMatrixLocation,
-            1,
-            false,
-            f16Matrix1,
             0
         )
 
