@@ -6,10 +6,23 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true">
 
-    <!-- demo视频帧处理组件-->
-    <com.qlive.qnlivekit.demo.VideoFrameBgProcess
+    <!-- demo视频帧处理组件
+        画布总宽高 视频摄像头参数 720 1280
+        app:video_height="480" //视频高
+        app:video_width="320"  //视频宽
+        app:video_x="600"      //视频坐标
+        app:video_y="100"
+        app:bgImg="@drawable/ic_goods_demo_des" //背景图片
+    -->
+    <com.qlive.qnlivekit.demo.VideoFrameBgProcessDemo
         android:layout_width="0dp"
-        android:layout_height="0dp" />
+        android:layout_height="0dp"
+
+        app:bgImg="@drawable/ic_goods_demo_des"
+        app:video_height="480"
+        app:video_width="320"
+        app:video_x="240"
+        app:video_y="100" />
 
     <!--  用户申请连麦监听  功能组件-->
     <com.qlive.uikitlinkmic.FuncCPTLinkMicApplyMonitor

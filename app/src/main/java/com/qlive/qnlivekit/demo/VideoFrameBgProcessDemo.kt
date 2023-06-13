@@ -2,8 +2,6 @@ package com.qlive.qnlivekit.demo
 
 import android.content.Context
 import android.util.AttributeSet
-import com.qiniu.droid.rtc.QNVideoFrameListener
-import com.qiniu.droid.rtc.QNVideoFrameType
 import com.qlive.avparam.QVideoFrameListener
 import com.qlive.avparam.QVideoFrameType
 import com.qlive.core.QLiveClient
@@ -18,7 +16,13 @@ import com.qlive.uikitcore.QLiveFuncComponent
  *
  * @constructor Create empty Video frame bg process
  */
-class VideoFrameBgProcess : QLiveFuncComponent {
+class VideoFrameBgProcessDemo : QLiveFuncComponent {
+
+    var videoW = 100
+    var videoH = 100
+    var videoX = 0
+    var videoY = 0
+    var bgImg = -1
 
     private var mTextureRenderer: TextureRenderer? = null
     private var mTextureUtils = TextureUtils()
@@ -39,15 +43,18 @@ class VideoFrameBgProcess : QLiveFuncComponent {
             timestampNs: Long,
             transformMatrix: FloatArray?
         ): Int {
+            if (bgImg == -1) {
+                return textureID
+            }
             if (mTextureRenderer?.w != width || mTextureRenderer?.h != height) {
                 mTextureRenderer?.detach()
                 mTextureRenderer = TextureRenderer()
-                mTextureRenderer?.setTargetSize(320, 330, 0, 0)
+                mTextureRenderer?.setTargetSize(videoW, videoH, videoX, videoY)
                 mTextureRenderer?.attach(width, height)
             }
             if (!mTextureUtils.isInit) {
                 mTextureUtils.init()
-                mTextureUtils.loadTexture(context, R.drawable.ic_goods_demo_des, null)
+                mTextureUtils.loadTexture(context, bgImg, null)
             }
 
             return mTextureRenderer!!.drawFrame(
@@ -64,7 +71,16 @@ class VideoFrameBgProcess : QLiveFuncComponent {
         context,
         attrs,
         defStyleAttr
-    )
+    ) {
+        val styled =
+            context.obtainStyledAttributes(attrs, R.styleable.VideoFrameBgProcess, defStyleAttr, 0)
+        videoW = styled.getInteger(R.styleable.VideoFrameBgProcess_video_width, 100)
+        videoH = styled.getInteger(R.styleable.VideoFrameBgProcess_video_height, 100)
+        videoX = styled.getInteger(R.styleable.VideoFrameBgProcess_video_x, 100)
+        videoY = styled.getInteger(R.styleable.VideoFrameBgProcess_video_y, 100)
+        bgImg = styled.getResourceId(R.styleable.VideoFrameBgProcess_bgImg, -1)
+        styled.recycle()
+    }
 
     override fun attachLiveClient(client: QLiveClient) {
         super.attachLiveClient(client)

@@ -14,10 +14,11 @@ val vs = """#version 300 es
 layout (location = 0) in vec4 vPosition;
 layout (location = 1) in vec4 aTextureCoord;
 uniform mat4 uPositionMatrix;
+uniform mat4 uTextureMatrix;
 out vec2 vTexCoord;
 void main() { 
      gl_Position  =  (uPositionMatrix * vPosition);
-     vTexCoord =  aTextureCoord.xy;
+     vTexCoord =  (uTextureMatrix * aTextureCoord).xy;
 }"""
 
 
@@ -68,6 +69,7 @@ class TextureRenderer {
     private var textureId = 0
     private var textureId2 = 0
     private var uTextureUnitLocation = 0
+    private var uTextureMatrixLocation = 0
     private var uPositionMatrixLocation = 0
     private val mOpenGLTools = OpenGLTools()
 
@@ -102,6 +104,7 @@ class TextureRenderer {
         mProgram = ShaderUtils.linkProgram(vertexShaderId, fragmentShaderId)
 
         uPositionMatrixLocation = GLES30.glGetUniformLocation(mProgram, "uPositionMatrix")
+        uTextureMatrixLocation = GLES30.glGetUniformLocation(mProgram, "uTextureMatrix")
         uTextureUnitLocation = GLES30.glGetUniformLocation(mProgram, "uTextureUnit")
 
         Log.d(
@@ -119,8 +122,6 @@ class TextureRenderer {
         isAttach = true
         w = width
         h = height
-
-        // mTextureScaler.setInputSize(width, height)
     }
 
     private var targetW = 0
@@ -130,11 +131,10 @@ class TextureRenderer {
     private var targetY = 0
 
     fun setTargetSize(width: Int, height: Int, x: Int, y: Int) {
-        targetW = height
-        targetH = width
+        targetW = width
+        targetH = height
         targetX = x
         targetY = y
-        //  mTextureScaler.setOutPutSize(targetW, targetH)
     }
 
     fun drawFrame(textureIdb: Int, textureIdf: Int, f16Matrix: FloatArray, rotation: Int): Int {
@@ -142,9 +142,6 @@ class TextureRenderer {
         textureId = textureIdb
         textureId2 = textureIdf
 
-        //    val scalerT = mTextureScaler.draw(textureId2, f16Matrix, rotation)
-
-        Log.d("onDrawFrame", "onDrawFrame")
         mOpenGLTools.bindFBO()
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
 
@@ -156,7 +153,6 @@ class TextureRenderer {
         Log.d("onSurfaceChanged", "onReadPixel $w  $h")
         mOpenGLTools.unbindFBO()
         return mOpenGLTools.textures!![0]
-        //   return scalerT
     }
 
     private fun drawPic1(f16Matrix: FloatArray, rotationDegrees: Float) {
@@ -185,6 +181,17 @@ class TextureRenderer {
             0
         )
 
+        val rotationMatrix = FloatArray(16)
+        Matrix.setIdentityM(rotationMatrix, 0)
+        GLES30.glUniform1i(uTextureMatrixLocation, 0)
+        //将纹理矩阵传给片段着色器
+        GLES30.glUniformMatrix4fv(
+            uTextureMatrixLocation,
+            1,
+            false,
+            rotationMatrix,
+            0
+        )
         // 绘制
         GLES20.glDrawElements(
             GLES20.GL_TRIANGLES,
@@ -222,9 +229,7 @@ class TextureRenderer {
         )
         val rotatedV = FloatArray(4)
         Matrix.multiplyMV(rotatedV, 0, rotationMatrix, 0, v, 0)
-
         Matrix.translateM(matrix, 0, rotatedV[0], rotatedV[1], 1f)
-        Log.d("mjl", "  multiplyMV $rotatedV")
 
         if (targetW <= 0) {
             targetW = w
@@ -246,6 +251,34 @@ class TextureRenderer {
             0
         )
 
+
+
+        var sy = 0f
+        var sx = 0f
+        val realw = h.toFloat() * (targetW / targetH)
+        val realh = w.toFloat() / (targetW / targetH)
+        if (realw < w) {
+            sy = 1f
+            sx = realw / w
+        } else {
+            sy = realh / h
+            sx = 1f
+        }
+
+        val matrix2 = FloatArray(16)
+        Matrix.setIdentityM(matrix2, 0)
+        Matrix.scaleM(matrix2, 0, sx, sy, 1f)
+
+        GLES30.glUniform1i(uTextureMatrixLocation, 0)
+        //将纹理矩阵传给片段着色器
+        GLES30.glUniformMatrix4fv(
+            uTextureMatrixLocation,
+            1,
+            false,
+            matrix2,
+            0
+        )
+
         // 绘制
         GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
         GLES30.glEnable(GLES30.GL_BLEND)
@@ -258,7 +291,6 @@ class TextureRenderer {
     }
 
     fun detach() {
-      //  mTextureScaler.detach()
         if (isAttach) {
             mOpenGLTools.unbindFBO()
         }
