@@ -2,7 +2,7 @@ package com.qlive.qnlivekit.demo.fbo
 import android.opengl.GLES30
 
 
-object OpenGLTools {
+class OpenGLTools {
 
     var textures:IntArray?=null
     fun createFBOTexture(width: Int, height: Int): Int {

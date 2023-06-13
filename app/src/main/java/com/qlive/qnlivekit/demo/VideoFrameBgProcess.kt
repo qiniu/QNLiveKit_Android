@@ -42,6 +42,7 @@ class VideoFrameBgProcess : QLiveFuncComponent {
             if (mTextureRenderer?.w != width || mTextureRenderer?.h != height) {
                 mTextureRenderer?.detach()
                 mTextureRenderer = TextureRenderer()
+                mTextureRenderer?.setTargetSize(320, 330, 0, 0)
                 mTextureRenderer?.attach(width, height)
             }
             if (!mTextureUtils.isInit) {

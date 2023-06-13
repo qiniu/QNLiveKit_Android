@@ -4,18 +4,13 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import android.opengl.Matrix
 import android.util.Log
-import com.qlive.qnlivekit.demo.fbo.OpenGLTools.bindFBO
-import com.qlive.qnlivekit.demo.fbo.OpenGLTools.createFBOTexture
-import com.qlive.qnlivekit.demo.fbo.OpenGLTools.createFrameBuffer
-import com.qlive.qnlivekit.demo.fbo.OpenGLTools.textures
-import com.qlive.qnlivekit.demo.fbo.OpenGLTools.unbindFBO
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.nio.ShortBuffer
 
 
-private val vs = """#version 300 es
+val vs = """#version 300 es
 layout (location = 0) in vec4 vPosition;
 layout (location = 1) in vec4 aTextureCoord;
 uniform mat4 uPositionMatrix;
@@ -26,7 +21,7 @@ void main() {
 }"""
 
 
-private val fs = """#version 300 es
+val fs = """#version 300 es
 precision mediump float;
 uniform sampler2D uTextureUnit;
 in vec2 vTexCoord;
@@ -35,10 +30,38 @@ void main() {
      vFragColor = texture(uTextureUnit,vTexCoord);
 }"""
 
+/**
+ * 顶点坐标
+ * (x,y,z)
+ */
+val POSITION_VERTEX = floatArrayOf(
+    0f, 0f, 0f,  //顶点坐标V0
+    1f, 1f, 0f,  //顶点坐标V1
+    -1f, 1f, 0f,  //顶点坐标V2
+    -1f, -1f, 0f,  //顶点坐标V3
+    1f, -1f, 0f //顶点坐标V4
+)
+
+val TEX_VERTEX = floatArrayOf(
+    0.5f, 0.5f,  //纹理坐标V0
+    1f, 1f,  //纹理坐标V1
+    0f, 1f,  //纹理坐标V2
+    0f, 0f,  //纹理坐标V3
+    1f, 0f //纹理坐标V4
+)
+
+val VERTEX_INDEX = shortArrayOf(
+    0, 1, 2,  //V0,V1,V2 三个顶点组成一个三角形
+    0, 2, 3,  //V0,V2,V3 三个顶点组成一个三角形
+    0, 3, 4,  //V0,V3,V4 三个顶点组成一个三角形
+    0, 4, 1 //V0,V4,V1 三个顶点组成一个三角形
+)
+
 class TextureRenderer {
 
-    private val vertexBuffer: FloatBuffer
-
+    private val vertexBuffer: FloatBuffer = ByteBuffer.allocateDirect(POSITION_VERTEX.size * 4)
+        .order(ByteOrder.nativeOrder())
+        .asFloatBuffer()
     private val mTexVertexBuffer: FloatBuffer
     private val mVertexIndexBuffer: ShortBuffer
     private var mProgram = 0
@@ -46,60 +69,16 @@ class TextureRenderer {
     private var textureId2 = 0
     private var uTextureUnitLocation = 0
     private var uPositionMatrixLocation = 0
+    private val mOpenGLTools = OpenGLTools()
 
-
+    // private val mTextureScaler by lazy { TextureScaler() }
     var w = 0
         private set
     var h = 0
         private set
 
-    /**
-     * 顶点坐标
-     * (x,y,z)
-     */
-    private val POSITION_VERTEX = floatArrayOf(
-        0f, 0f, 0f,  //顶点坐标V0
-        1f, 1f, 0f,  //顶点坐标V1
-        -1f, 1f, 0f,  //顶点坐标V2
-        -1f, -1f, 0f,  //顶点坐标V3
-        1f, -1f, 0f //顶点坐标V4
-    )
-
-    /**
-     * 纹理坐标
-     * (s,t)
-     */
-//    private val TEX_VERTEX = floatArrayOf(
-//        0.5f, 0.5f,  //纹理坐标V0
-//        1f, 0f,  //纹理坐标V1
-//        0f, 0f,  //纹理坐标V2
-//        0f, 1.0f,  //纹理坐标V3
-//        1f, 1.0f //纹理坐标V4
-//    )
-
-    private val TEX_VERTEX = floatArrayOf(
-        0.5f, 0.5f,  //纹理坐标V0
-        1f, 1f,  //纹理坐标V1
-        0f, 1f,  //纹理坐标V2
-        0f, 0f,  //纹理坐标V3
-        1f, 0f //纹理坐标V4
-    )
-
-    /**
-     * 索引
-     */
-    private val VERTEX_INDEX = shortArrayOf(
-        0, 1, 2,  //V0,V1,V2 三个顶点组成一个三角形
-        0, 2, 3,  //V0,V2,V3 三个顶点组成一个三角形
-        0, 3, 4,  //V0,V3,V4 三个顶点组成一个三角形
-        0, 4, 1 //V0,V4,V1 三个顶点组成一个三角形
-    )
-
     init {
         //分配内存空间,每个浮点型占4字节空间
-        vertexBuffer = ByteBuffer.allocateDirect(POSITION_VERTEX.size * 4)
-            .order(ByteOrder.nativeOrder())
-            .asFloatBuffer()
         //传入指定的坐标数据
         vertexBuffer.put(POSITION_VERTEX)
         vertexBuffer.position(0)
@@ -134,35 +113,50 @@ class TextureRenderer {
     private var isAttach = false
     fun attach(width: Int, height: Int) {
         Log.d("onSurfaceChanged", "onSurfaceChanged $width  $height")
-        createFBOTexture(width, height)
-        createFrameBuffer()
+        mOpenGLTools.createFBOTexture(width, height)
+        mOpenGLTools.createFrameBuffer()
         GLES30.glViewport(0, 0, width, height)
         isAttach = true
         w = width
         h = height
+
+        // mTextureScaler.setInputSize(width, height)
     }
 
-    var targetW = 460
-    var targetH = 320
+    private var targetW = 0
+    private var targetH = 0
 
-    var targetX = 0
-    var targetY = 800
+    private var targetX = 0
+    private var targetY = 0
+
+    fun setTargetSize(width: Int, height: Int, x: Int, y: Int) {
+        targetW = height
+        targetH = width
+        targetX = x
+        targetY = y
+        //  mTextureScaler.setOutPutSize(targetW, targetH)
+    }
+
     fun drawFrame(textureIdb: Int, textureIdf: Int, f16Matrix: FloatArray, rotation: Int): Int {
+
         textureId = textureIdb
         textureId2 = textureIdf
+
+        //    val scalerT = mTextureScaler.draw(textureId2, f16Matrix, rotation)
+
         Log.d("onDrawFrame", "onDrawFrame")
-        bindFBO()
+        mOpenGLTools.bindFBO()
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
 
         //使用程序片段
         GLES30.glUseProgram(mProgram)
         drawPic1(f16Matrix, rotation.toFloat())
-        drawPic2(f16Matrix, rotation.toFloat())
+        drawPic2(textureId2, f16Matrix, rotation.toFloat())
         Log.d("drawPic1", "drawPic1")
         Log.d("onSurfaceChanged", "onReadPixel $w  $h")
-        unbindFBO()
-        return textures!![0]
-        //OpenGLTools.INSTANCE.deleteFBO();
+        mOpenGLTools.unbindFBO()
+        return mOpenGLTools.textures!![0]
+        //   return scalerT
     }
 
     private fun drawPic1(f16Matrix: FloatArray, rotationDegrees: Float) {
@@ -190,6 +184,7 @@ class TextureRenderer {
             origin,
             0
         )
+
         // 绘制
         GLES20.glDrawElements(
             GLES20.GL_TRIANGLES,
@@ -199,14 +194,16 @@ class TextureRenderer {
         )
     }
 
-    private fun drawPic2(f16Matrix: FloatArray, rotationDegrees: Float) {
+    private fun drawPic2(texture: Int, f16Matrix: FloatArray, rotationDegrees: Float) {
+
         GLES30.glEnableVertexAttribArray(0)
         GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 0, vertexBuffer)
         GLES30.glEnableVertexAttribArray(1)
         GLES30.glVertexAttribPointer(1, 2, GLES30.GL_FLOAT, false, 0, mTexVertexBuffer)
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
+
         //绑定纹理
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId2)
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture)
         GLES30.glUniform1i(uTextureUnitLocation, 0)
 
         GLES30.glUniform1i(uPositionMatrixLocation, 0)
@@ -261,8 +258,9 @@ class TextureRenderer {
     }
 
     fun detach() {
+      //  mTextureScaler.detach()
         if (isAttach) {
-            OpenGLTools.unbindFBO()
+            mOpenGLTools.unbindFBO()
         }
         isAttach = false
     }
