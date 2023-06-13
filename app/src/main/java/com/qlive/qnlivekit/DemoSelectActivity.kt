@@ -35,6 +35,14 @@ class DemoSelectActivity : BaseBindingActivity<ActivityDemoSelectBinding>() {
 
             QLive.getLiveUIKit().launch(this)
         }
+
+        binding.btnPusherVideoProcess.setOnClickListener {
+            QLive.getLiveUIKit().getPage(RoomPage::class.java).playerCustomLayoutID =
+                R.layout.kit_activity_room_player
+            QLive.getLiveUIKit().getPage(RoomPage::class.java).anchorCustomLayoutID =
+                R.layout.custom_layout_pusher_demo_img_process
+            QLive.getLiveUIKit().launch(this)
+        }
     }
 
 }

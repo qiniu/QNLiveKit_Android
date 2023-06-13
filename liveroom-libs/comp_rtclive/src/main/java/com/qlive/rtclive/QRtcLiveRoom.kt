@@ -34,9 +34,14 @@ open class QRtcLiveRoom(
     val localAudioTrack: QNMicrophoneAudioTrack? get() = mQRTCUserStore.localAudioTrack
     val roomName get() = mQRTCUserStore.roomName
     val roomToken get() = mQRTCUserStore.roomToken
-    private var mVideoFrameListener: QNVideoFrameListener? = null
     private var mAudioFrameListener: QNAudioFrameListener? = null
     private var mInnerVideoFrameListener: QNVideoFrameListener? = null
+
+    private val mBeautyVideoFrameListenerWarp by lazy {
+        BeautyVideoFrameListenerWarp(
+            mInnerVideoFrameListener
+        )
+    }
 
     init {
         QInnerVideoFrameHook.mBeautyHooker?.attach()
@@ -81,10 +86,7 @@ open class QRtcLiveRoom(
         )
 
         mQRTCUserStore.localVideoTrack?.setVideoFrameListener(
-            BeautyVideoFrameListenerWarp(
-                mInnerVideoFrameListener,
-                mVideoFrameListener
-            )
+            mBeautyVideoFrameListenerWarp
         )
     }
 
@@ -190,7 +192,6 @@ open class QRtcLiveRoom(
         mInnerVideoFrameListener = null
         QInnerVideoFrameHook.mBeautyHooker?.detach()
         mAudioFrameListener = null
-        mVideoFrameListener = null
         mQNRTCEngineEventWrap.clear()
         QNRTC.deinit()
     }
@@ -227,7 +228,7 @@ open class QRtcLiveRoom(
 
     //设置视频帧回调
     fun setVideoFrameListener(frameListener: QNVideoFrameListener?) {
-        mVideoFrameListener = frameListener
+        mBeautyVideoFrameListenerWarp.mVideoFrameListener = frameListener
     }
 
     //设置音频帧回调
