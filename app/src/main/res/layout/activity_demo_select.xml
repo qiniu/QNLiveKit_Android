@@ -25,4 +25,11 @@
         android:layout_height="wrap_content"
         android:text="带k歌" />
 
+    <Button
+        android:id="@+id/btnPusherVideoProcess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="自定义推流视频帧处理" />
+
+
 </LinearLayout>
