@@ -131,8 +131,8 @@ class TextureRenderer {
     private var targetY = 0
 
     fun setTargetSize(width: Int, height: Int, x: Int, y: Int) {
-        targetW = width
-        targetH = height
+        targetW = height
+        targetH = width
         targetX = x
         targetY = y
     }
@@ -149,9 +149,11 @@ class TextureRenderer {
         GLES30.glUseProgram(mProgram)
         drawPic1(f16Matrix, rotation.toFloat())
         drawPic2(textureId2, f16Matrix, rotation.toFloat())
-        Log.d("drawPic1", "drawPic1")
-        Log.d("onSurfaceChanged", "onReadPixel $w  $h")
+
         mOpenGLTools.unbindFBO()
+        val ec = GLES30.glGetError();
+      //  Log.d("mjl","GLES30.glGetError $ec")
+        GLES30.glFinish()
         return mOpenGLTools.textures!![0]
     }
 
@@ -218,8 +220,8 @@ class TextureRenderer {
         val matrix = FloatArray(16)
         Matrix.setIdentityM(matrix, 0)
 
-        val x = (targetX.toFloat() + targetW / 2 - h / 2) / (h / 2)
-        val y = -(targetY.toFloat() + targetH / 2 - w / 2) / (w / 2)
+        val x = (targetX.toFloat() + targetH / 2 - h / 2) / (h / 2)
+        val y = -(targetY.toFloat() + targetW / 2 - w / 2) / (w / 2)
 
         val v = floatArrayOf(x, y, 0.0f, 0f)
         val rotationMatrix = f16Matrix.clone()
@@ -242,7 +244,6 @@ class TextureRenderer {
 
         Matrix.scaleM(matrix, 0, scaleX, scaleY, 1f)
 
-        //将纹理矩阵传给片段着色器
         GLES30.glUniformMatrix4fv(
             uPositionMatrixLocation,
             1,
@@ -252,11 +253,10 @@ class TextureRenderer {
         )
 
 
-
         var sy = 0f
         var sx = 0f
-        val realw = h.toFloat() * (targetW / targetH)
-        val realh = w.toFloat() / (targetW / targetH)
+        val realw = h.toFloat() * (targetW.toFloat() / targetH)
+        val realh = w.toFloat() / (targetW.toFloat() / targetH)
         if (realw < w) {
             sy = 1f
             sx = realw / w
@@ -278,10 +278,9 @@ class TextureRenderer {
             matrix2,
             0
         )
-
         // 绘制
-        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
-        GLES30.glEnable(GLES30.GL_BLEND)
+//        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
+//        GLES30.glEnable(GLES30.GL_BLEND)
         GLES20.glDrawElements(
             GLES30.GL_TRIANGLES,
             VERTEX_INDEX.size,
@@ -293,6 +292,7 @@ class TextureRenderer {
     fun detach() {
         if (isAttach) {
             mOpenGLTools.unbindFBO()
+            mOpenGLTools.deleteFBO()
         }
         isAttach = false
     }
