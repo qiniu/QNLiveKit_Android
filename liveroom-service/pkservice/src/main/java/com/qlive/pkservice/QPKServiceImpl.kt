@@ -102,6 +102,7 @@ internal class QPKServiceImpl : QPKService, BaseService() {
                         if (info.startAt <= 0) {
                             mPKSession!!.startTimeStamp = info.createdAt
                         }
+                        mPKSession!!.extension = info.extensions
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }

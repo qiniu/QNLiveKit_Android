@@ -229,6 +229,9 @@ class MixStreamManager(val mQRtcLiveRoom: RtcClientWrap) {
             videoFrameRate = mixStreamParams.FPS; // 设置合流任务的视频帧率
 //            setRenderMode(QNRenderMode.ASPECT_FILL); // 设置合流任务的默认画面填充方式
             bitrate = mixStreamParams.mixBitrate; // 设置合流任务的码率，单位: kbps
+            mixStreamParams.renderMode?.let {
+                this.renderMode = it
+            }
             mixStreamParams.backGroundImg?.let { bg ->
                 background = QNTranscodingLiveStreamingImage().apply {
                     this.url = bg.url
@@ -455,13 +458,16 @@ class MixStreamManager(val mQRtcLiveRoom: RtcClientWrap) {
                         zOrder = op.z
                         width = op.width
                         height = op.height
+                        op.renderMode?.let { rm ->
+                            this.renderMode = rm
+                        }
                         if (mQRtcLiveRoom.mQRTCUserStore.localVideoTrack?.trackID == key) {
                             isSEIEnabled = true
                             QLiveLogUtil.d(
                                 "MixStreamHelperImp",
                                 "commitOpt trackId  ${trackID} is isSEIEnabled = true"
                             )
-                        }else{
+                        } else {
                             isSEIEnabled = false
                         }
                         // renderMode = op.stretchMode

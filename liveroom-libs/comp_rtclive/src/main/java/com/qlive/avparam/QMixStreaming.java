@@ -1,5 +1,7 @@
 package com.qlive.avparam;
 
+import com.qiniu.droid.rtc.QNRenderMode;
+
 public class QMixStreaming {
     /**
      * 混流画布参数
@@ -26,6 +28,7 @@ public class QMixStreaming {
          * 混流背景图片
          */
         public TranscodingLiveStreamingImage backGroundImg = null;
+        public QNRenderMode renderMode = null;
     }
 
     /**
@@ -86,8 +89,7 @@ public class QMixStreaming {
          * 用户视频高
          */
         public int height = 0;
-        // var stretchMode: QNRenderMode? = null
-
+        public QNRenderMode renderMode;
     }
 
     /**
