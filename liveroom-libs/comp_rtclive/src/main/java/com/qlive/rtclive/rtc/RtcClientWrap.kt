@@ -2,6 +2,7 @@ package com.qlive.rtclive.rtc
 
 import android.content.Context
 import com.qiniu.droid.rtc.*
+import com.qiniu.droid.rtc.model.QNAudioDevice
 import com.qlive.liblog.QLiveLogUtil
 import com.qlive.rtclive.MixStreamManager
 import com.qlive.rtclive.QRTCUserStore
@@ -38,7 +39,12 @@ open class RtcClientWrap(
         mQNRTCEngineEventWrap.removeExtraQNRTCEngineEventListener(extraQNRTCEngineEventListener)
     }
 
-    private val mQNRTCEventListener = QNRTCEventListener { }
+    var audioDevice: QNAudioDevice = QNAudioDevice.NONE
+    var audioDeviceCall: ((QNAudioDevice) -> Unit)? = null
+    private val mQNRTCEventListener = QNRTCEventListener {
+        audioDevice = it
+        audioDeviceCall?.invoke(it)
+    }
 
     init {
         if (!QLiveLogUtil.isLogAble) {

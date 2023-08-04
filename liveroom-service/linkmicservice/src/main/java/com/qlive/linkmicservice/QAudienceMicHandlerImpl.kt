@@ -454,4 +454,25 @@ internal class QAudienceMicHandlerImpl(private val micLinkContext: MicLinkContex
     override fun getMicrophoneVolume(): Double {
         return mMicrophoneVolume
     }
+
+    override fun getAudioDeviceInfo(): Int {
+        return micLinkContext.mQRtcLiveRoom.getAudioDeviceInfo()
+    }
+
+    override fun setAudioRouteToSpeakerphone(
+        audioRouteToSpeakerphone: Boolean,
+        callBack: QLiveCallBack<Int>?
+    ) {
+        backGround {
+            doWork {
+                val ret = micLinkContext.mQRtcLiveRoom.setAudioRouteToSpeakerphone(
+                    audioRouteToSpeakerphone
+                )
+                callBack?.onSuccess(ret)
+            }
+            catchError {
+                callBack?.onError(it.getCode(), it.message)
+            }
+        }
+    }
 }

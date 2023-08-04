@@ -131,4 +131,24 @@ public interface QAudienceMicHandler {
     void setMicrophoneVolume(double volume);
 
     double getMicrophoneVolume();
+
+    /**
+     * 获得当前音频模式
+     * SPEAKER_PHONE(0), 扬声器
+     * EARPIECE(1),   听筒
+     * WIRED_HEADSET(2),
+     * BLUETOOTH(3),
+     * NONE(-1);
+     */
+    int getAudioDeviceInfo();
+
+    /**
+     * 设置是否将音频路由切换到扬声器
+     * 1. 设置为 true，音频将会通过扬声器播放
+     * 2. 设置为 false，音频将会通过蓝牙、有线耳机、听筒等设备播放，具体路由取决于当时的设备连接情况
+     *
+     * @param audioRouteToSpeakerphone
+     * @param callBack                 回调操作后的音频模式
+     */
+    void setAudioRouteToSpeakerphone(boolean audioRouteToSpeakerphone, QLiveCallBack<Integer> callBack);
 }

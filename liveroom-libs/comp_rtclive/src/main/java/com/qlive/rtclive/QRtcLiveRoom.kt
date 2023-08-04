@@ -2,13 +2,35 @@ package com.qlive.rtclive
 
 import android.content.Context
 import android.util.Base64
-import com.qlive.rtclive.rtc.RtcClientWrap
-import com.qlive.rtclive.rtc.SimpleQNRTCListener
-import com.qiniu.droid.rtc.*
+import com.qiniu.droid.rtc.QNAudioFrameListener
+import com.qiniu.droid.rtc.QNAudioQuality
+import com.qiniu.droid.rtc.QNCameraSwitchResultCallback
+import com.qiniu.droid.rtc.QNCameraVideoTrack
+import com.qiniu.droid.rtc.QNCameraVideoTrackConfig
+import com.qiniu.droid.rtc.QNClientMode
+import com.qiniu.droid.rtc.QNClientRole
+import com.qiniu.droid.rtc.QNConnectionDisconnectedInfo
+import com.qiniu.droid.rtc.QNConnectionState
+import com.qiniu.droid.rtc.QNLocalTrack
+import com.qiniu.droid.rtc.QNMicrophoneAudioTrack
+import com.qiniu.droid.rtc.QNMicrophoneAudioTrackConfig
+import com.qiniu.droid.rtc.QNPublishResultCallback
+import com.qiniu.droid.rtc.QNRTC
+import com.qiniu.droid.rtc.QNRTCClientConfig
+import com.qiniu.droid.rtc.QNRTCSetting
+import com.qiniu.droid.rtc.QNRenderView
+import com.qiniu.droid.rtc.QNTrack
+import com.qiniu.droid.rtc.QNVideoCaptureConfig
+import com.qiniu.droid.rtc.QNVideoEncoderConfig
+import com.qiniu.droid.rtc.QNVideoFrameListener
 import com.qlive.avparam.QCameraParam
 import com.qlive.avparam.QMicrophoneParam
-import com.qlive.avparam.QVideoCaptureConfig
 import com.qlive.liblog.QLiveLogUtil
+import com.qlive.rtclive.rtc.RtcClientWrap
+import com.qlive.rtclive.rtc.SimpleQNRTCListener
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -256,4 +278,45 @@ open class QRtcLiveRoom(
     fun setUserCameraWindowView(uid: String, view: QNRenderView) {
         mQRTCUserStore.setUserCameraPreView(uid, view)
     }
+
+
+    fun getAudioDeviceInfo(): Int {
+        return audioDevice.value()
+    }
+
+    suspend fun setAudioRouteToSpeakerphone(audioRouteToSpeakerphone: Boolean) =
+        suspendCoroutine<Int> { continuation ->
+            if (audioDeviceCall != null) {
+                continuation.resume(audioDevice.value())
+                return@suspendCoroutine
+            }
+            var hasResumed = false
+            audioDeviceCall = {
+                if (!hasResumed) {
+                    hasResumed = true
+                    continuation.resume(it.value())
+                }
+                audioDeviceCall = null
+            }
+            QNRTC.setAudioRouteToSpeakerphone(audioRouteToSpeakerphone)
+            if (hasResumed) {
+                return@suspendCoroutine
+            }
+            var index = 0
+            GlobalScope.launch {
+                while (!hasResumed) {
+                    index++
+                    delay(50)
+                    if (hasResumed) {
+                        return@launch
+                    }
+                    if (index > 10) {
+                        hasResumed = true
+                        continuation.resume(audioDevice.value())
+                        audioDeviceCall = null
+                    }
+                }
+            }
+        }
+
 }
