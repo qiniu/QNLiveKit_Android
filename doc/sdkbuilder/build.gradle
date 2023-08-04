@@ -67,7 +67,7 @@ fataar {
     transitive = true
 }
 def uikitversion = 'qlive-uikit-1.0.9'
-def qliveversion = 'qlive-sdk-1.0.9'
+def qliveversion = 'qlive-sdk-1.1.0'
 
 task makeAAR(type: Copy) {
     def localProperties = new Properties()

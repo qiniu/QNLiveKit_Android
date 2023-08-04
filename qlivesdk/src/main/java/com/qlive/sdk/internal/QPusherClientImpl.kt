@@ -286,4 +286,23 @@ internal class QPusherClientImpl : QPusherClient, QRTCProvider, QLiveServiceObse
     override fun getMicrophoneVolume(): Double {
         return mMicrophoneVolume
     }
+
+    override fun getAudioDeviceInfo(): Int {
+        return mRtcRoom.getAudioDeviceInfo()
+    }
+
+    override fun setAudioRouteToSpeakerphone(
+        audioRouteToSpeakerphone: Boolean,
+        callBack: QLiveCallBack<Int>?
+    ) {
+        backGround {
+            doWork {
+                val ret = mRtcRoom.setAudioRouteToSpeakerphone(audioRouteToSpeakerphone)
+                callBack?.onSuccess(ret)
+            }
+            catchError {
+                callBack?.onError(it.getCode(), it.message)
+            }
+        }
+    }
 }
