@@ -39,7 +39,7 @@ public interface QPKService extends QLiveService {
      *
      * @param timeoutTimestamp 等待对方流超时时间时间戳 毫秒
      * @param receiverRoomID   接受方所在房间ID
-     * @param receiverUID      接收方用户ID
+     * @param receiverUID      接收方用户IDp
      * @param extension        扩展字段
      * @param callBack         操作回调函数
      */
